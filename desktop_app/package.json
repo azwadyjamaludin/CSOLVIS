@@ -18,10 +18,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "dev": "concurrently -k \"BROWSER=none npm start\" \"npm:electron\"",
-    "electron": "wait-on tcp:3000 && electron .",
-    "package-mac": "electron-packager . --overwrite --platform=darwin --arch=x64 --icon=assets/icons/mac/c-solvis.icns --prune=true --out=release-builds",
-    "package-win": "electron-packager . electron-tutorial-app --overwrite --asar=true --platform=win32 --arch=ia32 --icon=assets/icons/win/c-solvis.ico --prune=true --out=release-builds --version-string.CompanyName=azwadyInc --version-string.FileDescription=azwadyInc --version-string.ProductName=\"CSOLVIS\"",
-    "package-linux": "electron-packager . electron-tutorial-app --overwrite --asar=true --platform=linux --arch=x64 --icon=assets/icons/png/1024x1024.png --prune=true --out=release-builds"
+    "electron": "wait-on tcp:3000 && electron ."
   },
   "eslintConfig": {
     "extends": [
@@ -43,9 +40,8 @@
   },
   "devDependencies": {
     "concurrently": "^6.0.2",
-    "electron": "^12.0.5",
+    "electron": "^12.0.6",
     "electron-is-dev": "^2.0.0",
-    "electron-packager": "^15.2.0",
     "wait-on": "^5.3.0"
   }
 }

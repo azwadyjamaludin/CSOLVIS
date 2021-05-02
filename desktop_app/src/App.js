@@ -1,4 +1,4 @@
-import logo from './newC-SOLVIS.png';
+import logo from './assets/CSOLVIS.png';
 import './App.css';
 
 function App() {
@@ -6,18 +6,15 @@ function App() {
     <div className="App">
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
-        <p>
-	  C SOLVIS Desktop App
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-	  {/*<a
+        <br/><br/>
+        <a
           className="App-link"
-          href="https://reactjs.org"
+          href=""
           target="_blank"
           rel="noopener noreferrer"
         >
-          Learn React
-        </a>*/}
+          C SOLVIS
+        </a>
       </header>
     </div>
   );

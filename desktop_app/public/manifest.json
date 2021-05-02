@@ -1,19 +1,19 @@
 {
-  "short_name": "C SOLVIS App",
-  "name": "Create C SOLVIS App",
+  "short_name": "C SOLVIS",
+  "name": "C SOLVIS front end",
   "icons": [
     {
-      "src": "favicon.ico",
+      "src": "csolvis.ico",
       "sizes": "64x64 32x32 24x24 16x16",
       "type": "image/x-icon"
     },
     {
-      "src": "newC-SOLVIS.png",
+      "src": "CSOLVIS.png",
       "type": "image/png",
       "sizes": "192x192"
     },
     {
-      "src": "newC-SOLVIS.png",
+      "src": "CSOLVIS.png",
       "type": "image/png",
       "sizes": "512x512"
     }
