@@ -2,7 +2,9 @@ import React, {useEffect} from 'react'
 import {Router, Switch, Route} from "react-router-dom";
 import history from '../../config/history';
 import Layout from "./layout";
-import ProbDes from "../probsolve/sub"
+import ProbDes from "../probsolve/step1"
+import DevEditor from "./editor"
+import Help from "../help"
 
 
 const DPIndex = () => {
@@ -17,10 +19,13 @@ const DPIndex = () => {
             <Router history={history}>
                 <Layout>
                     <Switch>
-                        {/*<Route exact path={'/devprog'} render={()=> <div><DevProg/></div>}/>*/}
+                        <Route exact path={'/devprog/editor'} render={()=> <div><DevEditor/></div>}/>
                     </Switch>
                 </Layout>
-                <Route exact path={'/probdes1'} render={()=> <div><ProbDes/></div>}/>
+                <Switch>
+                <Route exact path={'/probdes/step1'} render={()=> <div><ProbDes/></div>}/>
+                <Route exact path={'/help/info'} render={()=> <div><Help/></div>}/>
+                </Switch>
             </Router>
 
         </div>

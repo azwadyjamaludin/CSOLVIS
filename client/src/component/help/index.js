@@ -2,12 +2,11 @@ import React, {useEffect} from 'react'
 import {Router, Switch, Route} from "react-router-dom";
 import history from '../../config/history';
 import Layout from "./layout";
-import ProbDes from "../probsolve/step1"
-import DevEditor from "./editor"
-import Help from "../help"
+import Info from './info'
+import DevProg from "../devprogram/editor"
+import ProbDev from "../probsolve/step1"
 
-
-const DPIndex = () => {
+const HPIndex = () => {
     useEffect(() => {
         /*if (refresh === true) {
             window.location.reload(false)
@@ -19,16 +18,14 @@ const DPIndex = () => {
             <Router history={history}>
                 <Layout>
                     <Switch>
-                        <Route exact path={'/devprog/editor'} render={()=> <div><DevEditor/></div>}/>
+                        <Route exact path={'/help/info'} render={()=> <div><Info/></div>}/>
                     </Switch>
                 </Layout>
-                <Switch>
-                <Route exact path={'/probdes/step1'} render={()=> <div><ProbDes/></div>}/>
-                <Route exact path={'/help/info'} render={()=> <div><Help/></div>}/>
-                </Switch>
+                <Route exact path={'/probdev/step1'} render={()=> <div><ProbDev/></div>}/>
+                <Route exact path={'/devprog/editor'} render={()=> <div><DevProg/></div>}/>
             </Router>
 
         </div>
     );
 }
-export default DPIndex
+export default HPIndex

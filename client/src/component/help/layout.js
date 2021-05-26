@@ -1,4 +1,4 @@
-import React, {Component, Fragment} from "react";
+import React, {Component, Fragment, useState} from "react";
 import { Link, withRouter } from "react-router-dom";
 import {
   AppBar,
@@ -14,7 +14,6 @@ import Button from "@material-ui/core/Button";
 import { withStyles } from "@material-ui/core/styles";
 import { compose } from "recompose";
 import Typography from '@material-ui/core/Typography';
-import DescriptionRoundedIcon from '@material-ui/icons/DescriptionRounded';
 import logo from '../../assets/CSOLVIS.png'
 
 
@@ -51,6 +50,9 @@ const styles = theme => ({
   },
   nested: {
     paddingLeft: theme.spacing(10)
+  },
+  nested2: {
+    paddingLeft: theme.spacing(5)
   },
   drawer: {
     [theme.breakpoints.up("sm")]: {
@@ -117,49 +119,19 @@ class Layout extends Component {
           {/*<img src={logo} height="50" />*/}
         </div>
         <MenuList>
-          <MenuList>
+         <MenuList>
             <Divider/>
             <Divider/>
             <Divider/>
             <Divider/>
-          <MenuItem > {/*component={Link} to="" selected={"/pages/articles" === pathname}>*/}
-            <Typography variant="body1" noWrap >
-            <DescriptionRoundedIcon fontSize={'default'} color={'secondary'}/> &nbsp; Problem Design
-            </Typography>
-          </MenuItem>
-            <MenuItem className={classes.nested} component={Link} to="/probdes/step1" selected={"/probdes/step1" === pathname}>
-              <Typography variant="subtitle2" noWrap >
-              Step 1 ->
-              </Typography>
-            </MenuItem>
-            <MenuItem className={classes.nested} component={Link} to="/probdes/step2" selected={"/probdes/step2" === pathname}>
-              <Typography variant="subtitle2" noWrap >
-              Step 2 ->
-              </Typography>
-            </MenuItem>
-            <MenuItem className={classes.nested} component={Link} to="/probdes/step3" selected={"/probdes/step3" === pathname}>
-              <Typography variant="subtitle2" noWrap >
-              Step 3 ->
-              </Typography>
-            </MenuItem>
-            <MenuItem className={classes.nested} component={Link} to="/probdes/step4" selected={"/probdes/step4" === pathname}>
-              <Typography variant="subtitle2" noWrap >
-              Step 4 ->
-              </Typography>
-            </MenuItem>
-            <MenuItem className={classes.nested} component={Link} to="/probdes/step5" selected={"/probdes/step5" === pathname}>
-              <Typography variant="subtitle2" noWrap >
-              Step 5 ->
-              </Typography>
-            </MenuItem>
-            <MenuItem className={classes.nested} component={Link} to="/probdes/step6" selected={"/probdes/step6" === pathname}>
-              <Typography variant="subtitle2" noWrap >
-              Step 6 ->
-              </Typography>
-            </MenuItem>
+           <MenuItem className={classes.nested2} component={Link} to="/help/info" selected={"/help/info" === pathname}>
+             <Typography variant="subtitle2" noWrap >
+               C SOLVIS Info
+             </Typography>
+           </MenuItem>
           </MenuList>
          <MenuList>
-          </MenuList>
+         </MenuList>
         </MenuList>
       </div>
     );

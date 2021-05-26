@@ -1,29 +1,24 @@
-import React, {Component, Fragment, useState} from "react";
+import React, {Component, Fragment} from "react";
 import { Link, withRouter } from "react-router-dom";
 import {
   AppBar,
   Toolbar,
-  IconButton,
   Hidden,
   Drawer,
   CssBaseline,
   MenuList,
   MenuItem,
-  Divider, Backdrop, Paper
+  Divider
 } from "@material-ui/core";
 import Button from "@material-ui/core/Button";
-import { fade, makeStyles, useTheme, withStyles } from "@material-ui/core/styles";
+import { withStyles } from "@material-ui/core/styles";
 import { compose } from "recompose";
-
 import DescriptionRoundedIcon from '@material-ui/icons/DescriptionRounded';
-import drawerImage from '../../assets/gradient-green-linear-purple.png'
 import logo from '../../assets/CSOLVIS.png'
-import LiveHelpRoundedIcon from '@material-ui/icons/LiveHelpRounded';
-import AccessibilityNewRoundedIcon from '@material-ui/icons/AccessibilityNewRounded';
 import Typography from '@material-ui/core/Typography';
 
 
-const drawerWidth = 200;
+const drawerWidth = 210;
 
 const styles = theme => ({
   root: {
@@ -57,6 +52,9 @@ const styles = theme => ({
   },
   nested: {
     paddingLeft: theme.spacing(10)
+  },
+  nested2: {
+    paddingLeft: theme.spacing(2)
   },
   drawer: {
     [theme.breakpoints.up("sm")]: {
@@ -100,6 +98,44 @@ const styles = theme => ({
   }
 });
 
+const BootstrapBlueButton = withStyles({
+  root: {
+    boxShadow: 'none',
+    textTransform: 'none',
+    fontSize: 16,
+    padding: '6px 12px',
+    border: '1px solid',
+    lineHeight: 1.5,
+    backgroundColor: '#0062cc',
+    borderColor: '#0062cc',
+    fontFamily: [
+      '-apple-system',
+      'BlinkMacSystemFont',
+      '"Segoe UI"',
+      'Roboto',
+      '"Helvetica Neue"',
+      'Arial',
+      'sans-serif',
+      '"Apple Color Emoji"',
+      '"Segoe UI Emoji"',
+      '"Segoe UI Symbol"',
+    ].join(','),
+    '&:hover': {
+      backgroundColor: '#90ee90',
+      borderColor: '#90ee90',
+      boxShadow: 'none',
+    },
+    '&:active': {
+      boxShadow: 'none',
+      backgroundColor: '#0062cc',
+      borderColor: '#005cbf',
+    },
+    '&:focus': {
+      boxShadow: '0 0 0 0.2rem rgba(0,123,255,.5)',
+    },
+  },
+})(Button);
+
 class Layout extends Component {
   state = {
     mobileOpen: false,
@@ -120,25 +156,39 @@ class Layout extends Component {
     const drawer = (
       <div>
         <div className={classes.toolbar}>
-          {/*<img src={logo} height="50" />*/}
+          {<img src={logo} height="50" />}
         </div>
         <MenuList>
-          {/*<MenuList>
-
-          </MenuList>
-          <Divider/>
-          <Divider/>*/}
-          <MenuList>
-          <MenuItem > {/*component={Link} to="" selected={"/pages/articles" === pathname}>*/}
+         <MenuList>
+              <Divider/>
+              <Divider/>
+              <Divider/>
+              <Divider/>
+              <Typography className={classes.nested2} variant="body2" >
+                <b>Place cursor in editor and click code pattern</b>
+              </Typography>
+              <Divider/>
+              <Divider/>
+              <Divider/>
+              <Divider/>
+          <MenuItem  > {/*component={Link} to="/devprog/editor" selected={"/devprog/editor" === pathname}>*/}
             <Typography variant="subtitle1" noWrap >
-            <DescriptionRoundedIcon /> &nbsp; Code Design
+            <DescriptionRoundedIcon fontSize={'default'} color={'secondary'}/> &nbsp; Code Pattern
             </Typography>
           </MenuItem>
-            <MenuItem className={classes.nested} component={Link} to="/" selected={"/" === pathname}>
-              <Typography variant="subtitle2" noWrap >
-              - Stdio
-              </Typography>
-            </MenuItem>
+            <div align={'center'}>
+              <BootstrapBlueButton
+                  variant="contained"
+                  //color="primary"
+              >
+                <Typography variant="subtitle2" noWrap >
+                  include stdio
+                </Typography>
+              </BootstrapBlueButton>
+            </div>
+            <div align={'center'}>
+
+            </div>
             <MenuItem className={classes.nested} component={Link} to="/" selected={"/" === pathname}>
               <Typography variant="subtitle2" noWrap >
               - Step 2
@@ -166,14 +216,9 @@ class Layout extends Component {
             </MenuItem>
 
           </MenuList>
-          <Divider/>
-          <Divider/>
-          <MenuList>
-          </MenuList>
         </MenuList>
       </div>
     );
-
     return (
       <Fragment>
         <CssBaseline />
@@ -195,7 +240,7 @@ class Layout extends Component {
                   variant="text"
                   color="primary"
                   className={classes.button}
-                  component={Link} to={'/probsolve'}
+                  component={Link} to={'/probdes/step1'}
                   type={'submit'}
                   //startIcon={<LiveHelpRoundedIcon />}
                   edge="start"
@@ -205,27 +250,12 @@ class Layout extends Component {
                   Problem Solving
                   </Typography>
                 </Button>{" "}&nbsp;&nbsp;
-                <Backdrop className={classes.backdrop} open={this.state.qsModal} /*disableBackdropClick={true}*/ >
-                  <Paper variant={'elevation'}>
-                    <Typography >
-                      Problem Solving
-                      <br/>
-                      <Button
-                          variant="text"
-                          color="secondary"
-                          type={'submit'}
-                          //onClick={this.handleFAQClose}
-                      >
-                        close
-                      </Button>
-                    </Typography>
-                  </Paper>
-                </Backdrop>
+
                 <Button
                     variant="text"
                     color="primary"
                     className={classes.button}
-                    component={Link} to={'/devprog'}
+                    component={Link} to={'/devprog/editor'}
                     type={'submit'}
                     //startIcon={<AccessibilityNewRoundedIcon /> }
                     edge="start"
@@ -234,27 +264,13 @@ class Layout extends Component {
                   <Typography variant={'button'} display={'block'}>
                     Develop Program
                   </Typography>
-                </Button>
-                <Backdrop className={classes.backdrop} open={this.state.qsModal2} /*disableBackdropClick={true}*/ >
-                  <Paper variant={'elevation'}>
-                    <Typography >
-                      Develop Program
-                      <br/>
-                      <Button
-                          variant="text"
-                          color="secondary"
-                          type={'submit'}
-                          //onClick={this.handleHelpClose}
-                      >
-                        close
-                      </Button>
-                    </Typography>
-                  </Paper>
-                </Backdrop>
+                </Button>{" "}&nbsp;&nbsp;
+
                 <Button
                     variant="text"
                     color="primary"
                     className={classes.button}
+                    component={Link} to={'/help/info'}
                     //startIcon={<LiveHelpRoundedIcon />}
                     edge="start"
                     //onClick={this.handleFAQOpen}
@@ -263,22 +279,7 @@ class Layout extends Component {
                     Help
                   </Typography>
                 </Button>{" "}&nbsp;&nbsp;
-                <Backdrop className={classes.backdrop} open={this.state.qsModal} /*disableBackdropClick={true}*/ >
-                  <Paper variant={'elevation'}>
-                    <Typography >
-                      Help
-                      <br/>
-                      <Button
-                          variant="text"
-                          color="secondary"
-                          type={'submit'}
-                          //onClick={this.handleFAQClose}
-                      >
-                        close
-                      </Button>
-                    </Typography>
-                  </Paper>
-                </Backdrop>
+
               </div>
             </Toolbar>
           </AppBar>
@@ -298,7 +299,7 @@ class Layout extends Component {
             </Hidden>
           </nav>
           <main className={classes.content}>
-            {<div className={classes.toolbar} />}
+            {/*<div className={classes.toolbar} />*/}
             {children}
           </main>
         </div>
