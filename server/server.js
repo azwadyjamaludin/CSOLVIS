@@ -4,15 +4,17 @@ let cors = require('cors');
 let http = require('http');
 let log4js = require('log4js');
 let dotenv = require('dotenv') ;
-let socketio = require('socket.io');
+let path = require('path');
 
 const host = process.env.APPREST_HOST || 'localhost';
 const port = process.env.APPREST_PORT || 3000;
-const path = require('path');
 
+
+let socketio = require('socket.io')
 let logger = log4js.getLogger('server.js')
 let myapp = express()
-//let userAPI = require('../server/routes/api/user.js')
+let FileMgtRoute = require('./routes/fileMgt-route')
+let FMR = '/routes/fileMgt'
 
 //let USER_API = '/api/user'
 
@@ -27,9 +29,9 @@ async function main() {
     myapp.use(cors());
 
     //API
-    //app.use(USER_API, userAPI)
+    myapp.use(FMR, FileMgtRoute)
 
-    myapp.use("/be", (req, res) => {
+    myapp.use("/", (req, res) => {
         res.json({
             message: "Welcome to C SOLVIS back end."
         });
@@ -42,11 +44,11 @@ async function main() {
     const cb = () => {
         logger.info('---------------------------------------------------------------------------');
         logger.info('****************** C SOLVIS BACKEND SERVER STARTED ************************');
-        logger.info('******************   http://%s:%s   ********************',
+        logger.info('***********************   http://%s:%s   *************************',
             host,
             port
         );
-        logger.info('---------------------------------------------------------------------------');
+        logger.log('---------------------------------------------------------------------------');
     }
 
     let server = http.createServer(myapp).listen(port, cb);
@@ -54,7 +56,7 @@ async function main() {
 
     let websocket = socketio(server);
     websocket.on('connection', async socket => {
-        console.log('Client connected successfully');
+        logger.info('Client connected successfully');
         websocket.emit('chat', 'websocket connected to server');
     });
 }

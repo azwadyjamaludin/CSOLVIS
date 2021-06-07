@@ -1,32 +1,19 @@
 import React, {useEffect} from 'react'
-import {Router, Switch, Route} from "react-router-dom";
-import history from '../../config/history';
-import Layout from "./layout";
-import ProbDes from "../probsolve/step1"
-import DevEditor from "./editor"
-import Help from "../help"
-
+import {BrowserRouter, Switch, Route} from "react-router-dom";
+import DevLayout from "./layout";
+import DevElement from "./element";
 
 const DPIndex = () => {
-    useEffect(() => {
-        /*if (refresh === true) {
-            window.location.reload(false)
-        }*/
-    },[])
 
     return (
         <div>
-            <Router history={history}>
-                <Layout>
+            <BrowserRouter >
+                <DevLayout>
                     <Switch>
-                        <Route exact path={'/devprog/editor'} render={()=> <div><DevEditor/></div>}/>
+                        <Route exact path={'/devprog/element/:params'} render={() => <div><DevElement/></div>}/>
                     </Switch>
-                </Layout>
-                <Switch>
-                <Route exact path={'/probdes/step1'} render={()=> <div><ProbDes/></div>}/>
-                <Route exact path={'/help/info'} render={()=> <div><Help/></div>}/>
-                </Switch>
-            </Router>
+                </DevLayout>
+            </BrowserRouter>
 
         </div>
     );
