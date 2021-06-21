@@ -7,6 +7,8 @@ import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import { makeStyles } from '@material-ui/core/styles';
 import MenuItem from '@material-ui/core/MenuItem';
+import axios from "axios";
+import Swal from "sweetalert2";
 
 const useStyles = makeStyles((theme) => ({
     formControl: {
@@ -58,10 +60,12 @@ const BootstrapButton = withStyles({
     },
 })(Button);
 
-const Step6 = ({process}) => {
+function Step6(props) {
     const classes = useStyles();
+    const URL = `http://${sessionStorage.getItem('ipsett')}`;
     const [step6counter,setStep6counter] = useState(''); const [step6repeat,setStep6repeat] = useState('')
     const [atypes , setAtypes] = useState('')
+    let processProp = ''; let varProp = ''
 
     const step6Blur1 = (e) => {
         setStep6counter(e.target.value)
@@ -75,9 +79,25 @@ const Step6 = ({process}) => {
         setStep6repeat(e.target.value)
     }
 
-    const step6OnClickSubmit = () => {
-        process.append('Repeat for'+''+step6repeat)
+    const step6OnClickSubmit = async() => {
+        varProp = atypes+' '+step6counter+';'
+        processProp = 'Repeat for'+' '+step6repeat
+        const data = {process:processProp,variable:varProp,sessionID:sessionStorage.getItem('sessionID')}
+        await axios.post(URL+'/routes/dataMgt/step6', data).then((res)=> {
+            props.IPOData(res.data.ipo)
+        }).catch(function (error) {
+            errorIPSetting(error)
+        })
         setStep6counter('');setAtypes('');setStep6counter('')
+    }
+
+    const errorIPSetting =(error) => {
+        Swal.fire({
+            icon: 'error',
+            title: '',
+            text: `${error}`,
+        }).then((r) => {
+        })
     }
 
     const types = [
@@ -110,6 +130,7 @@ const Step6 = ({process}) => {
                 <Typography variant={'body2'} paragraph={true} align={'center'}>
                     <u>REPEATING ACTION</u>
                 </Typography>
+                <form  >
                 <BootstrapButton >
                     Name of counter
                 </BootstrapButton>
@@ -136,8 +157,8 @@ const Step6 = ({process}) => {
                     select
                     label="Types"
                     onChange={step6OnSelect}
-                    helperText=""
                     variant="outlined"
+                    value={atypes}
                     size={'small'}
                     style={{
                         backgroundColor: '#FFFAFA',
@@ -181,6 +202,7 @@ const Step6 = ({process}) => {
                     Submit
                 </Button>
                 <div><br/></div>
+                </form>
             </Paper>
         </div>
     )

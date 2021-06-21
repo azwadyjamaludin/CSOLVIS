@@ -7,16 +7,15 @@ let dotenv = require('dotenv') ;
 let path = require('path');
 
 const host = process.env.APPREST_HOST || 'localhost';
-const port = process.env.APPREST_PORT || 3000;
-
+const port = process.env.APPREST_PORT || 3002;
 
 let socketio = require('socket.io')
 let logger = log4js.getLogger('server.js')
 let myapp = express()
 let FileMgtRoute = require('./routes/fileMgt-route')
 let FMR = '/routes/fileMgt'
-
-//let USER_API = '/api/user'
+let DataMgtRoute = require('./routes/dataMgt-route')
+let DMR = '/routes/dataMgt'
 
 
 async function main() {
@@ -25,12 +24,16 @@ async function main() {
     myapp.use(bodyParser.urlencoded({
         extended: true
     }));
-    //app.use(express.static(path.join(__dirname, 'views')))
-    myapp.use(cors());
+    //allow cors
+    myapp.use(function (req, res, next) {
+        res.header("Access-Control-Allow-Origin", "*");
+        res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+        next();
+    });
 
     //API
     myapp.use(FMR, FileMgtRoute)
-
+    myapp.use(DMR,DataMgtRoute)
     myapp.use("/", (req, res) => {
         res.json({
             message: "Welcome to C SOLVIS back end."

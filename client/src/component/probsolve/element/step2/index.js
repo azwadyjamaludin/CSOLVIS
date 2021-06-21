@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react'
+import React, {useState} from 'react'
 import {
     InputAdornment,
     Paper
@@ -8,6 +8,8 @@ import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import { makeStyles } from '@material-ui/core/styles';
 import MenuItem from '@material-ui/core/MenuItem';
+import axios from "axios";
+import Swal from "sweetalert2";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -29,10 +31,11 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const Step2 = ({process,output,variable}) => {
+const Step2 = (props) => {
     const [output2, setOutput2] = useState('')
-    const [atypes , setAtypes] = useState('')
-
+    const [atypes , setAtypes] = useState('');
+    const URL = `http://${sessionStorage.getItem('ipsett')}`;
+    let processProp = ''; let outputProp = ''; let varProp ='';
     const classes = useStyles();
     const types = [
         {
@@ -59,6 +62,7 @@ const Step2 = ({process,output,variable}) => {
 
     const step2OnBlur = (e) => {
         setOutput2(e.target.value)
+
     }
 
     const step2OnSelect = (e) => {
@@ -66,10 +70,24 @@ const Step2 = ({process,output,variable}) => {
     }
 
     const step2OnClickSubmit = async() => {
-        output.append(output2)
-        process.append('Calculate'+''+output2)
-        variable.append(atypes+''+output2+';')
+        outputProp = output2
+        processProp = 'Calculate'+' '+output2
+        varProp =  atypes+' '+output2+';'
+        const data = {sessionID:sessionStorage.getItem('sessionID'),output:outputProp,process:processProp,variable:varProp}
+        await axios.post(URL+'/routes/dataMgt/step2',data).then((res) => {
+            props.IPOData(res.data.ipo)
+        }).catch(function (error) {
+            errorIPSetting(error)
+        })
         setOutput2('');setAtypes('')
+    }
+    const errorIPSetting =(error) => {
+        Swal.fire({
+            icon: 'error',
+            title: '',
+            text: `${error}`,
+        }).then((r) => {
+        })
     }
 
     return(
@@ -79,6 +97,7 @@ const Step2 = ({process,output,variable}) => {
                 <Typography variant={'body2'} paragraph={true} align={'center'}>
                     What should be calculate?
                 </Typography>
+                <form >
                 <TextField id={'step2'}
                            label={'Output name'}
                            name={'Output'}
@@ -109,6 +128,7 @@ const Step2 = ({process,output,variable}) => {
                     label="Types"
                     onChange={step2OnSelect}
                     helperText=""
+                    value={atypes}
                     variant="outlined"
                     size={'small'}
                     style={{
@@ -133,6 +153,7 @@ const Step2 = ({process,output,variable}) => {
                     Submit
                 </Button>
                 <div><br/></div>
+                </form>
             </Paper>
         </div>
     )

@@ -2,19 +2,21 @@ const fs = require('fs');
 const path = require('path');
 const log4js = require('log4js');
 const datetime = require('node-datetime');
+const {spawn} = require('child_process')
 let logger = log4js.getLogger('fileConfig.js')
 let multer = require('multer');
 
-let uploadPathUser = '';
+let uploadPathUser = ''; let uploadPathUserNormalise = ''
 uploadPathUser = path.join(__dirname, '../files/saveFile/');
+uploadPathUserNormalise = path.normalize(uploadPathUser)
 
-if (!fs.existsSync(uploadPathUser)) {
-    fs.mkdirSync(uploadPathUser)
+if (!fs.existsSync(uploadPathUserNormalise)) {
+    fs.mkdirSync(uploadPathUserNormalise)
 }
 
 let storage = multer.diskStorage({
     destination: async function (req, file, cb) {
-        await cb(null, uploadPathUser)
+        await cb(null, uploadPathUserNormalise)
     },
     filename: async function (req, file, cb) {
         let ts = Date.now();
@@ -28,4 +30,4 @@ let uploadConfig = multer({
     storage: storage
 }).single('file');
 
-module.exports = {uploadConfig}
+module.exports = {uploadConfig,spawn}

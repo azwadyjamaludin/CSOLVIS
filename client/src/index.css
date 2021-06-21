@@ -5,8 +5,8 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-image: url("assets/gradient-green-linear-purple.png");
-  background-size: cover;
+  background-image: url("assets/gradient_multicolored_color.jpg");
+  background-size: 120%;
 }
 
 code {

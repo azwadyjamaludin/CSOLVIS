@@ -42,7 +42,7 @@ function ConsoleIndex() {
                color={'primary'}
                size={'small'}
                multiline={true}
-               rows={10}
+               rows={15}
                fullWidth={true}
                style={{
                    textAlign:'left'

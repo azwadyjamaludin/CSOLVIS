@@ -20,6 +20,7 @@ const useStyles = makeStyles((theme) => ({
 const STIndex = () => {
     const classes = useStyles();
     const [ipadd, setIpadd] = useState('')
+    const [sesID, setSesID] = useState('')
 
     const onBlurSett = (e) => {
         setIpadd(e.target.value)
@@ -27,6 +28,14 @@ const STIndex = () => {
 
     const onClickSubmitSett = () => {
         sessionStorage.setItem('ipsett',ipadd)
+    }
+
+    const onBlurSessID = (e) => {
+        setSesID(e.target.value)
+    }
+
+    const onClickSubmitSessID = () => {
+        sessionStorage.setItem('sessionID',sesID)
     }
 
     return(
@@ -57,6 +66,32 @@ const STIndex = () => {
                     color="secondary"
                     size={'large'}
                     onClick={onClickSubmitSett}
+                >
+                    Submit
+                </Button>
+                <div><br/></div>
+                <TextField id={'sesID'}
+                           label={'Session ID'}
+                           name={'id_session'}
+                           variant={'outlined'}
+                           color={'primary'}
+                           value={sesID}
+                           onChange={onBlurSessID}
+                           helperText="Please insert your previous session ID"
+                           size={'small'}
+                           style={{
+                               backgroundColor: '#FFFAFA',
+                               width: 500,
+                               textAlign:'left'
+                           }}
+
+                />
+                &nbsp;&nbsp;&nbsp;&nbsp;
+                <Button
+                    variant="outlined"
+                    color="secondary"
+                    size={'large'}
+                    onClick={onClickSubmitSessID}
                 >
                     Submit
                 </Button>

@@ -66,9 +66,9 @@ const Step2 = ({process,output,variable}) => {
     }
 
     const step2OnClickSubmit = async() => {
-        output.append(output2)
-        process.append('Calculate'+''+output2)
-        variable.append(atypes+''+output2+';')
+        output = output2
+        process = 'Calculate'+''+output2
+        variable = atypes+''+output2+';'
         setOutput2('');setAtypes('')
     }
 
@@ -109,6 +109,7 @@ const Step2 = ({process,output,variable}) => {
                     label="Types"
                     onChange={step2OnSelect}
                     helperText=""
+                    value={'int'}
                     variant="outlined"
                     size={'small'}
                     style={{

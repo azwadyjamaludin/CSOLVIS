@@ -1,15 +1,15 @@
-import React from 'react'
-import {Router, Switch, Route} from "react-router-dom";
-import history from '../../config/history';
+import React, {useState} from 'react'
+import {BrowserRouter, Switch, Route} from "react-router-dom";
 import ProbLayout from "./layout";
 import ProbElement from "./element";
 import DevProg from "../devprogram"
 import Help from "../help"
 
 const PSIndex = () => {
+
     return (
         <div>
-            <Router history={history}>
+            <BrowserRouter >
                 <ProbLayout>
                     <Switch>
                         <Route exact path={'/probdes/element/:params'} component={ProbElement}/>
@@ -17,7 +17,7 @@ const PSIndex = () => {
                 </ProbLayout>
                 <Route exact path={'/devprog/element/dev'} component={DevProg}/>
                 <Route exact path={'/help/element/info'} component={Help}/>
-            </Router>
+            </BrowserRouter>
 
         </div>
     );

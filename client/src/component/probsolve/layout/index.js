@@ -173,12 +173,6 @@ class ProbLayout extends Component {
         <div className={classes.root}>
           <AppBar position={'fixed'} className={classes.appBar}>
             <Toolbar>
-              {/*<Hidden smDown>
-                <div className={classes.toolbar}>
-                  <img src={logo} height="50" />
-                </div>
-              </Hidden>*/}
-
               <div className={classes.toolbarButtons}>
                 <Button
                   variant="text"
@@ -243,7 +237,7 @@ class ProbLayout extends Component {
             </Hidden>
           </nav>
           <main className={classes.content}>
-            {<div className={classes.toolbar} />}
+            {<div />}
             {children}
           </main>
         </div>

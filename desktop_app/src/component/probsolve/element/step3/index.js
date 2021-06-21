@@ -68,9 +68,9 @@ const Step3 = ({input,process,variable}) => {
     }
 
     const step3OnClickSubmit = async() => {
-        input.append(dataname)
-        process.append(dataname+''+'='+''+datavalue)
-        variable.append(atypes+''+dataname+''+'='+''+datavalue)
+        input = dataname
+        process = dataname+''+'='+''+datavalue
+        variable = atypes+''+dataname+''+'='+''+datavalue
         setDatavalue('');setDatavalue('');setAtypes('')
     }
 
@@ -120,6 +120,7 @@ const Step3 = ({input,process,variable}) => {
                     label="Types"
                     onChange={step3OnSelect}
                     variant="outlined"
+                    value={'int'}
                     size={'small'}
                     style={{
                         backgroundColor: '#FFFAFA',

@@ -66,9 +66,9 @@ const Step1 = ({input,process,variable}) => {
     }
 
     const step1OnClickSubmit = async() => {
-        input.append(input1)
-        process.append('Get'+''+input1)
-        variable.append(atypes+''+input1+';')
+        input = input1
+        process = 'Get'+''+input1
+        variable = atypes+''+input1+';'
         setInput1('');setAtypes('')
     }
 
@@ -111,6 +111,7 @@ const Step1 = ({input,process,variable}) => {
                     onChange={step1OnSelect}
                     helperText=""
                     variant="outlined"
+                    value={'int'}
                     //margin={'normal'}
                     size={'small'}
                     style={{

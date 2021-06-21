@@ -5,6 +5,7 @@ import Button from "@material-ui/core/Button";
 import axios from "axios";
 import Swal from "sweetalert2";
 import {save} from "save-file";
+import paperImage from '../../../../assets/white-concrete-wall.jpg'
 
 const BootstrapGreenButton = withStyles({
     root: {
@@ -91,7 +92,7 @@ const useStyles = makeStyles((theme) => ({
         marginTop: theme.spacing(2),
     },
     paperBG: {
-        backgroundColor:"#f5f5f5"
+        backgroundImage: 'url('+paperImage+')'
     },
     paperBG2: {
         backgroundColor:"#faf0e6"
@@ -189,7 +190,7 @@ function MenuIndex({latestFile,Filename}) {
         return(
             <div>&nbsp;&nbsp;&nbsp;&nbsp;
                 <input
-                    accept={'text/x-c'}
+                    //accept={'text/c-s'}
                     className={classes.input}
                     type="file"
                     onChange={onFileChange}
@@ -202,7 +203,7 @@ function MenuIndex({latestFile,Filename}) {
     return(
         <div>
         <Upload/>
-    <Paper variant={'elevation'} elevation={7} className={classes.paperBG2}>
+    <Paper variant={'elevation'} elevation={7} className={classes.paperBG}>
         &nbsp;&nbsp;&nbsp;
         <label htmlFor="contained-button-file">
             <BootstrapGreenButton color={'secondary'} className={classes.margin} component={'span'}>

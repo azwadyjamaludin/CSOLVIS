@@ -39,8 +39,8 @@ const Step4 = ({process,formula}) => {
     }
 
     const step4OnClickSubmit = () => {
-        process.append(step4output+''+'='+''+step4formula)
-        formula.append(step4output+''+'='+''+step4formula)
+        process = step4output+''+'='+''+step4formula
+        formula = step4output+''+'='+''+step4formula
         setStep4Output('');setStep4formula('')
     }
 

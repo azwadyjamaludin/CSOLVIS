@@ -77,7 +77,7 @@ const Step5 = ({process}) => {
     }
 
     const step5OnClickSubmit = () => {
-        process.append('If'+''+step5if+'\\n'+'Do'+''+step5do+'\\n'+'Else'+''+step5else)
+        process = 'If'+''+step5if+'\\n'+'Do'+''+step5do+'\\n'+'Else'+''+step5else
         setStep5if('');setStep5do('');setStep5else('')
     }
 

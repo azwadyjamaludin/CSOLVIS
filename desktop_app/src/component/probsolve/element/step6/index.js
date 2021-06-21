@@ -138,6 +138,7 @@ const Step6 = ({process}) => {
                     onChange={step6OnSelect}
                     helperText=""
                     variant="outlined"
+                    value={'int'}
                     size={'small'}
                     style={{
                         backgroundColor: '#FFFAFA',

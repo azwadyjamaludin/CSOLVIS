@@ -10,6 +10,8 @@ import Typography from "@material-ui/core/Typography";
 import {Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow} from "@material-ui/core";
 import Button from "@material-ui/core/Button";
 import {makeStyles} from "@material-ui/core/styles";
+import axios from "axios";
+import paperImage from '../../../assets/white-concrete-wall.jpg'
 
 const useStyles = makeStyles((theme) => ({
     formControl: {
@@ -20,7 +22,7 @@ const useStyles = makeStyles((theme) => ({
         marginTop: theme.spacing(2),
     },
     paperBG: {
-        backgroundColor:"#f5f5f5"
+        backgroundImage: 'url('+paperImage+')'
     },
     paperBG2: {
         backgroundColor:"#faf0e6"
@@ -34,6 +36,7 @@ function ProbElement() {
     let {params} = useParams();
     const classes = useStyles();
     const myinputs=[]; const myprocesses=[]; const myoutputs=[]; const myvariables=[]; const myformulas = []
+    const URL=`http://${sessionStorage.getItem('ipsett')}`;
 
     useEffect(()=> {
 
@@ -65,6 +68,14 @@ function ProbElement() {
         myoutputs.length = 0
         myvariables.length = 0
         myformulas.length = 0
+    }
+
+    const onClickSave = async () => {
+        const data = {vars:myvariables,formulas:myformulas}
+        await axios.post(URL+'/routes/dataMgt/DataDeclare',data).then((res) => {
+            sessionStorage.setItem('variables',(JSON.stringify(res.data.variables)))
+            sessionStorage.setItem('formulas',(JSON.stringify(res.data.formulas)))
+        })
     }
 
     return(
@@ -128,11 +139,21 @@ function ProbElement() {
                 <Paper variant={'elevation'} elevation={7} className={classes.paperBG}>
                     <Button
                         variant={'text'}
-                        color={'primary'}
+                        color={'secondary'}
                         onClick={onClickReset}
                     >
                         <Typography variant={'button'} >
                             Reset
+                        </Typography>
+                    </Button>
+                    &nbsp;&nbsp;
+                    <Button
+                        variant={'text'}
+                        color={'primary'}
+                        onClick={onClickSave}
+                    >
+                        <Typography variant={'button'} >
+                            Save
                         </Typography>
                     </Button>
                 </Paper>

@@ -288,67 +288,7 @@ class DevLayout extends Component {
       <Fragment>
         <CssBaseline />
         <div className={classes.root}>
-          {/*<AppBar position={'fixed'} className={classes.appBar}>
-            <Toolbar>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-              <Hidden smDown>
-                <div className={classes.toolbar}>
-                  <img src={logo} height="50" />
-                </div>
-              </Hidden>
-              <div >
-              <Typography variant="h6" color="textPrimary">
-                C SOLVIS
-              </Typography>
-              </div>
-              <div className={classes.toolbarButtons}>
-                <Button
-                  variant="text"
-                  color="primary"
-                  className={classes.button}
-                  component={Link} to={'/probdes/element/step1'}
-                  type={'submit'}
-                  //startIcon={<LiveHelpRoundedIcon />}
-                  edge="start"
-                  //onClick={this.handleFAQOpen}
-                >
-                  <Typography variant={'button'} display={'block'}>
-                  Problem Solving
-                  </Typography>
-                </Button>{" "}&nbsp;&nbsp;
-
-                <Button
-                    variant="text"
-                    color="primary"
-                    className={classes.button}
-                    component={Link} to={'/devprog/element/editor'}
-                    type={'submit'}
-                    //startIcon={<AccessibilityNewRoundedIcon /> }
-                    edge="start"
-                    //onClick={this.handleHelpOpen}
-                >
-                  <Typography variant={'button'} display={'block'}>
-                    Develop Program
-                  </Typography>
-                </Button>{" "}&nbsp;&nbsp;
-
-                <Button
-                    variant="text"
-                    color="primary"
-                    className={classes.button}
-                    component={Link} to={'/help/element/info'}
-                    //startIcon={<LiveHelpRoundedIcon />}
-                    edge="start"
-                    //onClick={this.handleFAQOpen}
-                >
-                  <Typography variant={'button'} display={'block'}>
-                    Help
-                  </Typography>
-                </Button>{" "}&nbsp;&nbsp;
-
-              </div>
-            </Toolbar>
-          </AppBar>*/}
-          <nav className={classes.drawer} aria-label="mailbox folders">
+            <nav className={classes.drawer} aria-label="mailbox folders">
             <Hidden xsDown implementation="css">
               <Drawer
                 classes={{

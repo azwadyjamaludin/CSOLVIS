@@ -1,143 +1,172 @@
-import React, {useEffect} from 'react'
-import { useParams } from "react-router-dom";
+import React, {useState} from 'react'
+import TitleIndex from "./title";
 import Step1 from "./step1";
 import Step2 from "./step2";
 import Step3 from "./step3";
 import Step4 from "./step4";
 import Step5 from "./step5";
 import Step6 from "./step6";
-import Typography from "@material-ui/core/Typography";
-import {Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow} from "@material-ui/core";
+import IPOIndex from "./ipo";
+import axios from "axios";
+import Swal from "sweetalert2";
+import {useParams} from "react-router-dom";
+import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
-import {makeStyles} from "@material-ui/core/styles";
+import {withStyles} from "@material-ui/core/styles";
+import {CopyToClipboard} from 'react-copy-to-clipboard';
 
-const useStyles = makeStyles((theme) => ({
-    formControl: {
-        margin: theme.spacing(1),
-        minWidth: 120,
+const BootstrapWhiteButton = withStyles({
+    root: {
+        boxShadow: 'none',
+        textTransform: 'none',
+        fontSize: 16,
+        padding: '6px 12px',
+        border: '1px solid',
+        lineHeight: 1.5,
+        backgroundColor: '#f5f5f5',
+        borderColor: '#f5f5f5',
+        fontFamily: [
+            '-apple-system',
+            'BlinkMacSystemFont',
+            '"Segoe UI"',
+            'Roboto',
+            '"Helvetica Neue"',
+            'Arial',
+            'sans-serif',
+            '"Apple Color Emoji"',
+            '"Segoe UI Emoji"',
+            '"Segoe UI Symbol"',
+        ].join(','),
+        '&:hover': {
+            backgroundColor: '#f5f5f5',
+            borderColor: '#f5f5f5',
+            boxShadow: 'none',
+        },
+        '&:active': {
+            boxShadow: 'none',
+            backgroundColor: '#0062cc',
+            borderColor: '#005cbf',
+        },
+        '&:focus': {
+            boxShadow: '0 0 0 0.2rem rgba(0,123,255,.5)',
+        },
     },
-    selectEmpty: {
-        marginTop: theme.spacing(2),
-    },
-    paperBG: {
-        backgroundColor:"#f5f5f5"
-    },
-    paperBG2: {
-        backgroundColor:"#faf0e6"
-    },
-    table: {
-        minWidth: 650,
-    },
-}));
+})(Button);
+
 
 function ProbElement() {
     let {params} = useParams();
-    const classes = useStyles();
-    const myinputs=[]; const myprocesses=[]; const myoutputs=[]; const myvariables=[]; const myformulas = []
 
-    useEffect(()=> {
+    const [IPO,setIPO] = useState([]); const [sesID, setSesID] = useState('');
+    const URL = `http://${sessionStorage.getItem('ipsett')}`;  const [copied, setCopied] = useState(false)
 
-    }, [])
+    let newSessionID = ''
 
-    const myInputCallback = (inputData) => {
-        myinputs.push(inputData)
+    const dataSubmitted = (IPOData) => {
+        setIPO(IPOData)
+        console.log(IPO)
     }
 
-    const myProcessCallback = (procData) => {
-        myprocesses.push(procData)
+    const onClickReset = async() => {
+        const data = {sessionID:sessionStorage.getItem('sessionID')}
+        await axios.post(URL+'/routes/dataMgt/deleteRows',data).then((res)=> {
+            setIPO(res.data.ipo)
+            sessionStorage.removeItem('sessionID')
+        }).catch(function (error) {
+            errorIPSetting(error)
+        })
     }
 
-    const myOutputCallback = (outData) => {
-        myoutputs.push(outData)
+    const errorIPSetting =(error) => {
+        Swal.fire({
+            icon: 'error',
+            title: '',
+            text: `${error}`,
+        }).then((r) => {
+        })
     }
 
-    const myVariableCallback = (varData) => {
-        myvariables.push(varData)
+    const copySessionID = () => {
+        setCopied(true)
+        console.log(copied)
     }
 
-    const myFormulaCallback = (formData) => {
-        myformulas.push(formData)
+    const createSessionID = async() => {
+        const uuidv4 = require('uuid/v4');
+        newSessionID = uuidv4()
+        sessionStorage.setItem('sessionID',newSessionID)
+        const data= {sessionID:newSessionID}
+        await axios.post(URL+'/routes/dataMgt/createSessionID',data).then((res) => {
+                setSesID(res.data.id);
+        }).catch(function (error) {
+            errorIPSetting(error)
+        })
     }
 
-    const onClickReset = () => {
-        myinputs.length = 0
-        myprocesses.length = 0
-        myoutputs.length = 0
-        myvariables.length = 0
-        myformulas.length = 0
-    }
+        return (
+            <div align={'center'}>
+                <br/><br/><br/>
+                <TitleIndex />
+                <div>
+                {params === 'step1'?
+                    <Step1 IPOData={dataSubmitted} />
+                    :null}
+                {params === 'step2'?
+                    <Step2 IPOData={dataSubmitted} />
+                    :null}
+                {params === 'step3'?
+                    <Step3 IPOData={dataSubmitted} />
+                    :null}
+                {params === 'step4'?
+                    <Step4 IPOData={dataSubmitted} />
+                    :null}
+                {params === 'step5'?
+                    <Step5 IPOData={dataSubmitted} />
+                    :null}
+                {params === 'step6'?
+                    <Step6 IPOData={dataSubmitted} />
+                    :null}
+                </div>
+                <br/>
+                <IPOIndex ipos={IPO} resetBut={onClickReset}/>
+                <br/><br/><br/><br/>
+                <div align={'left'}>
+                <TextField id={'sesID'}
+                           placeholder={'Session ID'}
+                           name={'id_session'}
+                           variant={'outlined'}
+                           color={'primary'}
+                           value={sesID}
+                           size={'small'}
+                           style={{
+                               backgroundColor: '#FFFAFA',
+                               width: 500,
+                               textAlign:'left'
+                           }}
 
-    return(
-        <div align={'center'}>
-            <br/><br/><br/>
-            <Paper variant={'elevation'} elevation={7} className={classes.paperBG}>
-                <Typography variant={'body1'} paragraph={true} align={'center'}>
-                    Each step can be <b>REPEATED</b> or <b>IGNORED</b> if not related.
-                </Typography>
-            </Paper>
-            {params === 'step1'? (
-                <Step1
-                    input={myInputCallback} process={myProcessCallback} variable={myVariableCallback}
                 />
-            ):(null)}
-            {params === 'step2'? (
-                <Step2
-                     process={myProcessCallback} output={myOutputCallback} variable={myVariableCallback}
-                />
-            ):(null)}
-            {params === 'step3'? (
-                <Step3
-                    input={myInputCallback} process={myProcessCallback} variable={myVariableCallback}
-                />
-            ):(null)}
-            {params === 'step4'? (
-                <Step4
-                    process={myProcessCallback} formula={myFormulaCallback}
-                />
-            ):(null)}
-            {params === 'step5'? (
-                <Step5 process={myProcessCallback} />
-            ):(null)}
-            {params === 'step6'? (
-                <Step6 process={myProcessCallback} />
-            ):(null)}
-            <Paper variant={'elevation'} elevation={3} className={classes.paperBG}>
-                <Typography className={classes.selectEmpty} variant={'subtitle1'}><b>IPO Chart</b></Typography>
-                <TableContainer>
-                    <Table className={classes.table} stickyHeader={true} aria-label="simple table">
-                        <TableHead>
-                            <TableRow>
-                                <TableCell align="center">Input</TableCell>
-                                <TableCell align="center">Process</TableCell>
-                                <TableCell align="center">Output</TableCell>
-                            </TableRow>
-                        </TableHead>
-                        <TableBody className={classes.paperBG2}>
-                            {myinputs.map((input,index)=>
-                                <TableCell key={index}>{input}</TableCell>
-                            )}
-                            {myprocesses.map((process,index)=>
-                                <TableCell key={index}>{process}</TableCell>
-                            )}
-                            {myoutputs.map((output,index)=>
-                                <TableCell key={index}>{output}</TableCell>
-                            )}
-                        </TableBody>
-                    </Table>
-                </TableContainer>
-                <Paper variant={'elevation'} elevation={7} className={classes.paperBG}>
-                    <Button
-                        variant={'text'}
-                        color={'primary'}
-                        onClick={onClickReset}
-                    >
-                        <Typography variant={'button'} >
-                            Reset
-                        </Typography>
-                    </Button>
-                </Paper>
-            </Paper>
-        </div>
-    )
+                &nbsp;&nbsp;&nbsp;&nbsp;
+                <BootstrapWhiteButton
+                    variant="outlined"
+                    color="primary"
+                    onClick={createSessionID}
+                >
+                    Generate Session ID
+                </BootstrapWhiteButton>
+                    &nbsp;&nbsp;
+                    <CopyToClipboard text={sesID} onCopy={copySessionID}>
+                <BootstrapWhiteButton
+                    color="secondary"
+                >
+                    Copy Session ID
+                </BootstrapWhiteButton>
+                    </CopyToClipboard>
+                    &nbsp;&nbsp;
+                    {copied ? <span style={{color: 'red'}}>Copied.</span> : null}
+                    <p>*Please click the copy button to copy the ID to clipboard</p>
+                </div>
+            </div>
+
+        )
 }
 export default ProbElement

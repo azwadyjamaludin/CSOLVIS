@@ -8,6 +8,8 @@ import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import { makeStyles } from '@material-ui/core/styles';
 import MenuItem from '@material-ui/core/MenuItem';
+import axios from "axios";
+import Swal from "sweetalert2";
 
 const useStyles = makeStyles((theme) => ({
     formControl: {
@@ -28,10 +30,10 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const Step1 = ({input,process,variable}) => {
-    const [input1,setInput1] = useState('')
-    const [atypes , setAtypes] = useState('')
-
+function Step1(props)  {
+    const [input, setInput] = useState(''); const [atypes, setAtypes] = useState('')
+    const URL = `http://${sessionStorage.getItem('ipsett')}`;
+    let inputProp = ''; let processProp = ''; let varProp = '';
     const classes = useStyles();
     const types = [
         {
@@ -56,37 +58,53 @@ const Step1 = ({input,process,variable}) => {
         },
     ];
 
-    const step1OnBlur = (e) => {
-        setInput1(e.target.value)
-        console.log(input1)
+    function step1OnBlur(e) {
+        setInput(e.target.value)
     }
 
-    const step1OnSelect = (e) => {
+    function step1OnSelect(e) {
         setAtypes(e.target.value)
     }
 
-    const step1OnClickSubmit = async() => {
-        input.append(input1)
-        process.append('Get'+''+input1)
-        variable.append(atypes+''+input1+';')
-        setInput1('');setAtypes('')
+    async function step1OnClickSubmit() {
+        inputProp = input
+        processProp = 'Get'+' '+input
+        varProp = atypes+' '+input+';'
+        const data = {sessionID:sessionStorage.getItem('sessionID'),input:inputProp,process:processProp,variable:varProp}
+        console.log(data)
+        await axios.post(URL+'/routes/dataMgt/step1',data).then((res) => {
+             props.IPOData(res.data.ipo)
+        }).catch(function (error) {
+            errorIPSetting(error)
+        })
+
+        setInput(''); setAtypes('');
+    }
+
+    const errorIPSetting =(error) => {
+        Swal.fire({
+            icon: 'error',
+            title: '',
+            text: `${error}`,
+        }).then((r) => {
+        })
     }
 
     return(
         <div align={'center'}>
-
             <Paper variant={'elevation'} elevation={5} className={classes.paperBG}>
                 <br/>
                 <Typography variant={'body2'} paragraph={true} align={'center'}>
                     What data will you get from user?
                 </Typography>
+                <form >
                 <TextField id={'step1'}
                            label={'Input name'}
                            name={'Input'}
                            autoFocus
                            variant={'outlined'}
                            color={'primary'}
-                           value={input1}
+                           value={input}
                            onChange={step1OnBlur}
                            helperText="Example: jejari"
                            size={'small'}
@@ -111,7 +129,7 @@ const Step1 = ({input,process,variable}) => {
                     onChange={step1OnSelect}
                     helperText=""
                     variant="outlined"
-                    //margin={'normal'}
+                    value={atypes}
                     size={'small'}
                     style={{
                         backgroundColor: '#FFFAFA',
@@ -135,6 +153,7 @@ const Step1 = ({input,process,variable}) => {
                     Submit
                 </Button>
                 <div><br/></div>
+                </form>
             </Paper>
         </div>
     )

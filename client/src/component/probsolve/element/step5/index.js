@@ -8,6 +8,8 @@ import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import { makeStyles } from '@material-ui/core/styles';
+import axios from "axios";
+import Swal from "sweetalert2";
 
 const useStyles = makeStyles((theme) => ({
     formControl: {
@@ -59,10 +61,12 @@ const BootstrapButton = withStyles({
     },
 })(Button);
 
-const Step5 = ({process}) => {
+function Step5(props)  {
     const classes = useStyles();
+    const URL = `http://${sessionStorage.getItem('ipsett')}`;
     const [step5if, setStep5if] = useState(''); const [step5do, setStep5do] = useState('');
     const [step5else, setStep5else] = useState('')
+    let processProp = '';
 
     const step5OnBlur1 = (e) => {
         setStep5if(e.target.value)
@@ -76,9 +80,24 @@ const Step5 = ({process}) => {
         setStep5else(e.target.value)
     }
 
-    const step5OnClickSubmit = () => {
-        process.append('If'+''+step5if+'\\n'+'Do'+''+step5do+'\\n'+'Else'+''+step5else)
+    const step5OnClickSubmit = async() => {
+        processProp = `If ${step5if}; Do ${step5do}; Else ${step5else}`
+        const data = {process:processProp,sessionID:sessionStorage.getItem('sessionID')}
+        await axios.post(URL+'/routes/dataMgt/step5', data).then((res) => {
+                props.IPOData(res.data.ipo)
+        }).catch(function (error) {
+            errorIPSetting(error)
+        })
         setStep5if('');setStep5do('');setStep5else('')
+    }
+
+    const errorIPSetting =(error) => {
+        Swal.fire({
+            icon: 'error',
+            title: '',
+            text: `${error}`,
+        }).then((r) => {
+        })
     }
 
     return(
@@ -88,6 +107,7 @@ const Step5 = ({process}) => {
                 <Typography variant={'body2'} paragraph={true} align={'center'}>
                     <u>CONDITIONAL ACTION</u>
                 </Typography>
+                <form >
                 <TextField id={'step5a'}
                            label={'Selection condition'}
                            name={'Condition'}
@@ -112,10 +132,10 @@ const Step5 = ({process}) => {
                            }}
                 />
                 <br/><br/>
-                <BootstrapButton >
-                    If the condition is met
-                </BootstrapButton>
-                &nbsp;
+                    <BootstrapButton >
+                        if the condition is met
+                    </BootstrapButton>
+                    &nbsp;
                 <TextField id={'step5b'}
                            label={'if-true action/formula'}
                            name={'Action'}
@@ -139,7 +159,6 @@ const Step5 = ({process}) => {
                            }}
                 />
                 &nbsp;&nbsp;
-
                 <TextField id={'step5c'}
                            label={'if-false action/formula'}
                            name={'Action'}
@@ -172,6 +191,7 @@ const Step5 = ({process}) => {
                     Submit
                 </Button>
                 <div><br/></div>
+                </form>
             </Paper>
         </div>
     )
