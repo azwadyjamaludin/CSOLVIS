@@ -1,7 +1,8 @@
-import TextField from "@material-ui/core/TextField";
 import {Paper} from "@material-ui/core";
-import React from "react";
+import React, {useState} from "react";
 import {makeStyles} from "@material-ui/core/styles";
+import "ace-builds/src-noconflict/theme-monokai";
+import TextField from "@material-ui/core/TextField";
 
 const useStyles = makeStyles((theme) => ({
     formControl: {
@@ -32,21 +33,30 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function ConsoleIndex() {
+function ConsoleIndex(props) {
     const classes = useStyles();
+    let displayData = '';
+
+        if (props.displayCompile.length > 0) {
+            displayData = props.displayCompile
+        }
+        if (props.displayExecute.length > 0) {
+            displayData = props.displayExecute
+        }
 
     return(
         <Paper variant={'elevation'} elevation={7} className={classes.paperBG2}>
             <TextField id={'console'}
-               variant={'outlined'}
-               color={'primary'}
-               size={'small'}
-               multiline={true}
-               rows={15}
-               fullWidth={true}
-               style={{
-                   textAlign:'left'
-               }}
+                       variant={'outlined'}
+                       color={'primary'}
+                       size={'small'}
+                       onChange={displayData}
+                       multiline={true}
+                       rows={15}
+                       fullWidth={true}
+                       style={{
+                           textAlign:'left'
+                       }}
             />
         </Paper>
     )

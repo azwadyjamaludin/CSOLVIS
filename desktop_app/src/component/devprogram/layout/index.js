@@ -224,6 +224,7 @@ class DevLayout extends Component {
                     color={'primary'}
                     className={classes.margin}
                     type={'submit'}
+                    component={Link} to={'/devprog/element/button5'}
                 >
                   <Typography variant="subtitle2" noWrap >
                     printf
@@ -234,6 +235,7 @@ class DevLayout extends Component {
                   color={'primary'}
                   className={classes.margin}
                   type={'submit'}
+                  component={Link} to={'/devprog/element/button6'}
               >
                 <Typography variant="subtitle2" noWrap >
                   scanf
@@ -244,6 +246,7 @@ class DevLayout extends Component {
                   color={'primary'}
                   className={classes.margin}
                   type={'submit'}
+                  component={Link} to={'/devprog/element/button7'}
               >
                 <Typography variant="subtitle2" noWrap >
                   if else
@@ -254,6 +257,7 @@ class DevLayout extends Component {
                   color={'primary'}
                   className={classes.margin}
                   type={'submit'}
+                  component={Link} to={'/devprog/element/button8'}
               >
                 <Typography variant="subtitle2" noWrap >
                   for loop
@@ -264,6 +268,7 @@ class DevLayout extends Component {
                   color={'primary'}
                   className={classes.margin}
                   type={'submit'}
+                  component={Link} to={'/devprog/element/button9'}
               >
                 <Typography variant="subtitle2" noWrap >
                   while loop
@@ -274,6 +279,7 @@ class DevLayout extends Component {
                   color={'primary'}
                   className={classes.margin}
                   type={'submit'}
+                  component={Link} to={'/devprog/element/button10'}
               >
                 <Typography variant="subtitle2" noWrap >
                   do-while loop

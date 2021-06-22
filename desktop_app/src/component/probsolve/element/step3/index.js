@@ -7,6 +7,8 @@ import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import { makeStyles } from '@material-ui/core/styles';
 import MenuItem from '@material-ui/core/MenuItem';
+import axios from "axios";
+import Swal from "sweetalert2";
 
 const useStyles = makeStyles((theme) => ({
     formControl: {
@@ -27,7 +29,8 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const Step3 = ({input,process,variable}) => {
+function Step3(props) {
+    const URL = `http://${sessionStorage.getItem('ipsett')}`;
     const classes = useStyles();
     const types = [
         {
@@ -53,7 +56,8 @@ const Step3 = ({input,process,variable}) => {
     ];
 
     const [dataname,setDataname] = useState('');const [datavalue,setDatavalue] = useState('')
-    const [atypes , setAtypes] = useState('')
+    const [atypes , setAtypes] = useState('');
+    let inputProp = ''; let processProp = ''; let varProp = '';
 
     const step3OnBlur1 = (e) => {
         setDataname(e.target.value)
@@ -68,10 +72,25 @@ const Step3 = ({input,process,variable}) => {
     }
 
     const step3OnClickSubmit = async() => {
-        input = dataname
-        process = dataname+''+'='+''+datavalue
-        variable = atypes+''+dataname+''+'='+''+datavalue
-        setDatavalue('');setDatavalue('');setAtypes('')
+        inputProp = dataname
+        processProp = dataname+' '+'='+' '+datavalue
+        varProp = atypes+' '+dataname+' '+'='+' '+datavalue
+        const data = {input:inputProp,process:processProp,variable:varProp,sessionID:sessionStorage.getItem('sessionID')}
+        await axios.post(URL+'/routes/dataMgt/step3',data).then((res) => {
+            props.IPOData(res.data.ipo)
+        }).catch(function (error) {
+            errorIPSetting(error)
+        })
+        setDataname(''); setDatavalue(''); setAtypes('')
+    }
+
+    const errorIPSetting =(error) => {
+        Swal.fire({
+            icon: 'error',
+            title: '',
+            text: `${error}`,
+        }).then((r) => {
+        })
     }
 
     return(
@@ -81,6 +100,7 @@ const Step3 = ({input,process,variable}) => {
                 <Typography variant={'body2'} paragraph={true} align={'center'}>
                     What other data is given/needed?
                 </Typography>
+                <form >
                 <TextField id={'step3a'}
                            label={'Data name'}
                            name={'data_name'}
@@ -120,7 +140,7 @@ const Step3 = ({input,process,variable}) => {
                     label="Types"
                     onChange={step3OnSelect}
                     variant="outlined"
-                    value={'int'}
+                    value={atypes}
                     size={'small'}
                     style={{
                         backgroundColor: '#FFFAFA',
@@ -144,6 +164,7 @@ const Step3 = ({input,process,variable}) => {
                     Submit
                 </Button>
                 <div><br/></div>
+                </form>
             </Paper>
         </div>
     )

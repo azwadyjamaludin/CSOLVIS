@@ -1,99 +1,136 @@
-import React, {useState} from 'react'
-import { useParams } from "react-router-dom";
+import React, {useEffect, useState} from 'react'
 import MenuIndex from "./menu";
-import EditorIndex0 from "./editor0";
-import EditorIndex1 from "./editor1";
-import EditorIndex2 from "./editor2";
-import EditorIndex3 from "./editor3";
-import EditorIndex4 from "./editor4";
-import EditorIndex5 from "./editor5";
+import EditorIndex from "./editor";
 import VisIndex from "./visualiser";
+import VisButIndex from "./visbutton";
 import ConsoleIndex from "./console";
-import {makeStyles} from "@material-ui/core/styles";
-import paperImage from "../../../assets/white-concrete-wall.jpg";
-import {Grid} from "@material-ui/core";
-
-const useStyles = makeStyles((theme) => ({
-    formControl: {
-        margin: theme.spacing(1),
-        minWidth: 120,
-    },
-    selectEmpty: {
-        marginTop: theme.spacing(2),
-    },
-    paperBG: {
-        backgroundImage: 'url('+paperImage+')'
-    },
-    paperBG2: {
-        backgroundColor:"#faf0e6"
-    },
-    table: {
-        minWidth: 650,
-    },
-    margin: {
-        margin: theme.spacing(1),
-    },
-    backdrop: {
-        zIndex: theme.zIndex.drawer + 1,
-        color: '#fff',
-    },
-    input: {
-        display: 'none',
-    },
-}));
+import {Grid, Paper} from "@material-ui/core";
+import {useParams} from "react-router-dom";
+import axios from "axios";
+import insertTextAtCursor from "insert-text-at-cursor";
+import Swal from "sweetalert2";
 
 function DevElement() {
-    const classes = useStyles();
     let {params} = useParams();
-    let latestFile='';let fileName='';
-    let stdioButton = "'#include' '<'stdio.h'>'"; let mainButton = "int main() {" +"\\n"+"\\n"+"return 0"+"\\n"+"}";
-    let vardata = (sessionStorage.getItem('variables'));let formuladata = (sessionStorage.getItem('formulas'))
-
-    const myLatestFileCallback = (latestFileData) => {
-	    if (latestFileData !== null) {
-        latestFile.append(latestFileData)
-	    }
-    }
-	 const myLatestFileCallback2 = (latestFileData2) => {
-	    if (latestFileData2 !== null) {
-        latestFile.append(latestFileData2)
-	    }
-    }
-
-
-    const myFilenameCallback = (filenameData) => {
-	    if (filenameData !== null) {
-        fileName.append(filenameData)
-	    }
-    }
     console.log(params)
-    return(
-        <div>
-            <MenuIndex latestFile={myLatestFileCallback} Filename={myFilenameCallback}/>
-            <Grid container spacing={2} row={true} >
-                <Grid item xs={9} >
-                {params === 'dev' ?(
-                <EditorIndex0 uploadedFile={latestFile} filename={fileName} newValueFile={myLatestFileCallback2} />
-                ):(null)}
-                {params === 'button1' ?(
-                <EditorIndex1  uploadedFile={latestFile} filename={fileName} snippet={stdioButton} newValueFile={myLatestFileCallback2}/>
-                ):(null)}
-                {params === 'button2' ?(
-                <EditorIndex2  uploadedFile={latestFile} filename={fileName} snippet={mainButton} newValueFile={myLatestFileCallback2}/>
-                ):(null)}
-                {params === 'button3' ?(
-                <EditorIndex3  uploadedFile={latestFile} filename={fileName} myvar={vardata} newValueFile={myLatestFileCallback2}/>
-                ):(null)}
-                {params === 'button4' ?(
-                <EditorIndex4  uploadedFile={latestFile} filename={fileName} myformula={formuladata} newValueFile={myLatestFileCallback2}/>
-                ):(null)}
+
+    const [uploadfile, setUploadFile] = useState(''); const [filename,setFileName] = useState('')
+    const [newfile,setNewFile] = useState(''); const [myParam, setMyParam] = useState('');
+
+    let latestFile = ''; const [compileData,setCompileData] = useState(''); const [debugData,setDebugData] = useState(''); const [executeData,setExecuteData] = useState('');
+    let fileName = ''; const [visopen,setVisOpen] = useState(false); let menuParam = ''
+    let newFile = ''; const [visbutparam, setVisButParam] = useState('')
+
+    const myLatestFile = (latestFileData) =>  {
+        latestFile = latestFileData
+        setUploadFile(latestFile)
+    }
+    const myNewFileValue = (newFileValue) => {
+        newFile = newFileValue
+        setNewFile(newFile)
+    }
+
+    const myFilename = (filenameData) => {
+        fileName= filenameData
+        setFileName(fileName)
+    }
+
+    const openVis = (visValue) => {
+        if (visValue === 'open') {
+            setVisOpen(true)
+        }
+    }
+
+    const visButParam = (visValue) => {
+        if (visValue === 'play') {
+            setVisButParam('b 0 \\n run \\n')
+        }
+        if (visValue === 'next') {
+            setVisButParam('n \\n')
+        }
+        if (visValue === 'prev') {
+            setVisButParam('bt \\n')
+        }
+        if (visValue === 'show') {
+            setVisButParam('display variable \\n')
+        }
+        if (visValue === 'stop') {
+            setVisButParam('exit \\n')
+        }
+        if  (visValue === 'close') {
+            setVisOpen(false)
+        }
+    }
+
+    const compileResult = (compileResults) => {
+        setCompileData(compileResults)
+    }
+
+    const executeResult = (executeResults) => {
+        setExecuteData(executeResults)
+    }
+
+    const debugResult = (debugResults) => {
+        setDebugData(debugResults)
+    }
+
+        return(
+            <div>
+                <MenuIndex latestFile={myLatestFile} Filename={myFilename} visOpen={openVis} compileResult={compileResult} executeResult={executeResult}
+                           visualiseResult={debugResult} newFile={newfile}/>
+                <br/>
+                <Grid container spacing={3} direction={"row"} >
+                    <Grid item xs={true}>
+                        {params === 'dev'? (
+                            <EditorIndex  uploadedFile={uploadfile} myFileName={filename} newValueFile={myNewFileValue} patParam={params} />
+                            ):null};
+                        {params === 'button1'? (
+                            <EditorIndex  uploadedFile={uploadfile} myFileName={filename} newValueFile={myNewFileValue} patParam={params} />
+                        ):null};
+                        {params === 'button2'? (
+                            <EditorIndex  uploadedFile={uploadfile} myFileName={filename} newValueFile={myNewFileValue} patParam={params} />
+                        ):null};
+                        {params === 'button3'? (
+                            <EditorIndex  uploadedFile={uploadfile} myFileName={filename} newValueFile={myNewFileValue} patParam={params} />
+                        ):null};
+                        {params === 'button4'? (
+                            <EditorIndex  uploadedFile={uploadfile} myFileName={filename} newValueFile={myNewFileValue} patParam={params} />
+                        ):null};
+                        {params === 'button5'? (
+                            <EditorIndex  uploadedFile={uploadfile} myFileName={filename} newValueFile={myNewFileValue} patParam={params} />
+                        ):null};
+                        {params === 'button6'? (
+                            <EditorIndex  uploadedFile={uploadfile} myFileName={filename} newValueFile={myNewFileValue} patParam={params} />
+                        ):null};
+                        {params === 'button7'? (
+                            <EditorIndex  uploadedFile={uploadfile} myFileName={filename} newValueFile={myNewFileValue} patParam={params} />
+                        ):null};
+                        {params === 'button8'? (
+                            <EditorIndex  uploadedFile={uploadfile} myFileName={filename} newValueFile={myNewFileValue} patParam={params} />
+                        ):null};
+                        {params === 'button9'? (
+                            <EditorIndex  uploadedFile={uploadfile} myFileName={filename} newValueFile={myNewFileValue} patParam={params} />
+                        ):null};
+                        {params === 'button10'? (
+                            <EditorIndex  uploadedFile={uploadfile} myFileName={filename} newValueFile={myNewFileValue} patParam={params} />
+                        ):null};
+                    </Grid>
+                    {visopen === true?(
+                        <Grid item xs={3}>
+                            <VisIndex visualiseData={debugData} debugParam={visbutparam}/>
+                        </Grid>
+                    ):null}
                 </Grid>
-                <Grid item xs={3} >
-                <VisIndex/>
-                </Grid>
-            </Grid>
-            <ConsoleIndex/>
-        </div>
-    )
-}
+                <br/>
+                {visopen === true?(
+                    <VisButIndex playD={visButParam} nextln={visButParam} prevln={visButParam} showV={visButParam} stopD={visButParam} visOpen={visButParam} />
+                ):null}
+                <br/>
+                <div>
+                <ConsoleIndex displayCompile={compileData} displayExecute={executeData}/>
+                </div>
+            </div>
+            )
+
+    }
 export default DevElement

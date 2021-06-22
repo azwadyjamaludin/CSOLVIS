@@ -8,14 +8,9 @@ import AceEditor from 'react-ace';
 import "ace-builds/src-noconflict/mode-c_cpp";
 import "ace-builds/src-noconflict/theme-xcode";
 import paperImage from '../../../../assets/white-concrete-wall.jpg'
-import {useParams} from "react-router-dom";
-import NavigateBeforeRoundedIcon from "@material-ui/icons/NavigateBeforeRounded";
-import NavigateNextRoundedIcon from "@material-ui/icons/NavigateNextRounded";
-import Button from "@material-ui/core/Button";
 import axios from "axios";
 import Swal from "sweetalert2";
-
-
+import insertTextAtCursor from "insert-text-at-cursor";
 
 const useStyles = makeStyles((theme) => ({
     formControl: {
@@ -53,76 +48,24 @@ const editorStyle = {
 
 function EditorIndex (props) {
 
-    const classes = useStyles(); const aceRef = useRef()
-    const URL = `http://${sessionStorage.getItem('ipsett')}`;
+    const classes = useStyles(); //const aceRef = useRef()
 
     let newFile = '';
-    let varsProp = []; let formulasProp = [];
+    let varsProp = []; let formulasProp = []; const URL = `http://${sessionStorage.getItem('ipsett')}`;
+
     let include = "#include"; let stdio = "stdio.h"; let main = "int main() "; let n = "\n"; let return0 = "return 0 "; let insertText = "Insert your text here"; let varText = "variable"
     let stdioButton = `${include} ${'<'}${stdio}${'>'}` ; let mainButton = `${main} {${n}${n}${n}${return0}}`; let printfButton = `printf(${insertText.italics()});`; let scanfButton = `scanf(%v,${varText.italics()});`;
     let ifElseButton = `if(${'<'.italics()}${'selection condition'.italics()}${'>'.italics()}) {${n}${'if-true action/formula'.italics()}${n}} else() {${'if-false action/formula'.italics()}${n}}`;
     let forLoopButton = `for (${'<'.italics()}${"counter".italics()}${">".italics()}=0;${'<'.italics()}${"repeat condition".italics()}${'>'.italics()};${'<'.italics()}${"counter++".italics()}${'>'.italics()}) {${n}${n}}`
     let whilebutton = `while(${'<'.italics()}${"repeat condition".italics()}${'>'.italics()}) {${n}${n}}`; let doWhileButton = `do{${n}${n}}while(${'<'.italics()}${"repeat condition".italics()}${'>'.italics()});`
 
-    let patParam = props.patParam
-    console.log('EditorIndex:',patParam)
-
-    const butPattern = (editor) => {
-        console.log('AceEditor-onload:',editor)
-
-        const data = {sessionID: sessionStorage.getItem('sessionID')}
-        axios.post(URL + '/routes/dataMgt/getVarsAndFormulas', data).then((res) => {
-            varsProp = res.data.variable; formulasProp = res.data.formula
-            console.log(varsProp,formulasProp)
-        }).catch(function (error) {
-            errorIPSetting(error)
-        })
-
-        if (patParam === 'dev') {
-            editor.getSession().insert(editor.getCursorPosition,'Type here to edit')
-        }
-
-        if (patParam === 'button1') {
-            editor.getSession().insert(editor.getCursorPosition(), stdioButton)
-        }
-        if (patParam === 'button2') {
-            editor.getSession().insert(editor.getCursorPosition(), mainButton)
-        }
-        if (patParam === 'button3') {
-            for (let varData of varsProp) {
-                editor.getSession().insert(editor.getCursorPosition(), varData)
-            }
-        }
-        if (patParam === 'button4') {
-            for (let formulaData of formulasProp) {
-                editor.getSession().insert(editor.getCursorPosition(), formulaData)
-            }
-        }
-        if (patParam === 'button5') {
-            editor.getSession().insert(editor.getCursorPosition(), printfButton)
-        }
-        if (patParam === 'button6') {
-            editor.getSession().insert(editor.getCursorPosition(), scanfButton)
-        }
-        if (patParam === 'button7') {
-            editor.getSession().insert(editor.getCursorPosition(), ifElseButton)
-        }
-        if (patParam === 'button8') {
-            editor.getSession().insert(editor.getCursorPosition(), forLoopButton)
-        }
-        if (patParam === 'button9') {
-            editor.getSession().insert(editor.getCursorPosition(), whilebutton)
-        }
-        if (patParam === 'button10') {
-            editor.getSession().insert(editor.getCursorPosition(), doWhileButton)
-        }
-    }
-
-    function onEditorChange(newValue) {
-        newFile = newValue
-        props.newValueFile(newFile)
-
-    }
+    const data = {sessionID: sessionStorage.getItem('sessionID')}
+    axios.post(URL + '/routes/dataMgt/getVarsAndFormulas', data).then((res) => {
+        varsProp = res.data.variable; formulasProp = res.data.formula
+        console.log(varsProp,formulasProp)
+    }).catch(function (error) {
+        errorIPSetting(error)
+    })
 
     const errorIPSetting =(error) => {
         Swal.fire({
@@ -131,6 +74,59 @@ function EditorIndex (props) {
             text: `${error}`,
         }).then((r) => {
         })
+    }
+
+    const butPattern = (editor) => {
+        console.log('AceEditor-butPattern:',editor)
+
+        if (props.patParam === 'button1') {
+            insertTextAtCursor(editor, stdioButton)
+            console.log('insertTextAtCursor-button1',stdioButton)
+        }
+        if(props.patParam === 'button2') {
+            insertTextAtCursor(editor, mainButton)
+        }
+        if (props.patParam === 'button3') {
+            for (let varData of varsProp) {
+                insertTextAtCursor(editor, varData)
+            }
+        }
+        if (props.patParam === 'button4') {
+            for (let formulaData of formulasProp) {
+                insertTextAtCursor(editor, formulaData)
+            }
+        }
+        if (props.patParam === 'button5') {
+            insertTextAtCursor(editor, printfButton)
+        }
+        if (props.patParam === 'button6') {
+            insertTextAtCursor(editor, scanfButton)
+        }
+        if (props.patParam === 'button7') {
+            insertTextAtCursor(editor, ifElseButton)
+        }
+        if (props.patParam === 'button8') {
+            insertTextAtCursor(editor, forLoopButton)
+        }
+        if (props.patParam === 'button9') {
+            insertTextAtCursor(editor, whilebutton)
+        }
+        if (props.patParam === 'button10') {
+            insertTextAtCursor(editor, doWhileButton)
+        }
+    }
+
+    newFile = props.uploadedFile
+    props.newValueFile(newFile)
+    console.log(newFile)
+    function onEditorChange(newValue) {
+        if (!newValue) {
+        newFile = props.uploadedFile
+        props.newValueFile(newFile)
+        }else {
+            newFile = newValue
+            props.newValueFile(newFile)
+        }
     }
 
     return(
@@ -142,17 +138,17 @@ function EditorIndex (props) {
                     <br/>
                     {props.myFileName !== 'Untitled.c' ? (
                         <p>{props.myFileName}</p>
-                    ):('Untitled.c')}
+                    ):null}
                 </Typography>
                 <AceEditor
                     name={'AceEditor'}
                     style={editorStyle}
                     readOnly={false}
-                    ref={aceRef}
+                    //ref={aceRef}
                     theme={'xcode'}
                     mode="c_cpp"
                     width="99%"
-                    focus={true}
+                    //focus={true}
                     value={props.uploadedFile}
                     onChange={onEditorChange}
                     highlightActiveLine
@@ -168,6 +164,7 @@ function EditorIndex (props) {
                         editor.focus();
                         editor.getSession().setUseWrapMode(true);
                         butPattern(editor)
+
                     }}
                 />
                 <br/>

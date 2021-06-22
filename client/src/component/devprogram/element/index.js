@@ -6,15 +6,18 @@ import VisButIndex from "./visbutton";
 import ConsoleIndex from "./console";
 import {Grid, Paper} from "@material-ui/core";
 import {useParams} from "react-router-dom";
+import axios from "axios";
+import insertTextAtCursor from "insert-text-at-cursor";
+import Swal from "sweetalert2";
 
 function DevElement() {
-    let params = useParams();
+    let {params} = useParams();
     console.log(params)
 
     const [uploadfile, setUploadFile] = useState(''); const [filename,setFileName] = useState('')
-    const [newfile,setNewFile] = useState('')
+    const [newfile,setNewFile] = useState(''); const [myParam, setMyParam] = useState('');
 
-    let latestFile = ''; let compileData = ''; let debugData = ''; let executeData = '';
+    let latestFile = ''; const [compileData,setCompileData] = useState(''); const [debugData,setDebugData] = useState(''); const [executeData,setExecuteData] = useState('');
     let fileName = ''; const [visopen,setVisOpen] = useState(false); let menuParam = ''
     let newFile = ''; const [visbutparam, setVisButParam] = useState('')
 
@@ -60,15 +63,15 @@ function DevElement() {
     }
 
     const compileResult = (compileResults) => {
-        compileData = compileResults
+        setCompileData(compileResults)
     }
 
     const executeResult = (executeResults) => {
-        executeData = executeResults
+        setExecuteData(executeResults)
     }
 
     const debugResult = (debugResults) => {
-        debugData = debugResults
+        setDebugData(debugResults)
     }
 
         return(
@@ -78,7 +81,39 @@ function DevElement() {
                 <br/>
                 <Grid container spacing={3} direction={"row"} >
                     <Grid item xs={true}>
-                            <EditorIndex  uploadedFile={uploadfile} myFileName={filename} newValueFile={myNewFileValue} patParam={params}/>
+                        {params === 'dev'? (
+                            <EditorIndex  uploadedFile={uploadfile} myFileName={filename} newValueFile={myNewFileValue} patParam={params} />
+                            ):null};
+                        {params === 'button1'? (
+                            <EditorIndex  uploadedFile={uploadfile} myFileName={filename} newValueFile={myNewFileValue} patParam={params} />
+                        ):null};
+                        {params === 'button2'? (
+                            <EditorIndex  uploadedFile={uploadfile} myFileName={filename} newValueFile={myNewFileValue} patParam={params} />
+                        ):null};
+                        {params === 'button3'? (
+                            <EditorIndex  uploadedFile={uploadfile} myFileName={filename} newValueFile={myNewFileValue} patParam={params} />
+                        ):null};
+                        {params === 'button4'? (
+                            <EditorIndex  uploadedFile={uploadfile} myFileName={filename} newValueFile={myNewFileValue} patParam={params} />
+                        ):null};
+                        {params === 'button5'? (
+                            <EditorIndex  uploadedFile={uploadfile} myFileName={filename} newValueFile={myNewFileValue} patParam={params} />
+                        ):null};
+                        {params === 'button6'? (
+                            <EditorIndex  uploadedFile={uploadfile} myFileName={filename} newValueFile={myNewFileValue} patParam={params} />
+                        ):null};
+                        {params === 'button7'? (
+                            <EditorIndex  uploadedFile={uploadfile} myFileName={filename} newValueFile={myNewFileValue} patParam={params} />
+                        ):null};
+                        {params === 'button8'? (
+                            <EditorIndex  uploadedFile={uploadfile} myFileName={filename} newValueFile={myNewFileValue} patParam={params} />
+                        ):null};
+                        {params === 'button9'? (
+                            <EditorIndex  uploadedFile={uploadfile} myFileName={filename} newValueFile={myNewFileValue} patParam={params} />
+                        ):null};
+                        {params === 'button10'? (
+                            <EditorIndex  uploadedFile={uploadfile} myFileName={filename} newValueFile={myNewFileValue} patParam={params} />
+                        ):null};
                     </Grid>
                     {visopen === true?(
                         <Grid item xs={3}>

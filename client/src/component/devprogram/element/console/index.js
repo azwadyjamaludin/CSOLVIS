@@ -35,13 +35,13 @@ const useStyles = makeStyles((theme) => ({
 
 function ConsoleIndex(props) {
     const classes = useStyles();
-    const [displayData, setDisplayData] = useState('');
+    let displayData = '';
 
-        if (props.displayCompile !== '') {
-            setDisplayData(props.displayCompile)
+        if (props.displayCompile.length > 0) {
+            displayData = props.displayCompile
         }
-        if (props.displayExecute !== '') {
-            setDisplayData(props.displayExecute)
+        if (props.displayExecute.length > 0) {
+            displayData = props.displayExecute
         }
 
     return(

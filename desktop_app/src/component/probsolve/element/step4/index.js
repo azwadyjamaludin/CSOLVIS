@@ -6,6 +6,8 @@ import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import { makeStyles } from '@material-ui/core/styles';
+import axios from "axios";
+import Swal from "sweetalert2";
 
 const useStyles = makeStyles((theme) => ({
     formControl: {
@@ -26,9 +28,12 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const Step4 = ({process,formula}) => {
+function Step4(props)  {
     const classes = useStyles();
+    const URL = `http://${sessionStorage.getItem('ipsett')}`;
     const [step4output,setStep4Output] = useState(''); const [step4formula, setStep4formula] = useState('')
+    let processProp = ''; let formulaProp = '';
+
 
     const step4OnBlur1 = (e) => {
         setStep4Output(e.target.value)
@@ -38,10 +43,25 @@ const Step4 = ({process,formula}) => {
         setStep4formula(e.target.value)
     }
 
-    const step4OnClickSubmit = () => {
-        process = step4output+''+'='+''+step4formula
-        formula = step4output+''+'='+''+step4formula
+    const step4OnClickSubmit = async() => {
+        processProp = step4output+' '+'='+' '+step4formula
+        formulaProp = step4output+' '+'='+' '+step4formula
+        const data = {process:processProp,formula:formulaProp,sessionID:sessionStorage.getItem('sessionID')}
+        await axios.post(URL+'/routes/dataMgt/step4', data).then((res) => {
+                props.IPOData(res.data.ipo)
+        }).catch(function (error) {
+            errorIPSetting(error)
+        })
         setStep4Output('');setStep4formula('')
+    }
+
+    const errorIPSetting =(error) => {
+        Swal.fire({
+            icon: 'error',
+            title: '',
+            text: `${error}`,
+        }).then((r) => {
+        })
     }
 
   return(
@@ -51,6 +71,7 @@ const Step4 = ({process,formula}) => {
                 <Typography variant={'body2'} paragraph={true} align={'center'}>
                     Insert a formula to calculate the output
                 </Typography>
+                <form >
                 <TextField id={'step4a'}
                            label={'Output name'}
                            name={'Output'}
@@ -93,6 +114,7 @@ const Step4 = ({process,formula}) => {
                     Submit
                 </Button>
                 <div><br/></div>
+                </form>
             </Paper>
         </div>
     )

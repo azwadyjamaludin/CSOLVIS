@@ -1,11 +1,12 @@
-import {Paper} from "@material-ui/core";
-import React, {useState} from "react";
+import {Backdrop, Paper} from "@material-ui/core";
+import React, {useEffect, useState} from "react";
 import {makeStyles, withStyles} from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import axios from "axios";
 import Swal from "sweetalert2";
-import {save} from "save-file";
 import paperImage from '../../../../assets/white-concrete-wall.jpg'
+import Typography from "@material-ui/core/Typography";
+import TextField from "@material-ui/core/TextField";
 
 const BootstrapGreenButton = withStyles({
     root: {
@@ -112,85 +113,105 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function MenuIndex({latestFile,Filename}) {
+function MenuIndex(props) {
     const classes = useStyles();
-    const [selectedfile,setSelectedfile] = useState('');const [filename,setFilename] = useState(''); const [filepath,setFilepath] = useState('');const [latestfile,setLatestfile] = useState('')
-    const URL=`http://${sessionStorage.getItem('ipsett')}`;
+    const URL = `http://${sessionStorage.getItem('ipsett')}`; const [openRename, setOpenRename] = useState(false)
 
-    const onFileChange = async (e) => {
-        setSelectedfile(e.target.files[0])
-        setFilename(e.target.files[0].name)
-        Filename.append(filename)
+    let myFile = ''; let fileOriName = ''
+
+    async function onFileChange(e)  {
+        myFile = e.target.files[0]
+        fileOriName = e.target.files[0].name
+        console.log('MenuIndex-filename:',fileOriName,'MenuIndex-uploadfile:',myFile)
 
         if (!e.target.files[0].name.includes('.c')) {
             fileFormat()
-        }else {
-        await onClickInputFile(selectedfile)
+        } else {
+            await onClickInputFile(myFile)
         }
     }
 
-    const fileFormat = () => {
+    function fileFormat() {
         Swal.fire({
             icon: 'error',
             title: 'Oops...Wrong file format',
             text: 'Please choose file with .c file format!',
-        }).then((r ) => {})
-    }
-
-    const onClickInputFile = async(selectedfile) => {
-        const body = new FormData()
-        body.append('file', selectedfile)
-        console.log(body)
-        if (URL != null) {
-            await axios.post(URL+'/routes/fileMgt/writeFileToServer', body)
-                .then((res) => {
-                    setLatestfile(res.data.fileContents)
-                    latestFile.append(latestfile)
-                })
-        }else if (URL == null) {
-            nullIPSetting()
-        }
-    }
-
-    const onSaveFile = async () => {
-        await save(selectedfile, filename)
-    }
-
-    const compileFile = async() => {
-        const body = new FormData()
-        body.append('file', selectedfile)
-
-        if (URL != null) {
-            await axios.post(URL+'/routes/fileMgt/writeFileToServer',body)
-                .then((res) => {
-                    setFilepath(res.data.uploadPath)
-                    compileCSource()
-                })
-        }else if (URL == null) {
-            nullIPSetting()
-        }
-    }
-
-    const nullIPSetting = () => {
-        Swal.fire({
-            icon: 'error',
-            title: 'Oops...Cannot communicate with server',
-            text: 'You may check the IP setting!',
-        }).then((r ) => {})
-    }
-
-    const compileCSource = async() => {
-        const data = {cFilePath:filepath}
-        await axios.post(URL+'',data).then((res) =>{
-
+        }).then((r) => {
         })
     }
 
-    const Upload =() => {
-        return(
+    async function onClickInputFile(uploadedFile) {
+        const body = new FormData()
+        body.append('file', uploadedFile)
+
+            await axios.post(URL + '/routes/fileMgt/writeFileToServer', body)
+                .then((res) => {
+                    props.Filename(fileOriName)
+                    props.latestFile(res.data.fileContents)
+                })
+                .catch(function (error) {
+                    errorIPSetting(error)
+                })
+    }
+
+    const onSaveFile = async () => {
+                    let blob = new Blob([props.newFile])
+                    let file = new File([blob], fileOriName)
+
+                    const body = new FormData()
+                    body.append('file', file)
+
+                    await axios.post(URL+'routes/fileMgt/downloadSourceFile', body).then((res) => {
+
+                    }).catch(function (error) {
+                        errorIPSetting(error)
+                    })
+    }
+
+    const compileFile = async () => {
+                let blob = new Blob([props.newFile])
+                let file = new File([blob], fileOriName)
+
+                const body = new FormData()
+                body.append('file', file)
+
+                    await axios.post(URL + '/routes/fileMgt/compileSourceFile', body)
+                        .then((res) => {
+                            props.compileResult(res.data.compileResult)
+                        }).catch(function (error) {
+                            errorIPSetting(error)
+                        })
+    }
+
+    const executeFile = async () => {
+                let blob = new Blob([props.newFile])
+                let file = new File([blob], fileOriName)
+
+                const body = new FormData()
+                body.append('file', file)
+
+                    await axios.post(URL + '/routes/fileMgt/executeSourceFile', body)
+                        .then((res) => {
+                            props.executeResult(res.data.executeResult)
+                        }).catch(function (error) {
+                            errorIPSetting(error)
+                        })
+    }
+
+    const errorIPSetting = (error) => {
+        Swal.fire({
+            icon: 'error',
+            title: '',
+            text: `${error}`,
+        }).then((r) => {
+        })
+    }
+
+
+    const Upload = () => {
+        return (
             <div>&nbsp;&nbsp;&nbsp;&nbsp;
                 <input
-                    //accept={'text/c-s'}
                     className={classes.input}
                     type="file"
                     onChange={onFileChange}
@@ -198,6 +219,36 @@ function MenuIndex({latestFile,Filename}) {
                 />
             </div>
         )
+    }
+
+    const visualiseFile = async () => {
+                    let blob = new Blob([props.newFile])
+                    let file = new File([blob], fileOriName)
+
+                    props.visOpen('open')
+                    const body = new FormData()
+                    body.append('file', file)
+
+                    await axios.post(URL + '/routes/fileMgt/debugSourceFile', body)
+                    .then((res) => {
+                        props.visualiseResult(res.data.debugResult)
+                     })
+                    .catch(function (error) {
+                       errorIPSetting(error)
+                    })
+    }
+
+    const openRenameFile = () => {
+        setOpenRename(true)
+
+    }
+
+    const onChangeRenameFile = (e) => {
+        fileOriName = e.target.value
+    }
+
+    const closeRenameFile = () => {
+        setOpenRename(false)
     }
 
     return(
@@ -215,15 +266,49 @@ function MenuIndex({latestFile,Filename}) {
             Save .c file
         </BootstrapGreenButton>
         &nbsp;&nbsp;&nbsp;
+        <BootstrapGreenButton color={'secondary'} className={classes.margin} onClick={openRenameFile}>
+            Rename .c file
+        </BootstrapGreenButton>
+        <Backdrop className={classes.backdrop} open={openRename} >
+            <Paper variant={'elevation'}>
+                <Typography >
+                    Rename .c file
+                </Typography>
+                    <TextField id={'rename'}
+                               placeholder={'Rename .c file'}
+                               name={'rename'}
+                               variant={'outlined'}
+                               color={'primary'}
+                               onChange={onChangeRenameFile}
+                               size={'small'}
+                               style={{
+                                   backgroundColor: '#FFFAFA',
+                                   width: 500,
+                                   textAlign:'left'
+                               }}
+
+                    />
+                    <Button
+                        variant="outlined"
+                        color="secondary"
+                        type={'submit'}
+                        onClick={closeRenameFile}
+                    >
+                        close
+                    </Button>
+            </Paper>
+            <br/>
+        </Backdrop>
+        &nbsp;&nbsp;&nbsp;
         <BootstrapYellowButton color={'primary'} className={classes.margin} onClick={compileFile}>
             Compile
         </BootstrapYellowButton>
         &nbsp;&nbsp;
-        <BootstrapYellowButton color={'primary'} className={classes.margin}>
+        <BootstrapYellowButton color={'primary'} className={classes.margin} onClick={executeFile}>
             Execute
         </BootstrapYellowButton>
         &nbsp;&nbsp;
-        <BootstrapYellowButton color={'primary'} className={classes.margin}>
+        <BootstrapYellowButton color={'primary'} className={classes.margin} onClick={visualiseFile}>
             Visualize
         </BootstrapYellowButton>
     </Paper>

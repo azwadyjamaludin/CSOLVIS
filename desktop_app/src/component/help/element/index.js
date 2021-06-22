@@ -5,16 +5,17 @@ import STIndex from "./setting";
 
 function HelpElement() {
     let {params} = useParams();
-    return (
-        <div>
-            {params === 'info' ? (
-                <IFIndex/>
-            ):(null)}
-            {params === 'setting' ? (
-                <STIndex/>
-            ):(null)}
-        </div>
-    )
+
+        return (
+            <div>
+                {params === 'info' ? (
+                    <IFIndex/>
+                ):(null)}
+                {params === 'setting' ? (
+                    <STIndex/>
+                ):(null)}
+            </div>
+        )
 
 }
 export default HelpElement

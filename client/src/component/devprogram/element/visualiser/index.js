@@ -41,11 +41,8 @@ const useStyles = makeStyles((theme) => ({
 
 function VisIndex(props) {
     const classes = useStyles(); const tfRef = useRef(); const curPos = 0
-    const [debugData, setDebugData] = useState('')
+    let debugData = ''
 
-            if (props.visualiseData !== '') {
-                setDebugData(props.visualiseData)
-            }
      const visButParams = () => {
             const el = tfRef.current
             insertTextAtCursor(el,props.debugParam)
@@ -58,11 +55,11 @@ function VisIndex(props) {
                            variant={'outlined'}
                            color={'primary'}
                            size={'small'}
-                           onChange={debugData}
+                           onChange={props.visualiseData}
                            ref={tfRef}
                            onBlur={visButParams}
                            multiline={true}
-                           rows={32}
+                           rows={30}
                            fullWidth={true}
                            style={{
                                textAlign:'left'

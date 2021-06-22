@@ -10,7 +10,7 @@ const DPIndex = () => {
             <BrowserRouter >
                 <DevLayout>
                     <Switch>
-                        <Route exact path={'/devprog/element/:params'} render={() => <div><DevElement/></div>}/>
+                        <Route exact path={'/devprog/element/:params'} render={() => <div><DevElement /></div>}/>
                     </Switch>
                 </DevLayout>
             </BrowserRouter>

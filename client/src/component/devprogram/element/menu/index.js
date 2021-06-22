@@ -1,10 +1,12 @@
-import {Paper} from "@material-ui/core";
+import {Backdrop, Paper} from "@material-ui/core";
 import React, {useEffect, useState} from "react";
 import {makeStyles, withStyles} from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import axios from "axios";
 import Swal from "sweetalert2";
 import paperImage from '../../../../assets/white-concrete-wall.jpg'
+import Typography from "@material-ui/core/Typography";
+import TextField from "@material-ui/core/TextField";
 
 const BootstrapGreenButton = withStyles({
     root: {
@@ -113,19 +115,19 @@ const useStyles = makeStyles((theme) => ({
 
 function MenuIndex(props) {
     const classes = useStyles();
-    let uploadfile = ''; let filename = ''; let saveFile = ''
-    const URL = `http://${sessionStorage.getItem('ipsett')}`;
+    const URL = `http://${sessionStorage.getItem('ipsett')}`; const [openRename, setOpenRename] = useState(false)
+
+    let myFile = ''; let fileOriName = ''
 
     async function onFileChange(e)  {
-        uploadfile = e.target.files[0]
-        filename = e.target.files[0].name
-        saveFile = uploadfile
-        console.log('MenuIndex-filename:',filename,'MenuIndex-uploadfile:',uploadfile)
+        myFile = e.target.files[0]
+        fileOriName = e.target.files[0].name
+        console.log('MenuIndex-filename:',fileOriName,'MenuIndex-uploadfile:',myFile)
 
         if (!e.target.files[0].name.includes('.c')) {
             fileFormat()
         } else {
-            await onClickInputFile(uploadfile)
+            await onClickInputFile(myFile)
         }
     }
 
@@ -144,7 +146,7 @@ function MenuIndex(props) {
 
             await axios.post(URL + '/routes/fileMgt/writeFileToServer', body)
                 .then((res) => {
-                    props.Filename(filename)
+                    props.Filename(fileOriName)
                     props.latestFile(res.data.fileContents)
                 })
                 .catch(function (error) {
@@ -153,56 +155,47 @@ function MenuIndex(props) {
     }
 
     const onSaveFile = async () => {
-                let newsavefile = props.newFile
-                if (newsavefile !== '') {
+                    let blob = new Blob([props.newFile])
+                    let file = new File([blob], fileOriName)
+
                     const body = new FormData()
-                    body.append('file', saveFile)
+                    body.append('file', file)
 
                     await axios.post(URL+'routes/fileMgt/downloadSourceFile', body).then((res) => {
 
                     }).catch(function (error) {
                         errorIPSetting(error)
                     })
-                }
-                const body = new FormData()
-                body.append('file', newsavefile)
-
-                await axios.post(URL+'routes/fileMgt/downloadSourceFile', body).then((res) => {
-
-                }).catch(function (error) {
-                    errorIPSetting(error)
-                })
     }
 
     const compileFile = async () => {
-        let blob = new Blob([props.newFile])
-        let file = new File([blob], filename)
+                let blob = new Blob([props.newFile])
+                let file = new File([blob], fileOriName)
 
-        const body = new FormData()
-        body.append('file', file)
+                const body = new FormData()
+                body.append('file', file)
 
-            await axios.post(URL + '/routes/fileMgt/compileSourceFile', body)
-                .then((res) => {
-                    props.compileResult(res.data.compileResult)
-                }).catch(function (error) {
-                    errorIPSetting(error)
-                })
+                    await axios.post(URL + '/routes/fileMgt/compileSourceFile', body)
+                        .then((res) => {
+                            props.compileResult(res.data.compileResult)
+                        }).catch(function (error) {
+                            errorIPSetting(error)
+                        })
     }
 
     const executeFile = async () => {
-        let blob = new Blob([props.newFile])
-        let file = new File([blob], filename)
+                let blob = new Blob([props.newFile])
+                let file = new File([blob], fileOriName)
 
-        const body = new FormData()
-        body.append('file', file)
+                const body = new FormData()
+                body.append('file', file)
 
-
-            await axios.post(URL + '/routes/fileMgt/executeSourceFile', body)
-                .then((res) => {
-                    props.executeResult(res.data.executeResult)
-                }).catch(function (error) {
-                    errorIPSetting(error)
-                })
+                    await axios.post(URL + '/routes/fileMgt/executeSourceFile', body)
+                        .then((res) => {
+                            props.executeResult(res.data.executeResult)
+                        }).catch(function (error) {
+                            errorIPSetting(error)
+                        })
     }
 
     const errorIPSetting = (error) => {
@@ -229,19 +222,33 @@ function MenuIndex(props) {
     }
 
     const visualiseFile = async () => {
-            let blob = new Blob([props.newFile])
-            let file = new File([blob], filename)
-            props.visOpen('open')
-            const body = new FormData()
-            body.append('file', file)
+                    let blob = new Blob([props.newFile])
+                    let file = new File([blob], fileOriName)
 
-            await axios.post(URL + '/routes/fileMgt/debugSourceFile', body)
-            .then((res) => {
-                props.visualiseResult(res.data.debugResult)
-             })
-            .catch(function (error) {
-               errorIPSetting(error)
-            })
+                    props.visOpen('open')
+                    const body = new FormData()
+                    body.append('file', file)
+
+                    await axios.post(URL + '/routes/fileMgt/debugSourceFile', body)
+                    .then((res) => {
+                        props.visualiseResult(res.data.debugResult)
+                     })
+                    .catch(function (error) {
+                       errorIPSetting(error)
+                    })
+    }
+
+    const openRenameFile = () => {
+        setOpenRename(true)
+
+    }
+
+    const onChangeRenameFile = (e) => {
+        fileOriName = e.target.value
+    }
+
+    const closeRenameFile = () => {
+        setOpenRename(false)
     }
 
     return(
@@ -258,6 +265,40 @@ function MenuIndex(props) {
         <BootstrapGreenButton color={'secondary'} className={classes.margin} onClick={onSaveFile}>
             Save .c file
         </BootstrapGreenButton>
+        &nbsp;&nbsp;&nbsp;
+        <BootstrapGreenButton color={'secondary'} className={classes.margin} onClick={openRenameFile}>
+            Rename .c file
+        </BootstrapGreenButton>
+        <Backdrop className={classes.backdrop} open={openRename} >
+            <Paper variant={'elevation'}>
+                <Typography >
+                    Rename .c file
+                </Typography>
+                    <TextField id={'rename'}
+                               placeholder={'Rename .c file'}
+                               name={'rename'}
+                               variant={'outlined'}
+                               color={'primary'}
+                               onChange={onChangeRenameFile}
+                               size={'small'}
+                               style={{
+                                   backgroundColor: '#FFFAFA',
+                                   width: 500,
+                                   textAlign:'left'
+                               }}
+
+                    />
+                    <Button
+                        variant="outlined"
+                        color="secondary"
+                        type={'submit'}
+                        onClick={closeRenameFile}
+                    >
+                        close
+                    </Button>
+            </Paper>
+            <br/>
+        </Backdrop>
         &nbsp;&nbsp;&nbsp;
         <BootstrapYellowButton color={'primary'} className={classes.margin} onClick={compileFile}>
             Compile
