@@ -68,6 +68,12 @@ function Step5(props)  {
     const [step5else, setStep5else] = useState('')
     let processProp = '';
 
+    useEffect(() => {
+        if (!URL) {
+            SweetAlertSetting('Please check your network / IP setting')
+        }
+    },[])
+
     const step5OnBlur1 = (e) => {
         setStep5if(e.target.value)
     }
@@ -86,12 +92,12 @@ function Step5(props)  {
         await axios.post(URL+'/routes/dataMgt/step5', data).then((res) => {
                 props.IPOData(res.data.ipo)
         }).catch(function (error) {
-            errorIPSetting(error)
+            SweetAlertSetting(error)
         })
         setStep5if('');setStep5do('');setStep5else('')
     }
 
-    const errorIPSetting =(error) => {
+    const SweetAlertSetting =(error) => {
         Swal.fire({
             icon: 'error',
             title: '',
@@ -119,7 +125,7 @@ function Step5(props)  {
                            helperText="Example: jejari < 0"
                            size={'small'}
                            style={{
-                               backgroundColor: '#FFFAFA',
+                               backgroundColor: '#f5f5f5',
                                width: 400,
                                textAlign:'left'
                            }}
@@ -146,7 +152,7 @@ function Step5(props)  {
                            helperText="Example: luasbulatan = 0"
                            size={'small'}
                            style={{
-                               backgroundColor: '#FFFAFA',
+                               backgroundColor: '#f5f5f5',
                                width: 400,
                                textAlign:'left'
                            }}
@@ -169,7 +175,7 @@ function Step5(props)  {
                            helperText="Example: proceed"
                            size={'small'}
                            style={{
-                               backgroundColor: '#FFFAFA',
+                               backgroundColor: '#f5f5f5',
                                width: 400,
                                textAlign:'left'
                            }}

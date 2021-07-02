@@ -7,33 +7,83 @@ import ConsoleIndex from "./console";
 import {Grid, Paper} from "@material-ui/core";
 import {useParams} from "react-router-dom";
 import axios from "axios";
-import insertTextAtCursor from "insert-text-at-cursor";
 import Swal from "sweetalert2";
 
 function DevElement() {
     let {params} = useParams();
     console.log(params)
 
-    const [uploadfile, setUploadFile] = useState(''); const [filename,setFileName] = useState('')
-    const [newfile,setNewFile] = useState(''); const [myParam, setMyParam] = useState('');
+    const [filename,setFileName] = useState(''); const [newfile,setNewFile] = useState(''); const [vars, setVars] = useState(''); const [formulas, setFormulas] = useState('')
+    const [consoleData,setConsoleData] = useState(''); const [debugData,setDebugData] = useState('');
 
-    let latestFile = ''; const [compileData,setCompileData] = useState(''); const [debugData,setDebugData] = useState(''); const [executeData,setExecuteData] = useState('');
-    let fileName = ''; const [visopen,setVisOpen] = useState(false); let menuParam = ''
-    let newFile = ''; const [visbutparam, setVisButParam] = useState('')
+    let fileName = ''; const [visopen,setVisOpen] = useState(false); let compiledata = ''; let executedata = ''; let debugdata = ''; let filenamedata = '';
+    let newFile = ''; const [visbutparam, setVisButParam] = useState('');  const [saveFile, setSaveFile] = useState(false)
+
+    useEffect(() => {
+        getVarsAndFormulas()
+        getStoredFileData()
+        return() => {
+            setSaveFile(true)
+        }
+    },[])
+
+
+    const URL = `http://${sessionStorage.getItem('ipsett')}`;
+
+    const getVarsAndFormulas = () => {
+        if (sessionStorage.getItem('sessionID') != null) {
+        const data = {sessionID: sessionStorage.getItem('sessionID')}
+        axios.post(URL + '/routes/dataMgt/getVarsAndFormulas', data).then((res) => {
+            if (res.data.emptyData) {
+                SweetAlertSetting('No data found in the given session, Please create a new session or you may try to insert the previous session id (Help/setting)')
+            } else {
+            setVars(res.data.variable)
+            setFormulas(res.data.formula)
+            }
+        }).catch(function (error) {
+            SweetAlertSetting(error)
+        })
+        }
+    }
+
+    const SweetAlertSetting =(error) => {
+        Swal.fire({
+            icon: 'error',
+            title: '',
+            text: `${error}`,
+        }).then((r) => {
+        })
+    }
+
+    const getStoredFileData = () => {
+        const data = {sessionID: sessionStorage.getItem('sessionID') }
+        axios.post(URL+'/routes/fileMgt/getStoredData', data).then((res) => {
+                if (res.data.fileContents === 'enoent') {
+                    SweetAlertSetting('No file found for the given session. Please create a new session and save a new file or you may try to insert the previous session id (Help/setting)')
+                } else if (res.data.fileContents === 'something wrong somewhere') {
+                    SweetAlertSetting('Something got wrong!!')
+                } else {
+                newFile = res.data.fileContents; filenamedata = res.data.fileName;
+                setNewFile(newFile); setFileName(filenamedata)
+                }
+        }).catch(function (error) {
+            SweetAlertSetting(error)
+        })
+    }
 
     const myLatestFile = (latestFileData) =>  {
-        latestFile = latestFileData
-        setUploadFile(latestFile)
+        newFile = latestFileData
+        setNewFile(newFile)
     }
     const myNewFileValue = (newFileValue) => {
         newFile = newFileValue
         setNewFile(newFile)
     }
-
     const myFilename = (filenameData) => {
         fileName= filenameData
         setFileName(fileName)
     }
+
 
     const openVis = (visValue) => {
         if (visValue === 'open') {
@@ -43,19 +93,19 @@ function DevElement() {
 
     const visButParam = (visValue) => {
         if (visValue === 'play') {
-            setVisButParam('b 0 \\n run \\n')
+            setVisButParam('breakpoint set --line 1\n run\n continue\n')
         }
         if (visValue === 'next') {
-            setVisButParam('n \\n')
+            setVisButParam('n\n')
         }
         if (visValue === 'prev') {
-            setVisButParam('bt \\n')
+            setVisButParam('up\n')
         }
         if (visValue === 'show') {
-            setVisButParam('display variable \\n')
+            setVisButParam('frame variable\n')
         }
         if (visValue === 'stop') {
-            setVisButParam('exit \\n')
+            setVisButParam('exit\n yes\n')
         }
         if  (visValue === 'close') {
             setVisOpen(false)
@@ -63,57 +113,60 @@ function DevElement() {
     }
 
     const compileResult = (compileResults) => {
-        setCompileData(compileResults)
+        compiledata = compileResults
+        setConsoleData(compiledata)
     }
 
     const executeResult = (executeResults) => {
-        setExecuteData(executeResults)
+        executedata = executeResults
+        setConsoleData(executedata)
     }
 
     const debugResult = (debugResults) => {
-        setDebugData(debugResults)
+        debugdata = debugResults
+        setDebugData(debugdata)
     }
 
         return(
             <div>
                 <MenuIndex latestFile={myLatestFile} Filename={myFilename} visOpen={openVis} compileResult={compileResult} executeResult={executeResult}
-                           visualiseResult={debugResult} newFile={newfile}/>
+                           visualiseResult={debugResult} newFile={newfile} newFileName={filename} savefile={saveFile}/>
                 <br/>
                 <Grid container spacing={3} direction={"row"} >
                     <Grid item xs={true}>
-                        {params === 'dev'? (
-                            <EditorIndex  uploadedFile={uploadfile} myFileName={filename} newValueFile={myNewFileValue} patParam={params} />
-                            ):null};
-                        {params === 'button1'? (
-                            <EditorIndex  uploadedFile={uploadfile} myFileName={filename} newValueFile={myNewFileValue} patParam={params} />
-                        ):null};
-                        {params === 'button2'? (
-                            <EditorIndex  uploadedFile={uploadfile} myFileName={filename} newValueFile={myNewFileValue} patParam={params} />
-                        ):null};
-                        {params === 'button3'? (
-                            <EditorIndex  uploadedFile={uploadfile} myFileName={filename} newValueFile={myNewFileValue} patParam={params} />
-                        ):null};
-                        {params === 'button4'? (
-                            <EditorIndex  uploadedFile={uploadfile} myFileName={filename} newValueFile={myNewFileValue} patParam={params} />
-                        ):null};
-                        {params === 'button5'? (
-                            <EditorIndex  uploadedFile={uploadfile} myFileName={filename} newValueFile={myNewFileValue} patParam={params} />
-                        ):null};
-                        {params === 'button6'? (
-                            <EditorIndex  uploadedFile={uploadfile} myFileName={filename} newValueFile={myNewFileValue} patParam={params} />
-                        ):null};
-                        {params === 'button7'? (
-                            <EditorIndex  uploadedFile={uploadfile} myFileName={filename} newValueFile={myNewFileValue} patParam={params} />
-                        ):null};
-                        {params === 'button8'? (
-                            <EditorIndex  uploadedFile={uploadfile} myFileName={filename} newValueFile={myNewFileValue} patParam={params} />
-                        ):null};
-                        {params === 'button9'? (
-                            <EditorIndex  uploadedFile={uploadfile} myFileName={filename} newValueFile={myNewFileValue} patParam={params} />
-                        ):null};
-                        {params === 'button10'? (
-                            <EditorIndex  uploadedFile={uploadfile} myFileName={filename} newValueFile={myNewFileValue} patParam={params} />
-                        ):null};
+                        {params === 'dev'?(
+                            <EditorIndex  uploadedFile={newfile} myFileName={filename} newValueFile={myNewFileValue} myparam={params} />
+                            ):null}
+                        {params === 'button1'?(
+                            <EditorIndex  uploadedFile={newfile} myFileName={filename} newValueFile={myNewFileValue} myparam={params} />
+                            ):null}
+                        {params === 'button2'?(
+                            <EditorIndex  uploadedFile={newfile} myFileName={filename} newValueFile={myNewFileValue} myparam={params} />
+                            ):null}
+                        {params === 'button3'?(
+                            <EditorIndex  uploadedFile={newfile} myFileName={filename} newValueFile={myNewFileValue} myparam={params} myVars={vars} />
+                            ):null}
+                        {params === 'button4'?(
+                            <EditorIndex  uploadedFile={newfile} myFileName={filename} newValueFile={myNewFileValue} myparam={params} myFormulas={formulas} />
+                            ):null}
+                        {params === 'button5'?(
+                            <EditorIndex  uploadedFile={newfile} myFileName={filename} newValueFile={myNewFileValue} myparam={params} />
+                            ):null}
+                        {params === 'button6'?(
+                            <EditorIndex  uploadedFile={newfile} myFileName={filename} newValueFile={myNewFileValue} myparam={params} />
+                            ):null}
+                        {params === 'button7'?(
+                            <EditorIndex  uploadedFile={newfile} myFileName={filename} newValueFile={myNewFileValue} myparam={params} />
+                            ):null}
+                        {params === 'button8'?(
+                            <EditorIndex  uploadedFile={newfile} myFileName={filename} newValueFile={myNewFileValue} myparam={params} />
+                            ):null}
+                        {params === 'button9'?(
+                            <EditorIndex  uploadedFile={newfile} myFileName={filename} newValueFile={myNewFileValue} myparam={params} />
+                        ):null}
+                        {params === 'button10'?(
+                            <EditorIndex  uploadedFile={newfile} myFileName={filename} newValueFile={myNewFileValue} myparam={params} />
+                        ):null}
                     </Grid>
                     {visopen === true?(
                         <Grid item xs={3}>
@@ -127,7 +180,7 @@ function DevElement() {
                 ):null}
                 <br/>
                 <div>
-                <ConsoleIndex displayCompile={compileData} displayExecute={executeData}/>
+                <ConsoleIndex displayData={consoleData} />
                 </div>
             </div>
             )

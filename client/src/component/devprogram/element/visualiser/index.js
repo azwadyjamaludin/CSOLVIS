@@ -2,12 +2,12 @@ import React, {useEffect, useRef, useState} from 'react'
 import {
     Paper
 } from "@material-ui/core";
-import {makeStyles, withStyles} from '@material-ui/core/styles';
-import "ace-builds/src-noconflict/mode-c_cpp";
-import "ace-builds/src-noconflict/theme-xcode";
+import {makeStyles} from '@material-ui/core/styles';
+import "ace-builds/src-noconflict/mode-javascript";
+import "ace-builds/src-noconflict/theme-terminal";
 import paperImage from '../../../../assets/white-concrete-wall.jpg'
-import TextField from "@material-ui/core/TextField";
 import insertTextAtCursor from 'insert-text-at-cursor';
+import AceEditor from "react-ace";
 
 const useStyles = makeStyles((theme) => ({
     formControl: {
@@ -39,31 +39,51 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+const editorStyle = {
+    border: '2px solid lightgray',
+};
+
 function VisIndex(props) {
     const classes = useStyles(); const tfRef = useRef(); const curPos = 0
-    let debugData = ''
 
-     const visButParams = () => {
-            const el = tfRef.current
-            insertTextAtCursor(el,props.debugParam)
+    let newFile = props.visualiseData;
+
+     const debugArgs = (editor) => {
+            insertTextAtCursor(editor,props.debugParam)
      }
+
+    function onEditorChange(newValue) {
+        newFile = newValue
+    }
 
     return(
         <div>
             <Paper variant={'elevation'} elevation={0} className={classes.paperBG} >
-                <TextField id={'vis'}
-                           variant={'outlined'}
-                           color={'primary'}
-                           size={'small'}
-                           onChange={props.visualiseData}
-                           ref={tfRef}
-                           onBlur={visButParams}
-                           multiline={true}
-                           rows={30}
-                           fullWidth={true}
-                           style={{
-                               textAlign:'left'
-                           }}
+                <AceEditor
+                    name={'AceVisualiser'}
+                    style={editorStyle}
+                    readOnly={false}
+                    mode={'javascript'}
+                    theme={'terminal'}
+                    width="100%"
+                    height={'620px'}
+                    focus={false}
+                    value={props.visualiseData}
+                    onChange={onEditorChange}
+                    highlightActiveLine
+                    showGutter={false}
+                    showPrintMargin={false}
+                    setOptions={{
+                        enableBasicAutocompletion: false,
+                        enableLiveAutocompletion: false,
+                        showLineNumbers: false,
+                        enableSnippets: false,
+                        tabSize: 2,
+                    }}
+                    onLoad={(editor) => {
+                        editor.getSession().setUseWrapMode(true);
+                        debugArgs(editor)
+                    }}
                 />
             </Paper>
         </div>

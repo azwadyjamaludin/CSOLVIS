@@ -67,6 +67,12 @@ function Step6(props) {
     const [atypes , setAtypes] = useState('')
     let processProp = ''; let varProp = ''
 
+    useEffect(() => {
+        if (!URL) {
+            SweetAlertSetting('Please check your network / IP setting')
+        }
+    },[])
+
     const step6Blur1 = (e) => {
         setStep6counter(e.target.value)
     }
@@ -86,12 +92,12 @@ function Step6(props) {
         await axios.post(URL+'/routes/dataMgt/step6', data).then((res)=> {
             props.IPOData(res.data.ipo)
         }).catch(function (error) {
-            errorIPSetting(error)
+            SweetAlertSetting(error)
         })
         setStep6counter('');setAtypes('');setStep6counter('')
     }
 
-    const errorIPSetting =(error) => {
+    const SweetAlertSetting =(error) => {
         Swal.fire({
             icon: 'error',
             title: '',
@@ -146,7 +152,7 @@ function Step6(props) {
                            helperText="Example : x"
                            size={'small'}
                            style={{
-                               backgroundColor: '#FFFAFA',
+                               backgroundColor: '#f5f5f5',
                                width: 400,
                                textAlign:'left'
                            }}
@@ -161,7 +167,7 @@ function Step6(props) {
                     value={atypes}
                     size={'small'}
                     style={{
-                        backgroundColor: '#FFFAFA',
+                        backgroundColor: '#f5f5f5',
                         width: 190,
                         textAlign:'left'
                     }}
@@ -187,7 +193,7 @@ function Step6(props) {
                            helperText="Example : x < 10"
                            size={'small'}
                            style={{
-                               backgroundColor: '#FFFAFA',
+                               backgroundColor: '#f5f5f5',
                                width: 400,
                                textAlign:'left'
                            }}

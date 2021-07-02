@@ -2,5 +2,6 @@
 package-lock.json
 /views
 /files
+/db
 # misc
 .DS_Store

@@ -20,7 +20,7 @@ const useStyles = makeStyles((theme) => ({
 const STIndex = () => {
     const classes = useStyles();
     const [ipadd, setIpadd] = useState('')
-    const [sesID, setSesID] = useState('')
+    const [lastSesID, setLastSesID] = useState('')
 
     const onBlurSett = (e) => {
         setIpadd(e.target.value)
@@ -31,17 +31,17 @@ const STIndex = () => {
     }
 
     const onBlurSessID = (e) => {
-        setSesID(e.target.value)
+        setLastSesID(e.target.value)
     }
 
     const onClickSubmitSessID = () => {
-        sessionStorage.setItem('sessionID',sesID)
+        sessionStorage.setItem('sessionID',lastSesID)
     }
 
     return(
         <div align={'center'}>
             <br/>
-            <Paper className={classes.paperBG2} variant={'elevation'} elevation={7}>
+            <Paper className={classes.paperBG} variant={'elevation'} elevation={7}>
                 <div><br/></div>&nbsp;&nbsp;
                 <TextField id={'ip'}
                            label={'IP Setting'}
@@ -54,7 +54,7 @@ const STIndex = () => {
                            helperText="Example: 192.168.1.10:3000"
                            size={'small'}
                            style={{
-                               backgroundColor: '#FFFAFA',
+                               backgroundColor: '#f5f5f5',
                                width: 500,
                                textAlign:'left'
                            }}
@@ -75,12 +75,12 @@ const STIndex = () => {
                            name={'id_session'}
                            variant={'outlined'}
                            color={'primary'}
-                           value={sesID}
+                           value={lastSesID}
                            onChange={onBlurSessID}
-                           helperText="Please insert your previous session ID"
+                           helperText="Please insert your copied session ID to retrieve previous data (if any)"
                            size={'small'}
                            style={{
-                               backgroundColor: '#FFFAFA',
+                               backgroundColor: '#f5f5f5',
                                width: 500,
                                textAlign:'left'
                            }}

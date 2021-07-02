@@ -58,6 +58,12 @@ function Step1(props)  {
         },
     ];
 
+    useEffect(() => {
+        if (!URL) {
+            SweetAlertSetting('Please check your network / IP setting')
+        }
+    },[])
+
     function step1OnBlur(e) {
         setInput(e.target.value)
     }
@@ -75,13 +81,12 @@ function Step1(props)  {
         await axios.post(URL+'/routes/dataMgt/step1',data).then((res) => {
              props.IPOData(res.data.ipo)
         }).catch(function (error) {
-            errorIPSetting(error)
+            SweetAlertSetting(error)
         })
-
         setInput(''); setAtypes('');
     }
 
-    const errorIPSetting =(error) => {
+    const SweetAlertSetting =(error) => {
         Swal.fire({
             icon: 'error',
             title: '',
@@ -109,7 +114,7 @@ function Step1(props)  {
                            helperText="Example: jejari"
                            size={'small'}
                            style={{
-                               backgroundColor: '#FFFAFA',
+                               backgroundColor: '#f5f5f5',
                                width: 400,
                                textAlign:'left'
                            }}
@@ -132,7 +137,7 @@ function Step1(props)  {
                     value={atypes}
                     size={'small'}
                     style={{
-                        backgroundColor: '#FFFAFA',
+                        backgroundColor: '#f5f5f5',
                         width: 190,
                         textAlign:'left'
                     }}

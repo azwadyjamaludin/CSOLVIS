@@ -9,7 +9,7 @@ function createWindow() {
         width: 1600,
         height: 550,
         webPreferences: {
-            nodeIntegration: false,
+            nodeIntegration: true,
         },
 
     });
@@ -19,8 +19,8 @@ function createWindow() {
 	//
     win.loadURL(
         isDev
-            ? 'http://localhost:3000'
-            : `file://${path.join(__dirname, 'public/index.html')}`
+            ? 'http://localhost:3001'
+            : `file://${path.join(__dirname, 'build/index.html')}`
     );
     // Open the DevTools.
     /*if (isDev) {

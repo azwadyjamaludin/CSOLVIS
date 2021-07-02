@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import {
     InputAdornment,
     Paper
@@ -60,6 +60,12 @@ const Step2 = (props) => {
         },
     ];
 
+    useEffect(() => {
+        if (!URL) {
+            SweetAlertSetting('Please check your network / IP setting')
+        }
+    },[])
+
     const step2OnBlur = (e) => {
         setOutput2(e.target.value)
 
@@ -77,11 +83,12 @@ const Step2 = (props) => {
         await axios.post(URL+'/routes/dataMgt/step2',data).then((res) => {
             props.IPOData(res.data.ipo)
         }).catch(function (error) {
-            errorIPSetting(error)
+            SweetAlertSetting(error)
         })
         setOutput2('');setAtypes('')
     }
-    const errorIPSetting =(error) => {
+
+    const SweetAlertSetting =(error) => {
         Swal.fire({
             icon: 'error',
             title: '',
@@ -109,7 +116,7 @@ const Step2 = (props) => {
                            helperText="Example: luasbulatan"
                            size={'small'}
                            style={{
-                               backgroundColor: '#FFFAFA',
+                               backgroundColor: '#f5f5f5',
                                width: 400,
                                textAlign:'left'
                            }}
@@ -132,7 +139,7 @@ const Step2 = (props) => {
                     variant="outlined"
                     size={'small'}
                     style={{
-                        backgroundColor: '#FFFAFA',
+                        backgroundColor: '#f5f5f5',
                         width: 190,
                         textAlign:'left'
                     }}

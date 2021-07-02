@@ -34,6 +34,11 @@ function Step4(props)  {
     const [step4output,setStep4Output] = useState(''); const [step4formula, setStep4formula] = useState('')
     let processProp = ''; let formulaProp = '';
 
+    useEffect(() => {
+        if (!URL) {
+            SweetAlertSetting('Please check your network / IP setting')
+        }
+    },[])
 
     const step4OnBlur1 = (e) => {
         setStep4Output(e.target.value)
@@ -50,12 +55,12 @@ function Step4(props)  {
         await axios.post(URL+'/routes/dataMgt/step4', data).then((res) => {
                 props.IPOData(res.data.ipo)
         }).catch(function (error) {
-            errorIPSetting(error)
+            SweetAlertSetting(error)
         })
         setStep4Output('');setStep4formula('')
     }
 
-    const errorIPSetting =(error) => {
+    const SweetAlertSetting =(error) => {
         Swal.fire({
             icon: 'error',
             title: '',
@@ -83,7 +88,7 @@ function Step4(props)  {
                            helperText="Example: luasbulatan"
                            size={'small'}
                            style={{
-                               backgroundColor: '#FFFAFA',
+                               backgroundColor: '#f5f5f5',
                                width: 400,
                                textAlign:'left'
                            }}
@@ -99,7 +104,7 @@ function Step4(props)  {
                            helperText="PI * jejari * jejari"
                            size={'small'}
                            style={{
-                               backgroundColor: '#FFFAFA',
+                               backgroundColor: '#f5f5f5',
                                width: 400,
                                textAlign:'left'
                            }}

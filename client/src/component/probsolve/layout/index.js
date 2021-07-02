@@ -1,5 +1,5 @@
-import React, {Component, Fragment} from "react";
-import { Link, withRouter } from "react-router-dom";
+import React, {Fragment} from "react";
+import {Link} from "react-router-dom";
 import {
   AppBar,
   Toolbar,
@@ -11,17 +11,16 @@ import {
   Divider
 } from "@material-ui/core";
 import Button from "@material-ui/core/Button";
-import { withStyles } from "@material-ui/core/styles";
-import { compose } from "recompose";
 import Typography from '@material-ui/core/Typography';
 import KeyboardRoundedIcon from '@material-ui/icons/KeyboardRounded';
 import logo from '../../../assets/CSOLVIS.png'
 import drawerImage from '../../../assets/blue-concrete-textured-background.jpg'
+import {makeStyles} from "@material-ui/core/styles";
 
 
 const drawerWidth = 210;
 
-const styles = theme => ({
+const useStyles = makeStyles((theme) => ({
   root: {
     display: "flex",
   },
@@ -30,7 +29,6 @@ const styles = theme => ({
       width: `calc(100% - ${drawerWidth}px)`,
       marginLeft: drawerWidth,
       backgroundImage: 'url('+drawerImage+')',
-      //backgroundColor: '#c0c0c0',
       zIndex: theme.zIndex.drawer + 1,
     }
   },
@@ -93,24 +91,16 @@ const styles = theme => ({
     flexGrow: 1,
     padding: theme.spacing(3)
   }
-});
+}));
 
-class ProbLayout extends Component {
-  state = {
-    mobileOpen: false,
-    lamModal:false,
-    qsModal:false,
-    qsModal2:false
-  };
-
-
-  render() {
-    const {
+function ProbLayout(props) {
+    const classes = useStyles()
+    /*const myprops = ({
       classes,
       location: { pathname },
       children
-    } = this.props;
-    const { mobileOpen } = this.state;
+}) => (props);
+    //const { mobileOpen } = this.state;*/
 
     const drawer = (
       <div>
@@ -130,32 +120,32 @@ class ProbLayout extends Component {
              Problem Design
             </Typography>
           </MenuItem>
-            <MenuItem className={classes.nested} component={Link} to="/probdes/element/step1" selected={"/probdes/element/step1" === pathname}>
+            <MenuItem className={classes.nested} component={Link} to="/probdes/element/step1" selected={"/probdes/element/step1" === props.pathname}>
               <Typography color={'secondary'} variant="subtitle2" noWrap >
               Step 1 ->
               </Typography>
             </MenuItem>
-            <MenuItem className={classes.nested} component={Link} to="/probdes/element/step2" selected={"/probdes/element/step2" === pathname}>
+            <MenuItem className={classes.nested} component={Link} to="/probdes/element/step2" selected={"/probdes/element/step2" === props.pathname}>
               <Typography color={'secondary'} variant="subtitle2" noWrap >
               Step 2 ->
               </Typography>
             </MenuItem>
-            <MenuItem className={classes.nested} component={Link} to="/probdes/element/step3" selected={"/probdes/element/step3" === pathname}>
+            <MenuItem className={classes.nested} component={Link} to="/probdes/element/step3" selected={"/probdes/element/step3" === props.pathname}>
               <Typography color={'secondary'} variant="subtitle2" noWrap >
               Step 3 ->
               </Typography>
             </MenuItem>
-            <MenuItem className={classes.nested} component={Link} to="/probdes/element/step4" selected={"/probdes/element/step4" === pathname}>
+            <MenuItem className={classes.nested} component={Link} to="/probdes/element/step4" selected={"/probdes/element/step4" === props.pathname}>
               <Typography color={'secondary'} variant="subtitle2" noWrap >
               Step 4 ->
               </Typography>
             </MenuItem>
-            <MenuItem className={classes.nested} component={Link} to="/probdes/element/step5" selected={"/probdes/element/step5" === pathname}>
+            <MenuItem className={classes.nested} component={Link} to="/probdes/element/step5" selected={"/probdes/element/step5" === props.pathname}>
               <Typography color={'secondary'} variant="subtitle2" noWrap >
               Step 5 ->
               </Typography>
             </MenuItem>
-            <MenuItem className={classes.nested} component={Link} to="/probdes/element/step6" selected={"/probdes/element/step6" === pathname}>
+            <MenuItem className={classes.nested} component={Link} to="/probdes/element/step6" selected={"/probdes/element/step6" === props.pathname}>
               <Typography color={'secondary'} variant="subtitle2" noWrap >
               Step 6 ->
               </Typography>
@@ -165,7 +155,7 @@ class ProbLayout extends Component {
           </MenuList>
         </MenuList>
       </div>
-    );
+      )
 
     return (
       <Fragment>
@@ -180,9 +170,7 @@ class ProbLayout extends Component {
                   className={classes.button}
                   component={Link} to={'/probdes/element/step1'}
                   type={'submit'}
-                  //startIcon={<LiveHelpRoundedIcon />}
                   edge="start"
-                  //onClick={this.handleFAQOpen}
                 >
                   <Typography variant={'button'} display={'block'}>
                   Problem Solving
@@ -194,10 +182,8 @@ class ProbLayout extends Component {
                     color="primary"
                     className={classes.button}
                     component={Link} to={'/devprog/element/dev'}
-                    //startIcon={<AccessibilityNewRoundedIcon /> }
                     type={'submit'}
                     edge="start"
-                    //onClick={this.handleHelpOpen}
                 >
                   <Typography variant={'button'} display={'block'}>
                     Develop Program
@@ -209,9 +195,7 @@ class ProbLayout extends Component {
                     color="primary"
                     className={classes.button}
                     component={Link} to={'/help/element/info'}
-                    //startIcon={<LiveHelpRoundedIcon />}
                     edge="start"
-                    //onClick={this.handleFAQOpen}
                 >
                   <Typography variant={'button'} display={'block'}>
                     Help
@@ -238,12 +222,11 @@ class ProbLayout extends Component {
           </nav>
           <main className={classes.content}>
             {<div />}
-            {children}
+            {props.children}
           </main>
         </div>
       </Fragment>
     );
-  }
 }
 
-export default compose(withRouter, withStyles(styles))(ProbLayout);
+export default ProbLayout;

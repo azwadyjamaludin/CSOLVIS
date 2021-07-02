@@ -7,6 +7,7 @@ import Swal from "sweetalert2";
 import paperImage from '../../../../assets/white-concrete-wall.jpg'
 import Typography from "@material-ui/core/Typography";
 import TextField from "@material-ui/core/TextField";
+import { saveAs } from "file-saver";
 
 const BootstrapGreenButton = withStyles({
     root: {
@@ -115,9 +116,16 @@ const useStyles = makeStyles((theme) => ({
 
 function MenuIndex(props) {
     const classes = useStyles();
-    const URL = `http://${sessionStorage.getItem('ipsett')}`; const [openRename, setOpenRename] = useState(false)
+    const URL = `http://${sessionStorage.getItem('ipsett')}`; const [openRename, setOpenRename] = useState(false); const [currentPath, setCurrentPath] = useState('')
 
-    let myFile = ''; let fileOriName = ''
+    let myFile = ''; let fileOriName = ''; let currentFilePath = '';
+    console.log('MenuIndex-',props.newFile)
+
+    useEffect(() => {
+        if (!URL) {
+            SweetAlertSetting('Please check your network / IP setting')
+        }
+    },[])
 
     async function onFileChange(e)  {
         myFile = e.target.files[0]
@@ -125,19 +133,10 @@ function MenuIndex(props) {
         console.log('MenuIndex-filename:',fileOriName,'MenuIndex-uploadfile:',myFile)
 
         if (!e.target.files[0].name.includes('.c')) {
-            fileFormat()
+            SweetAlertSetting('Opps...Wrong file format,Please choose file with .c file format!')
         } else {
             await onClickInputFile(myFile)
         }
-    }
-
-    function fileFormat() {
-        Swal.fire({
-            icon: 'error',
-            title: 'Oops...Wrong file format',
-            text: 'Please choose file with .c file format!',
-        }).then((r) => {
-        })
     }
 
     async function onClickInputFile(uploadedFile) {
@@ -150,55 +149,96 @@ function MenuIndex(props) {
                     props.latestFile(res.data.fileContents)
                 })
                 .catch(function (error) {
-                    errorIPSetting(error)
+                    SweetAlertSetting(error)
                 })
     }
 
     const onSaveFile = async () => {
                     let blob = new Blob([props.newFile])
-                    let file = new File([blob], fileOriName)
-
-                    const body = new FormData()
-                    body.append('file', file)
-
-                    await axios.post(URL+'routes/fileMgt/downloadSourceFile', body).then((res) => {
-
-                    }).catch(function (error) {
-                        errorIPSetting(error)
-                    })
+                    let file = new File([blob], props.newFileName)
+                    saveToServer()
+        console.log('MenuIndex-onSaveFile:',file)
+                    saveAs(file,props.newFileName)
     }
 
     const compileFile = async () => {
+                let sessionID = sessionStorage.getItem('sessionID')
                 let blob = new Blob([props.newFile])
-                let file = new File([blob], fileOriName)
+                let file = new File([blob],`${props.newFileName}`)
 
                 const body = new FormData()
                 body.append('file', file)
 
-                    await axios.post(URL + '/routes/fileMgt/compileSourceFile', body)
+                    await axios.post(URL + '/routes/fileMgt/sendCurrentFile', body)
                         .then((res) => {
-                            props.compileResult(res.data.compileResult)
+                            currentFilePath = res.data.currentFilePath
+                            setCurrentPath(currentFilePath)
+                            const body = {filePath:currentFilePath}
+                            console.log(currentFilePath)
+                            axios.post(URL+'/routes/fileMgt/compileSourceFile', body).then((res) => {
+                                console.log(res.data.compileData)
+                                props.compileResult('\n'+res.data.compileData)
+                            }).catch(function (error) {
+                                SweetAlertSetting(error)
+                            })
                         }).catch(function (error) {
-                            errorIPSetting(error)
+                            SweetAlertSetting(error)
                         })
     }
 
     const executeFile = async () => {
-                let blob = new Blob([props.newFile])
-                let file = new File([blob], fileOriName)
-
-                const body = new FormData()
-                body.append('file', file)
+                    const body = {filePath:currentPath}
+                    console.log(currentPath)
+                    if (!currentPath) {
+                        SweetAlertSetting('Please compile the  C file first')
+                    }else {
 
                     await axios.post(URL + '/routes/fileMgt/executeSourceFile', body)
                         .then((res) => {
-                            props.executeResult(res.data.executeResult)
+                            props.executeResult('\n'+res.data.executeData)
                         }).catch(function (error) {
-                            errorIPSetting(error)
+                            SweetAlertSetting(error)
                         })
+                    }
     }
 
-    const errorIPSetting = (error) => {
+
+    const saveToServer = () => {
+            let sessionID = sessionStorage.getItem('sessionID')
+            let blob = new Blob([props.newFile])
+            let file = new File([blob], sessionID+'-'+props.newFileName)
+            let storedfilepath = '';
+            let storedfilename = '';
+
+            const body = new FormData()
+            body.append('file', file)
+            console.log('MenuIndex-storedFile:', file)
+
+            axios.post(URL + '/routes/fileMgt/storedFile', body)
+                .then((res) => {
+                    storedfilename = res.data.filename;
+                    storedfilepath = res.data.filepath
+                    fileOriName = storedfilename
+                    props.Filename(fileOriName)
+                    console.log('storedfilename:', storedfilename, 'storedfilepath:', storedfilepath)
+                    const data = {
+                        filepath: storedfilepath,
+                        filename: storedfilename,
+                        sessionID: sessionStorage.getItem('sessionID')
+                    }
+                    axios.post(URL + '/routes/dataMgt/storedData', data).then((res) => {
+
+                    }).catch(function (error) {
+                        SweetAlertSetting(error)
+                    })
+                })
+                .catch(function (error) {
+                    SweetAlertSetting(error)
+                })
+        }
+
+
+    const SweetAlertSetting = (error) => {
         Swal.fire({
             icon: 'error',
             title: '',
@@ -222,20 +262,20 @@ function MenuIndex(props) {
     }
 
     const visualiseFile = async () => {
-                    let blob = new Blob([props.newFile])
-                    let file = new File([blob], fileOriName)
-
                     props.visOpen('open')
-                    const body = new FormData()
-                    body.append('file', file)
-
+                    const body = {filePath:currentPath}
+                    console.log(currentPath)
+                if (!currentPath) {
+                    SweetAlertSetting('Please compile the  C file first')
+                }else {
                     await axios.post(URL + '/routes/fileMgt/debugSourceFile', body)
-                    .then((res) => {
-                        props.visualiseResult(res.data.debugResult)
-                     })
-                    .catch(function (error) {
-                       errorIPSetting(error)
-                    })
+                        .then((res) => {
+                            props.visualiseResult('\n'+res.data.debugData)
+                        })
+                        .catch(function (error) {
+                            SweetAlertSetting(error)
+                        })
+                }
     }
 
     const openRenameFile = () => {
@@ -245,6 +285,7 @@ function MenuIndex(props) {
 
     const onChangeRenameFile = (e) => {
         fileOriName = e.target.value
+        props.Filename(fileOriName+'.c')
     }
 
     const closeRenameFile = () => {
@@ -271,9 +312,10 @@ function MenuIndex(props) {
         </BootstrapGreenButton>
         <Backdrop className={classes.backdrop} open={openRename} >
             <Paper variant={'elevation'}>
-                <Typography >
+                <Typography align={'center'}>
                     Rename .c file
                 </Typography>
+                &nbsp;&nbsp;
                     <TextField id={'rename'}
                                placeholder={'Rename .c file'}
                                name={'rename'}
@@ -281,6 +323,7 @@ function MenuIndex(props) {
                                color={'primary'}
                                onChange={onChangeRenameFile}
                                size={'small'}
+                               autoFocus={true}
                                style={{
                                    backgroundColor: '#FFFAFA',
                                    width: 500,
@@ -288,6 +331,7 @@ function MenuIndex(props) {
                                }}
 
                     />
+                &nbsp;&nbsp;
                     <Button
                         variant="outlined"
                         color="secondary"
@@ -296,8 +340,9 @@ function MenuIndex(props) {
                     >
                         close
                     </Button>
+                &nbsp;&nbsp;
+                <div><br/></div>
             </Paper>
-            <br/>
         </Backdrop>
         &nbsp;&nbsp;&nbsp;
         <BootstrapYellowButton color={'primary'} className={classes.margin} onClick={compileFile}>

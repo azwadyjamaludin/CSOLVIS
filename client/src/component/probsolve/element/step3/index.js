@@ -59,6 +59,12 @@ function Step3(props) {
     const [atypes , setAtypes] = useState('');
     let inputProp = ''; let processProp = ''; let varProp = '';
 
+    useEffect(() => {
+        if (!URL) {
+            SweetAlertSetting('Please check your network / IP setting')
+        }
+    },[])
+
     const step3OnBlur1 = (e) => {
         setDataname(e.target.value)
     }
@@ -79,12 +85,12 @@ function Step3(props) {
         await axios.post(URL+'/routes/dataMgt/step3',data).then((res) => {
             props.IPOData(res.data.ipo)
         }).catch(function (error) {
-            errorIPSetting(error)
+            SweetAlertSetting(error)
         })
         setDataname(''); setDatavalue(''); setAtypes('')
     }
 
-    const errorIPSetting =(error) => {
+    const SweetAlertSetting =(error) => {
         Swal.fire({
             icon: 'error',
             title: '',
@@ -112,7 +118,7 @@ function Step3(props) {
                            helperText="Eample : Pi"
                            size={'small'}
                            style={{
-                               backgroundColor: '#FFFAFA',
+                               backgroundColor: '#f5f5f5',
                                width: 400,
                                textAlign:'left'
                            }}
@@ -128,7 +134,7 @@ function Step3(props) {
                            helperText="3.142"
                            size={'small'}
                            style={{
-                               backgroundColor: '#FFFAFA',
+                               backgroundColor: '#f5f5f5',
                                width: 400,
                                textAlign:'left'
                            }}
@@ -143,7 +149,7 @@ function Step3(props) {
                     value={atypes}
                     size={'small'}
                     style={{
-                        backgroundColor: '#FFFAFA',
+                        backgroundColor: '#f5f5f5',
                         width: 190,
                         textAlign:'left'
                     }}

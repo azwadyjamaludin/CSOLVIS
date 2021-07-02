@@ -4,167 +4,189 @@ let fs = require('fs')
 let fileConfig = require('../config/fileConfig.js')
 let path = require('path');
 let log4js = require('log4js');
+const dbConfig = require("../config/dbConfig");
+const cmd = require("node-cmd");
 let logger = log4js.getLogger('fileMgt.js')
 let router = express.Router();
 
 router.route('/writeFileToServer').post((req,res) => {
-            fileConfig.uploadConfig(req,res, function (err) {
-                if (err instanceof multer.MulterError) {
-                    logger.error(err);
-                    return res.status(500).json(err)
-                } else if (err) {
-                    logger.error(err);
-                    return res.status(500).json(err)
-                } else if (!req.file) {
-                    logger.warn("No file found!");
-                    return res.status(400).json({
-                        success: false,
-                        message: "No file found!"
+            try{
+                    fileConfig.uploadConfig(req,res, function (err) {
+                        if (err instanceof multer.MulterError) {
+                            logger.error(err);
+                            return res.status(500).json(err)
+                        } else if (err) {
+                            logger.error(err);
+                            return res.status(500).json(err)
+                        } else if (!req.file) {
+                            logger.warn("No file found!");
+                            return res.status(400).json({
+                                success: false,
+                                message: "No file found!"
+                            })
+                        }
+                        let filePath = req.file.path
+                        let fileName = path.basename(filePath)
+                        let fileContents = fs.readFileSync(filePath)
+                        logger.debug('filePath:',filePath,'fileName:',fileName,'fileContents:',fileContents.toString())
+                        fs.unlink(filePath,(err) => {
+                            logger.debug('C file removed:',filePath)
+                        })
+                        res.json({
+                            uploadPath: filePath,
+                            fileContents:fileContents.toString(),
+                            fileName: fileName,
+                            token: 'uploadedFile'
+                        })
                     })
-                }
-                let filePath = req.file.path
-                let fileName = path.basename(filePath)
-                let fileContents = fs.readFileSync(filePath)
-                logger.debug('filePath:',filePath,'fileName:',fileName,'fileContents:',fileContents.toString())
-                res.json({
-                    uploadPath: filePath,
-                    fileContents:fileContents.toString(),
-                    fileName: fileName,
-                    token: 'uploadedFile'
-                })
-            })
+            }catch (error) {
+                logger.error(error)
+            }
 })
 
-router.route('/downloadSourceFile').post((req,res) => {
-            fileConfig.uploadConfig(req,res, function (err) {
-                if (err instanceof multer.MulterError) {
-                    logger.error(err);
-                    return res.status(500).json(err)
-                } else if (err) {
-                    logger.error(err);
-                    return res.status(500).json(err)
-                } else if (!req.file) {
-                    logger.warn("No file found!");
-                    return res.status(400).json({
-                        success: false,
-                        message: "No file found!"
-                    })
-                }
-                let filePath = req.file.path
-                let fileName = path.basename(filePath)
-                res.download(filePath, fileName, (err) => {
-                    if (err) {
-                        res.status(500).send({
-                            message: "Could not download the file. " + err,
+router.route('/sendCurrentFile').post((req,res) => {
+            try {
+                fileConfig.uploadConfig(req,res, function (err) {
+                    if (err instanceof multer.MulterError) {
+                        logger.error(err);
+                        return res.status(500).json(err)
+                    } else if (err) {
+                        logger.error(err);
+                        return res.status(500).json(err)
+                    } else if (!req.file) {
+                        logger.warn("No file found!");
+                        return res.status(400).json({
+                            "success": false,
+                            "message": "No file found!"
+                        })
+                    }
+                    let filePath = req.file.path
+                    logger.debug(filePath)
+                    res.json({currentFilePath: filePath})
+                })
+            }catch (error) {
+                logger.error(error)
+            }
+})
+
+router.route('/compileSourceFile').post( async (req, res) => {
+            let filePath = req.body.filePath;
+            logger.debug('compileSource:', filePath)
+
+            try {
+             await fileConfig.compileProcess('clang', [filePath, '-o', filePath.replace('.c', '')], {},`${filePath.replace('.c','-process.log')}`,function (cb) {
+                 if (cb === 'process ended') {
+                        let readStream = fs.createReadStream(filePath.replace('.c','-process.log'))
+                        let data = '';
+                        readStream.on('data', function (chunk) {
+                            data += chunk
+                            res.json({compileData: data})
+                        });
+                        readStream.on('error', function(err) {
+                            res.end(err);
+                        });
+                     }
+                })
+            }catch (error) {
+                logger.error(error)
+            }
+})
+
+router.route('/executeSourceFile').post(async (req, res) => {
+            let filePath = req.body.filePath;
+            logger.debug('executeSource;', filePath)
+            try {
+                await fileConfig.executeProcess(`${filePath.replace('.c','')}`,[],{encoding:'utf8'},`${filePath.replace('.c','-process.log')}`,function (cb) {
+                    if (cb === 'process ended') {
+                        let readStream = fs.createReadStream(filePath.replace('.c','-process.log'))
+                        let data = '';
+                        readStream.on('data', function (chunk) {
+                            data += chunk
+                            res.send({executeData: data})
+                        });
+                        readStream.on('error', function(err) {
+                            res.end(err);
                         });
                     }
-                });
-            })
+                })
+            }catch (error) {
+                logger.error(error)
+            }
 })
 
-router.route('/compileSouceFile').post((req,res) => {
-
-            fileConfig.uploadConfig(req,res, function (err) {
-                if (err instanceof multer.MulterError) {
-                    logger.error(err);
-                    return res.status(500).json(err)
-                } else if (err) {
-                    logger.error(err);
-                    return res.status(500).json(err)
-                } else if (!req.file) {
-                    logger.warn("No file found!");
-                    return res.status(400).json({
-                        "success": false,
-                        "message": "No file found!"
-                    })
-                }
-                let filePath = req.file.path
-                logger.debug(filePath)
-                let clangCompile = fileConfig.spawn('clang'['-Wall',filePath,'-o',filePath.replace('.c','')])
-
-                clangCompile.stdout.on('data',(data)=> {
-                    res.json({'compileResult':data})
-                })
-                clangCompile.stderr.on('data',(data) => {
-                    res.json({'compileResult':data})
-                })
-                clangCompile.on('close',(code) => {
-                    if (code === 0) {
-                    res.json({'compileResult': `Process exit with code ${code}`})
+router.route('/debugSourceFile').post(async (req, res) => {
+            let filePath = req.body.filePath;
+            logger.debug('debugSource:', filePath)
+            try {
+                await fileConfig.debugProcess(`lldb`,`${filePath.replace('.c','')}`,{encoding:'utf8'},`${filePath.replace('.c','-process.log')}`,function (cb) {
+                    if (cb === 'process ended') {
+                        let readStream = fs.createReadStream(filePath.replace('.c', '-process.log'))
+                        let data = '';
+                        readStream.on('data', function (chunk) {
+                            data += chunk
+                            res.send({debugData: data})
+                        });
+                        readStream.on('error', function (err) {
+                            res.end(err);
+                        });
                     }
                 })
-
-            })
+            } catch (error) {
+                logger.error(error)
+            }
 })
 
-router.route('/executeSourceFile').post((req,res) => {
-            fileConfig.uploadConfig(req,res, function (err) {
-                if (err instanceof multer.MulterError) {
-                    logger.error(err);
-                    return res.status(500).json(err)
-                } else if (err) {
-                    logger.error(err);
-                    return res.status(500).json(err)
-                } else if (!req.file) {
-                    logger.warn("No file found!");
-                    return res.status(400).json({
-                        "success": false,
-                        "message": "No file found!"
-                    })
-                }
-                let filePath = req.file.path
-                logger.debug(filePath)
-                let clangCompile = fileConfig.spawn('clang'['-Wall',filePath,'-o',filePath.replace('.c','')])
-                let clangExecute = fileConfig.spawn(filePath.replace('.c',''))
-                process.stdin.pipe(clangExecute.stdin)
-                clangExecute.stdout.on('data',(data)=> {
-                    res.json({'executeResult':data})
-                })
-                clangExecute.stderr.on('data',(data) => {
-                    res.json({'executeResult':data})
-                })
-                clangExecute.on('close',(code) => {
-                    if (code === 0) {
-                    res.json({'executeResult': `Process exit with code ${code}`})
-                    }
-                })
-
-            })
+router.route('/storedFile').post((req,res) => {
+            try {
+                fileConfig.uploadConfig(req,res, function (err) {
+                        if (err instanceof multer.MulterError) {
+                            logger.error(err);
+                            return res.status(500).json(err)
+                        } else if (err) {
+                            logger.error(err);
+                            return res.status(500).json(err)
+                        } else if (!req.file) {
+                            logger.warn("No file found!");
+                            return res.status(400).json({
+                                success: false,
+                                message: "No file found!"
+                            })
+                        }
+                            let filePath = req.file.path
+                            let fileName = path.basename(filePath)
+                            res.json({filename:fileName,filepath:filePath})
+                        })
+            }catch (error) {
+                logger.error(error)
+            }
 })
 
-router.route('/debugSourceFile').post((req,res) => {
-            fileConfig.uploadConfig(req,res, function (err) {
-                if (err instanceof multer.MulterError) {
-                    logger.error(err);
-                    return res.status(500).json(err)
-                } else if (err) {
-                    logger.error(err);
-                    return res.status(500).json(err)
-                } else if (!req.file) {
-                    logger.warn("No file found!");
-                    return res.status(400).json({
-                        "success": false,
-                        "message": "No file found!"
+router.route('/getStoredData').post (async (req, res) => {
+                let sessionID = req.body.sessionID;
+                let queryData = `SELECT filepath,filename from file WHERE session_id = (?)`
+                let params = [sessionID]; let fileContents = ''; let fileName = '';
+                try {
+                    await dbConfig.getData(queryData, params, function (cb) {
+                        if (cb.success === true) {
+                            for (let result of cb.message) {
+                                let filePath = result['filepath']
+                                fileName = result['filename']
+                                try {
+                                fileContents = fs.readFileSync(filePath)
+                                }catch (err){
+                                    if(err.code === 'ENOENT') {
+                                        fileContents = 'enoent';
+                                    } else {
+                                        fileContents = 'something wrong somewhere'
+                                    }
+                                }
+                            }
+                        res.json({fileContents:fileContents.toString(),fileName:fileName})
+                        }
                     })
+                } catch (error) {
+                    logger.error(error)
                 }
-                let filePath = req.file.path
-                logger.debug(filePath)
-                let clangCompile = fileConfig.spawn('clang'['-g',filePath,'-o',filePath.replace('.c','')])
-                let clangDebug = fileConfig.spawn('lldb'[filePath.replace('.c','')])
-                process.stdin.pipe(clangDebug.stdin)
-                clangDebug.stdout.on('data',(data)=> {
-                    return res.json({'debugResult':data})
-                })
-                clangDebug.stderr.on('data',(data) => {
-                    return res.json({'debugResult':data})
-                })
-                clangDebug.on('close',(code) => {
-                    if (code === 0) {
-                        return res.json({'debugResult': `Process exit with code ${code}`})
-                    }
-                })
-
-            })
 })
 
 module.exports = router

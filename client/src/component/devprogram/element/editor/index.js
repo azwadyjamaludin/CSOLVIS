@@ -1,16 +1,15 @@
 import React, {useEffect, useRef, useState} from 'react'
 import {
-    Paper, Backdrop, Grid
+    Paper
 } from "@material-ui/core";
 import Typography from '@material-ui/core/Typography';
-import {makeStyles, withStyles} from '@material-ui/core/styles';
+import {makeStyles} from '@material-ui/core/styles';
 import AceEditor from 'react-ace';
 import "ace-builds/src-noconflict/mode-c_cpp";
 import "ace-builds/src-noconflict/theme-xcode";
 import paperImage from '../../../../assets/white-concrete-wall.jpg'
-import axios from "axios";
-import Swal from "sweetalert2";
 import insertTextAtCursor from "insert-text-at-cursor";
+import Swal from "sweetalert2";
 
 const useStyles = makeStyles((theme) => ({
     formControl: {
@@ -48,85 +47,63 @@ const editorStyle = {
 
 function EditorIndex (props) {
 
-    const classes = useStyles(); //const aceRef = useRef()
+    const classes = useStyles(); const aceRef = useRef(); const URL = `http://${sessionStorage.getItem('ipsett')}`;
 
-    let newFile = '';
-    let varsProp = []; let formulasProp = []; const URL = `http://${sessionStorage.getItem('ipsett')}`;
+    let newFile = props.uploadedFile;
 
-    let include = "#include"; let stdio = "stdio.h"; let main = "int main() "; let n = "\n"; let return0 = "return 0 "; let insertText = "Insert your text here"; let varText = "variable"
-    let stdioButton = `${include} ${'<'}${stdio}${'>'}` ; let mainButton = `${main} {${n}${n}${n}${return0}}`; let printfButton = `printf(${insertText.italics()});`; let scanfButton = `scanf(%v,${varText.italics()});`;
-    let ifElseButton = `if(${'<'.italics()}${'selection condition'.italics()}${'>'.italics()}) {${n}${'if-true action/formula'.italics()}${n}} else() {${'if-false action/formula'.italics()}${n}}`;
-    let forLoopButton = `for (${'<'.italics()}${"counter".italics()}${">".italics()}=0;${'<'.italics()}${"repeat condition".italics()}${'>'.italics()};${'<'.italics()}${"counter++".italics()}${'>'.italics()}) {${n}${n}}`
-    let whilebutton = `while(${'<'.italics()}${"repeat condition".italics()}${'>'.italics()}) {${n}${n}}`; let doWhileButton = `do{${n}${n}}while(${'<'.italics()}${"repeat condition".italics()}${'>'.italics()});`
+    let n = "\n";
+    let stdioButton = `${'#include'} ${'<'}${'stdio.h'}${'>'}` ; let mainButton = `${n}${'int main()'} {${n}${n}${n}${'return 0'}${n}}`; let printfButton = `${n}printf(${'insert your text here'});`; let scanfButton = `${n}scanf(%v,${'variable'});`;
+    let ifElseButton = `${n}if(${'selection condition'}) {${n}${n}${'if-true action/formula'}${n}${n}} ${n}else() {${n}${n}${'if-false action/formula'}${n}${n}}${n}`;
+    let forLoopButton = `${n}for (${"counter"}=0;${"repeat condition"};${"counter++"}) {${n}${n}}`
+    let whilebutton = `${n}while(${"repeat condition"}) {${n}${n}}`; let doWhileButton = `${n}do{${n}${n}}${n}while(${"repeat condition"});`
 
-    const data = {sessionID: sessionStorage.getItem('sessionID')}
-    axios.post(URL + '/routes/dataMgt/getVarsAndFormulas', data).then((res) => {
-        varsProp = res.data.variable; formulasProp = res.data.formula
-        console.log(varsProp,formulasProp)
-    }).catch(function (error) {
-        errorIPSetting(error)
-    })
 
-    const errorIPSetting =(error) => {
-        Swal.fire({
-            icon: 'error',
-            title: '',
-            text: `${error}`,
-        }).then((r) => {
-        })
-    }
+    const stdio = stdioButton; const main = mainButton; const printf = printfButton; const scanf = scanfButton; const ifElse = ifElseButton; const forLoop = forLoopButton;
+    const While = whilebutton; const doWhile = doWhileButton; const myVars = props.myVars; const myFormulas = props.myFormulas;
 
     const butPattern = (editor) => {
-        console.log('AceEditor-butPattern:',editor)
+        console.log('EditorIndex-butPattern:',editor)
 
-        if (props.patParam === 'button1') {
-            insertTextAtCursor(editor, stdioButton)
+
+        if (props.myparam === 'button1') {
+            insertTextAtCursor(editor, stdio)
             console.log('insertTextAtCursor-button1',stdioButton)
         }
-        if(props.patParam === 'button2') {
-            insertTextAtCursor(editor, mainButton)
+        if(props.myparam === 'button2') {
+            insertTextAtCursor(editor, main)
         }
-        if (props.patParam === 'button3') {
-            for (let varData of varsProp) {
-                insertTextAtCursor(editor, varData)
-            }
+        if (props.myparam === 'button3') {
+            console.log('insertTextAtCursor-button3',props.myVars.replace(',',' '))
+            insertTextAtCursor(editor,props.myVars.replace(',',' '))
+
         }
-        if (props.patParam === 'button4') {
-            for (let formulaData of formulasProp) {
-                insertTextAtCursor(editor, formulaData)
-            }
+        if (props.myparam === 'button4') {
+            insertTextAtCursor(editor, props.myFormulas.replace(',',' '))
         }
-        if (props.patParam === 'button5') {
-            insertTextAtCursor(editor, printfButton)
+        if (props.myparam === 'button5') {
+            insertTextAtCursor(editor, printf)
         }
-        if (props.patParam === 'button6') {
-            insertTextAtCursor(editor, scanfButton)
+        if (props.myparam === 'button6') {
+            insertTextAtCursor(editor, scanf)
         }
-        if (props.patParam === 'button7') {
-            insertTextAtCursor(editor, ifElseButton)
+        if (props.myparam === 'button7') {
+            insertTextAtCursor(editor, ifElse)
         }
-        if (props.patParam === 'button8') {
-            insertTextAtCursor(editor, forLoopButton)
+        if (props.myparam === 'button8') {
+            insertTextAtCursor(editor, forLoop)
         }
-        if (props.patParam === 'button9') {
-            insertTextAtCursor(editor, whilebutton)
+        if (props.myparam === 'button9') {
+            insertTextAtCursor(editor, While)
         }
-        if (props.patParam === 'button10') {
-            insertTextAtCursor(editor, doWhileButton)
+        if (props.myparam === 'button10') {
+            insertTextAtCursor(editor, doWhile)
         }
     }
 
-    newFile = props.uploadedFile
-    props.newValueFile(newFile)
-    console.log(newFile)
-    function onEditorChange(newValue) {
-        if (!newValue) {
-        newFile = props.uploadedFile
-        props.newValueFile(newFile)
-        }else {
+    const onEditorChange = (newValue) => {
             newFile = newValue
             props.newValueFile(newFile)
-        }
+            console.log(newFile)
     }
 
     return(
@@ -136,7 +113,7 @@ function EditorIndex (props) {
                     <br/>
                     <b>Editor</b>
                     <br/>
-                    {props.myFileName !== 'Untitled.c' ? (
+                    {props.myFileName.length > 0 ? (
                         <p>{props.myFileName}</p>
                     ):null}
                 </Typography>
@@ -144,11 +121,11 @@ function EditorIndex (props) {
                     name={'AceEditor'}
                     style={editorStyle}
                     readOnly={false}
-                    //ref={aceRef}
+                    ref={aceRef}
                     theme={'xcode'}
                     mode="c_cpp"
                     width="99%"
-                    //focus={true}
+                    focus={false}
                     value={props.uploadedFile}
                     onChange={onEditorChange}
                     highlightActiveLine
@@ -157,11 +134,11 @@ function EditorIndex (props) {
                     setOptions={{
                         enableBasicAutocompletion: false,
                         enableLiveAutocompletion: true,
+                        showLineNumbers : true,
                         enableSnippets: true,
                         tabSize: 2,
                     }}
                     onLoad={(editor) => {
-                        editor.focus();
                         editor.getSession().setUseWrapMode(true);
                         butPattern(editor)
 

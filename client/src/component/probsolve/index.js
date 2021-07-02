@@ -6,6 +6,10 @@ import DevProg from "../devprogram"
 import Help from "../help"
 
 const PSIndex = () => {
+    let autoSessionID = '';
+    const uuidv4 = require('uuid/v4');
+    autoSessionID = uuidv4()
+    sessionStorage.setItem('sessionID',autoSessionID)
 
     return (
         <div>

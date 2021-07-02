@@ -1,6 +1,5 @@
 let express = require('express');
 let bodyParser = require('body-parser');
-let cors = require('cors');
 let http = require('http');
 let log4js = require('log4js');
 let dotenv = require('dotenv') ;
@@ -34,19 +33,20 @@ async function main() {
     //API
     myapp.use(FMR, FileMgtRoute)
     myapp.use(DMR,DataMgtRoute)
-    myapp.use("/", (req, res) => {
+    myapp.use("/be", (req, res) => {
         res.json({
             message: "Welcome to C SOLVIS back end."
         });
     });
 
-    /*app.get('/', (req, res) => {
+    myapp.use(express.static(path.join(__dirname, 'views')))
+    myapp.get('/', (req, res) => {
         res.sendFile(path.join(__dirname, 'views', 'index.html'))
-    })*/
+    })
 
     const cb = () => {
         logger.info('---------------------------------------------------------------------------');
-        logger.info('****************** C SOLVIS BACKEND SERVER STARTED ************************');
+        logger.info('****************** C SOLVIS FULLSTACK SERVER STARTED ************************');
         logger.info('***********************   http://%s:%s   *************************',
             host,
             port

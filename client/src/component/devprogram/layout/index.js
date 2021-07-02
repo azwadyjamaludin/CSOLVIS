@@ -1,5 +1,5 @@
-import React, {Component, Fragment} from "react";
-import { Link, withRouter } from "react-router-dom";
+import React, {Fragment} from "react";
+import {Link} from "react-router-dom";
 import {
   Hidden,
   Drawer,
@@ -8,8 +8,7 @@ import {
   MenuItem,
 } from "@material-ui/core";
 import Button from "@material-ui/core/Button";
-import { withStyles } from "@material-ui/core/styles";
-import { compose } from "recompose";
+import {makeStyles, withStyles} from "@material-ui/core/styles";
 import DescriptionRoundedIcon from '@material-ui/icons/DescriptionRounded';
 import logo from '../../../assets/CSOLVIS.png'
 import Typography from '@material-ui/core/Typography';
@@ -17,7 +16,7 @@ import drawerImage from '../../../assets/blue-concrete-textured-background.jpg'
 
 const drawerWidth = 210;
 
-const styles = theme => ({
+const useStyles = makeStyles((theme) => ({
   root: {
     display: "flex",
   },
@@ -27,7 +26,6 @@ const styles = theme => ({
       width: `calc(100% - ${drawerWidth}px)`,
       marginLeft: drawerWidth,
       backgroundImage: 'url('+drawerImage+')',
-      //backgroundColor: '#c0c0c0',
       zIndex: theme.zIndex.drawer + 1,
     }
   },
@@ -63,8 +61,6 @@ const styles = theme => ({
   drawerPaper: {
     width: drawerWidth,
     backgroundImage: 'url('+drawerImage+')',
-    //backgroundColor: '#c0c0c0'
-
   },
 
   drawerContainer: {
@@ -96,7 +92,10 @@ const styles = theme => ({
   paperBG2: {
     backgroundColor:"#faf0e6"
   },
-});
+    margin: {
+        margin: theme.spacing(0.1),
+    },
+}));
 
 const BootstrapOutlineButton = withStyles({
   root: {
@@ -106,8 +105,6 @@ const BootstrapOutlineButton = withStyles({
     padding: '6px 12px',
     border: '1px solid',
     lineHeight: 1.5,
-    //backgroundColor: '#0062cc',
-    //borderColor: '#0062cc',
     fontFamily: [
       '-apple-system',
       'BlinkMacSystemFont',
@@ -136,22 +133,14 @@ const BootstrapOutlineButton = withStyles({
   },
 })(Button);
 
-class DevLayout extends Component {
-  state = {
-    mobileOpen: false,
-    lamModal:false,
-    qsModal:false,
-    qsModal2:false
-  };
-
-
-  render() {
-    const {
+function DevLayout(props) {
+    const classes = useStyles()
+    /*const {
       classes,
       location: { pathname },
       children
-    } = this.props;
-    const { mobileOpen } = this.state;
+    } = props;
+    //const { mobileOpen } = this.state;*/
 
     const drawer = (
       <div>
@@ -166,7 +155,7 @@ class DevLayout extends Component {
         <MenuList>
          <MenuList>
               <Typography className={classes.nested2} variant="body2" >
-                <b>Place cursor in editor and click code pattern</b>
+                <b>Place cursor after the last line and click code pattern</b>
               </Typography>
               <br/>
           <MenuItem >
@@ -289,7 +278,7 @@ class DevLayout extends Component {
           </MenuList>
         </MenuList>
       </div>
-    );
+    )
     return (
       <Fragment>
         <CssBaseline />
@@ -310,13 +299,10 @@ class DevLayout extends Component {
             </Hidden>
           </nav>
           <main className={classes.content}>
-            {/*<div className={classes.toolbar} />*/}
-            {children}
+            {props.children}
           </main>
         </div>
       </Fragment>
     );
-  }
 }
-
-export default compose(withRouter, withStyles(styles))(DevLayout);
+export default DevLayout;

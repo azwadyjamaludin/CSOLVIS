@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import TitleIndex from "./title";
 import Step1 from "./step1";
 import Step2 from "./step2";
@@ -56,28 +56,30 @@ const BootstrapWhiteButton = withStyles({
 
 function ProbElement() {
     let {params} = useParams();
+    const sesID = sessionStorage.getItem('sessionID')
 
-    const [IPO,setIPO] = useState([]); const [sesID, setSesID] = useState('');
+    const [IPO,setIPO] = useState([]);
     const URL = `http://${sessionStorage.getItem('ipsett')}`;  const [copied, setCopied] = useState(false)
-
-    let newSessionID = ''
 
     const dataSubmitted = (IPOData) => {
         setIPO(IPOData)
         console.log(IPO)
     }
 
+    useEffect(() => {
+        getStoredIPOData()
+    },[])
+
     const onClickReset = async() => {
         const data = {sessionID:sessionStorage.getItem('sessionID')}
         await axios.post(URL+'/routes/dataMgt/deleteRows',data).then((res)=> {
             setIPO(res.data.ipo)
-            sessionStorage.removeItem('sessionID')
         }).catch(function (error) {
-            errorIPSetting(error)
+            SweetAlertSetting(error)
         })
     }
 
-    const errorIPSetting =(error) => {
+    const SweetAlertSetting =(error) => {
         Swal.fire({
             icon: 'error',
             title: '',
@@ -91,17 +93,22 @@ function ProbElement() {
         console.log(copied)
     }
 
-    const createSessionID = async() => {
-        const uuidv4 = require('uuid/v4');
-        newSessionID = uuidv4()
-        sessionStorage.setItem('sessionID',newSessionID)
-        const data= {sessionID:newSessionID}
-        await axios.post(URL+'/routes/dataMgt/createSessionID',data).then((res) => {
-                setSesID(res.data.id);
+    const getStoredIPOData = () => {
+        if (sessionStorage.getItem('sessionID')) {
+        const data= {sessionID:sessionStorage.getItem('sessionID')}
+        axios.post(URL+'/routes/dataMgt/getStoredIPOData', data).then((res) => {
+            if (res.data.emptyData) {
+                SweetAlertSetting('No data found in the given session, Please create a new session or you may try to insert the previous session id (Help/setting)')
+            } else {
+            setIPO(res.data.storedIPO)
+            }
         }).catch(function (error) {
-            errorIPSetting(error)
+            SweetAlertSetting(error)
         })
+        }
     }
+
+
 
         return (
             <div align={'center'}>
@@ -146,14 +153,6 @@ function ProbElement() {
 
                 />
                 &nbsp;&nbsp;&nbsp;&nbsp;
-                <BootstrapWhiteButton
-                    variant="outlined"
-                    color="primary"
-                    onClick={createSessionID}
-                >
-                    Generate Session ID
-                </BootstrapWhiteButton>
-                    &nbsp;&nbsp;
                     <CopyToClipboard text={sesID} onCopy={copySessionID}>
                 <BootstrapWhiteButton
                     color="secondary"
@@ -163,7 +162,7 @@ function ProbElement() {
                     </CopyToClipboard>
                     &nbsp;&nbsp;
                     {copied ? <span style={{color: 'red'}}>Copied.</span> : null}
-                    <p>*Please click the copy button to copy the ID to clipboard</p>
+                    <p>*Please click the copy button to copy the generated session ID to your Notepad etc</p>
                 </div>
             </div>
 

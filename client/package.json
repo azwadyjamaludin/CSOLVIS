@@ -25,7 +25,6 @@
     "react-modal": "^3.14.2",
     "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.3",
-    "recompose": "^0.30.0",
     "save-file": "^2.3.1",
     "sweetalert2": "^11.0.16",
     "uuid": "^3.4.0",
