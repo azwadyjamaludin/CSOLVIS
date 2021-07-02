@@ -96,7 +96,7 @@ router.route('/executeSourceFile').post(async (req, res) => {
             let filePath = req.body.filePath;
             logger.debug('executeSource;', filePath)
             try {
-                await fileConfig.executeProcess(`${filePath.replace('.c','')}`,[],{encoding:'utf8'},`${filePath.replace('.c','-process.log')}`,function (cb) {
+                await fileConfig.executeProcess(`${filePath.replace('.c','')}`,[],{stdio:'inherit',encoding:'utf8'},`${filePath.replace('.c','-process.log')}`,function (cb) {
                     if (cb === 'process ended') {
                         let readStream = fs.createReadStream(filePath.replace('.c','-process.log'))
                         let data = '';
@@ -118,7 +118,7 @@ router.route('/debugSourceFile').post(async (req, res) => {
             let filePath = req.body.filePath;
             logger.debug('debugSource:', filePath)
             try {
-                await fileConfig.debugProcess(`lldb`,`${filePath.replace('.c','')}`,{encoding:'utf8'},`${filePath.replace('.c','-process.log')}`,function (cb) {
+                await fileConfig.debugProcess(`lldb`,`${filePath.replace('.c','')}`,{stdio:'inherit',encoding:'utf8'},`${filePath.replace('.c','-process.log')}`,function (cb) {
                     if (cb === 'process ended') {
                         let readStream = fs.createReadStream(filePath.replace('.c', '-process.log'))
                         let data = '';
