@@ -1,15 +1,18 @@
-import React, {useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import {BrowserRouter, Switch, Route} from "react-router-dom";
 import ProbLayout from "./layout";
 import ProbElement from "./element";
 import DevProg from "../devprogram"
 import Help from "../help"
 
-const PSIndex = () => {
-    let autoSessionID = '';
-    const uuidv4 = require('uuid/v4');
-    autoSessionID = uuidv4()
-    sessionStorage.setItem('sessionID',autoSessionID)
+function PSIndex(){
+
+    useEffect(() => {
+            let autoSessionID = '';
+            const uuidv4 = require('uuid/v4');
+            autoSessionID = uuidv4()
+            sessionStorage.setItem('sessionID',autoSessionID)
+    },[])
 
     return (
         <div>

@@ -159,7 +159,10 @@ router.route('/getVarsAndFormulas').post(async (req, res) => {
                                 res.json({emptyData:emptyData})
                         } else {
                         for (let result of cb.message) {
-                            varArray.push(result['variable']); formulaArray.push(result['formula'])
+                                if(result['variable'] != '' ) {
+                            varArray.push(result['variable']);}
+                                if (result['formula'] != '') {
+                                formulaArray.push(result['formula'])}
                         }
                         logger.debug('variable:',varArray.join('\n'), 'formula:',formulaArray.join('\n'))
                         res.json({variable:varArray.join('\n'),

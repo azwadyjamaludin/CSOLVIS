@@ -1,6 +1,5 @@
 import React, {useState} from 'react';
 import {
-    InputAdornment,
     Paper,
 } from "@material-ui/core";
 import {makeStyles} from "@material-ui/core/styles";
@@ -19,16 +18,16 @@ const useStyles = makeStyles((theme) => ({
 
 const STIndex = () => {
     const classes = useStyles();
-    const [ipadd, setIpadd] = useState('')
+    //const [ipadd, setIpadd] = useState('')
     const [lastSesID, setLastSesID] = useState('')
 
-    const onBlurSett = (e) => {
+    /*const onBlurSett = (e) => {
         setIpadd(e.target.value)
     }
 
     const onClickSubmitSett = () => {
         sessionStorage.setItem('ipsett',ipadd)
-    }
+    }*/
 
     const onBlurSessID = (e) => {
         setLastSesID(e.target.value)
@@ -43,7 +42,7 @@ const STIndex = () => {
             <br/>
             <Paper className={classes.paperBG} variant={'elevation'} elevation={7}>
                 <div><br/></div>&nbsp;&nbsp;
-                <TextField id={'ip'}
+                {/*<TextField id={'ip'}
                            label={'IP Setting'}
                            name={'ip_setting'}
                            autoFocus
@@ -69,7 +68,7 @@ const STIndex = () => {
                 >
                     Submit
                 </Button>
-                <div><br/></div>
+                <div><br/></div>*/}
                 <TextField id={'sesID'}
                            label={'Session ID'}
                            name={'id_session'}

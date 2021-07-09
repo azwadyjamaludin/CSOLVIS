@@ -9,6 +9,7 @@ import {useParams} from "react-router-dom";
 import axios from "axios";
 import Swal from "sweetalert2";
 
+
 function DevElement() {
     let {params} = useParams();
     console.log(params)
@@ -16,19 +17,16 @@ function DevElement() {
     const [filename,setFileName] = useState(''); const [newfile,setNewFile] = useState(''); const [vars, setVars] = useState(''); const [formulas, setFormulas] = useState('')
     const [consoleData,setConsoleData] = useState(''); const [debugData,setDebugData] = useState('');
 
-    let fileName = ''; const [visopen,setVisOpen] = useState(false); let compiledata = ''; let executedata = ''; let debugdata = ''; let filenamedata = '';
-    let newFile = ''; const [visbutparam, setVisButParam] = useState('');  const [saveFile, setSaveFile] = useState(false)
+    let fileName = ''; const [visopen,setVisOpen] = useState(false); let compiledata = ''; let executedata = ''; let debugdata = ''; let filenamedata = ''; let argdata = ''
+    let newFile = ''; const [visbutparam, setVisButParam] = useState('');  const [emitData, setEmitData] = useState('')
+
+    const URL = `${process.env.REACT_APP_REST_HOST}:${process.env.REACT_APP_REST_PORT}`;
+    //const URL = 'http://localhost:3002'
 
     useEffect(() => {
         getVarsAndFormulas()
         getStoredFileData()
-        return() => {
-            setSaveFile(true)
-        }
     },[])
-
-
-    const URL = `http://${sessionStorage.getItem('ipsett')}`;
 
     const getVarsAndFormulas = () => {
         if (sessionStorage.getItem('sessionID') != null) {
@@ -41,7 +39,11 @@ function DevElement() {
             setFormulas(res.data.formula)
             }
         }).catch(function (error) {
-            SweetAlertSetting(error)
+            if (!error.status) {
+                SweetAlertSetting('Please check the network setting (Help -> IP Setting)')
+            } else {
+                SweetAlertSetting(error)
+            }
         })
         }
     }
@@ -67,7 +69,11 @@ function DevElement() {
                 setNewFile(newFile); setFileName(filenamedata)
                 }
         }).catch(function (error) {
-            SweetAlertSetting(error)
+            if (!error.status) {
+                SweetAlertSetting('Please check the network setting (Help -> IP Setting)')
+            } else {
+                SweetAlertSetting(error)
+            }
         })
     }
 
@@ -93,7 +99,7 @@ function DevElement() {
 
     const visButParam = (visValue) => {
         if (visValue === 'play') {
-            setVisButParam('breakpoint set --line 1\n run\n continue\n')
+            setVisButParam('breakpoint set --line 2\n run\n')
         }
         if (visValue === 'next') {
             setVisButParam('n\n')
@@ -105,7 +111,7 @@ function DevElement() {
             setVisButParam('frame variable\n')
         }
         if (visValue === 'stop') {
-            setVisButParam('exit\n yes\n')
+            setVisButParam('exit\n')
         }
         if  (visValue === 'close') {
             setVisOpen(false)
@@ -127,10 +133,20 @@ function DevElement() {
         setDebugData(debugdata)
     }
 
+    const consTyping = (newCommand) => {
+        argdata = newCommand
+        setEmitData(argdata)
+    }
+
+    const visTyping = (newCommand) => {
+        argdata = newCommand
+        setEmitData(argdata)
+    }
+
         return(
             <div>
                 <MenuIndex latestFile={myLatestFile} Filename={myFilename} visOpen={openVis} compileResult={compileResult} executeResult={executeResult}
-                           visualiseResult={debugResult} newFile={newfile} newFileName={filename} savefile={saveFile}/>
+                           visualiseResult={debugResult} newFile={newfile} newFileName={filename} consData={emitData} visData={emitData}/>
                 <br/>
                 <Grid container spacing={3} direction={"row"} >
                     <Grid item xs={true}>
@@ -170,7 +186,7 @@ function DevElement() {
                     </Grid>
                     {visopen === true?(
                         <Grid item xs={3}>
-                            <VisIndex visualiseData={debugData} debugParam={visbutparam}/>
+                            <VisIndex visualiseData={debugData} debugParam={visbutparam} vistyping={visTyping}/>
                         </Grid>
                     ):null}
                 </Grid>
@@ -180,7 +196,7 @@ function DevElement() {
                 ):null}
                 <br/>
                 <div>
-                <ConsoleIndex displayData={consoleData} />
+                <ConsoleIndex displayData={consoleData} constyping={consTyping}/>
                 </div>
             </div>
             )

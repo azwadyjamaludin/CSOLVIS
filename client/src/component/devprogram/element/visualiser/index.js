@@ -39,10 +39,6 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const editorStyle = {
-    border: '2px solid lightgray',
-};
-
 function VisIndex(props) {
     const classes = useStyles(); const tfRef = useRef(); const curPos = 0
 
@@ -53,7 +49,7 @@ function VisIndex(props) {
      }
 
     function onEditorChange(newValue) {
-        newFile = newValue
+        props.vistyping = newValue
     }
 
     return(
@@ -61,8 +57,7 @@ function VisIndex(props) {
             <Paper variant={'elevation'} elevation={0} className={classes.paperBG} >
                 <AceEditor
                     name={'AceVisualiser'}
-                    style={editorStyle}
-                    readOnly={false}
+                    readOnly={true}
                     mode={'javascript'}
                     theme={'terminal'}
                     width="100%"
@@ -70,15 +65,40 @@ function VisIndex(props) {
                     focus={false}
                     value={props.visualiseData}
                     onChange={onEditorChange}
-                    highlightActiveLine
                     showGutter={false}
                     showPrintMargin={false}
+                    highlightActiveLine={false}
                     setOptions={{
                         enableBasicAutocompletion: false,
                         enableLiveAutocompletion: false,
                         showLineNumbers: false,
                         enableSnippets: false,
                         tabSize: 2,
+                    }}
+                    onLoad={(editor) => {
+                        editor.getSession().setUseWrapMode(true);
+
+                    }}
+                />
+                <AceEditor
+                    name={'AceVisualiserInput'}
+                    readOnly={false}
+                    mode={'javascript'}
+                    theme={'terminal'}
+                    width="100%"
+                    focus={false}
+                    value={props.visualiseData}
+                    onChange={onEditorChange}
+                    showGutter={false}
+                    showPrintMargin={false}
+                    highlightActiveLine={false}
+                    setOptions={{
+                        enableBasicAutocompletion: false,
+                        enableLiveAutocompletion: false,
+                        showLineNumbers: false,
+                        enableSnippets: false,
+                        tabSize: 2,
+                        maxLines:1
                     }}
                     onLoad={(editor) => {
                         editor.getSession().setUseWrapMode(true);

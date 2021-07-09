@@ -1,5 +1,5 @@
 import {Paper} from "@material-ui/core";
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {makeStyles} from "@material-ui/core/styles";
 import "ace-builds/src-noconflict/theme-terminal";
 import "ace-builds/src-noconflict/mode-javascript";
@@ -35,16 +35,12 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const editorStyle = {
-    border: '2px solid lightgray',
-};
-
 function ConsoleIndex(props) {
     const classes = useStyles(); const showMsg = () => 'Hello World'
     let newFile = props.displayData;
 
     function onEditorChange(newValue) {
-        newFile = newValue
+        props.constyping = newValue
     }
 
     return(
@@ -56,18 +52,16 @@ function ConsoleIndex(props) {
             </Typography>
             <AceEditor
                 name={'AceConsole'}
-                style={editorStyle}
-                readOnly={false}
+                readOnly={true}
                 mode={'javascript'}
                 theme={'terminal'}
-                width="99%"
-                height={'310px'}
+                width="100%"
+                height={'280px'}
                 focus={false}
                 value={props.displayData}
-                onChange={onEditorChange}
-                highlightActiveLine
                 showGutter={false}
                 showPrintMargin={false}
+                highlightActiveLine={false}
                 setOptions={{
                     enableBasicAutocompletion: false,
                     enableLiveAutocompletion: false,
@@ -80,7 +74,31 @@ function ConsoleIndex(props) {
 
                 }}
             />
+            <AceEditor
+                name={'AceConsoleInput'}
+                readOnly={false}
+                mode={'javascript'}
+                theme={'terminal'}
+                width="100%"
+                placeholder={'Input command / arguments here'}
+                focus={true}
+                onChange={onEditorChange}
+                showGutter={false}
+                showPrintMargin={false}
+                highlightActiveLine={false}
+                setOptions={{
+                    enableBasicAutocompletion: false,
+                    enableLiveAutocompletion: false,
+                    showLineNumbers: false,
+                    enableSnippets: false,
+                    tabSize: 2,
+                    maxLines:1
+                }}
+                onLoad={(editor) => {
+                    editor.getSession().setUseWrapMode(true);
 
+                }}
+            />
         </Paper>
     )
 }

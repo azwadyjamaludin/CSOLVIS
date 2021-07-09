@@ -8,6 +8,7 @@ import paperImage from '../../../../assets/white-concrete-wall.jpg'
 import Typography from "@material-ui/core/Typography";
 import TextField from "@material-ui/core/TextField";
 import { saveAs } from "file-saver";
+import {io} from "socket.io-client";
 
 const BootstrapGreenButton = withStyles({
     root: {
@@ -116,21 +117,19 @@ const useStyles = makeStyles((theme) => ({
 
 function MenuIndex(props) {
     const classes = useStyles();
-    const URL = `http://${sessionStorage.getItem('ipsett')}`; const [openRename, setOpenRename] = useState(false); const [currentPath, setCurrentPath] = useState('')
-
+    const URL = `${process.env.REACT_APP_REST_HOST}:${process.env.REACT_APP_REST_PORT}`;
+    //const URL = 'http://localhost:3002'
+    const [openRename, setOpenRename] = useState(false); const [currentPath, setCurrentPath] = useState('');
     let myFile = ''; let fileOriName = ''; let currentFilePath = '';
     console.log('MenuIndex-',props.newFile)
 
-    useEffect(() => {
-        if (!URL) {
-            SweetAlertSetting('Please check your network / IP setting')
-        }
-    },[])
+    //io(URL);
+    io() // same domain
 
-    async function onFileChange(e)  {
+    const onFileChange =async (e) => {
         myFile = e.target.files[0]
         fileOriName = e.target.files[0].name
-        console.log('MenuIndex-filename:',fileOriName,'MenuIndex-uploadfile:',myFile)
+        console.log('MenuIndex-filename:', fileOriName, 'MenuIndex-uploadfile:', myFile)
 
         if (!e.target.files[0].name.includes('.c')) {
             SweetAlertSetting('Opps...Wrong file format,Please choose file with .c file format!')
@@ -139,18 +138,18 @@ function MenuIndex(props) {
         }
     }
 
-    async function onClickInputFile(uploadedFile) {
+    const onClickInputFile =async (uploadedFile) => {
         const body = new FormData()
         body.append('file', uploadedFile)
 
-            await axios.post(URL + '/routes/fileMgt/writeFileToServer', body)
-                .then((res) => {
-                    props.Filename(fileOriName)
-                    props.latestFile(res.data.fileContents)
-                })
-                .catch(function (error) {
-                    SweetAlertSetting(error)
-                })
+        await axios.post(URL + '/routes/fileMgt/writeFileToServer', body)
+            .then((res) => {
+                props.Filename(fileOriName)
+                props.latestFile(res.data.fileContents)
+            })
+            .catch(function (error) {
+                SweetAlertSetting(error)
+            })
     }
 
     const onSaveFile = async () => {
@@ -162,7 +161,6 @@ function MenuIndex(props) {
     }
 
     const compileFile = async () => {
-                let sessionID = sessionStorage.getItem('sessionID')
                 let blob = new Blob([props.newFile])
                 let file = new File([blob],`${props.newFileName}`)
 
@@ -176,7 +174,7 @@ function MenuIndex(props) {
                             const body = {filePath:currentFilePath}
                             console.log(currentFilePath)
                             axios.post(URL+'/routes/fileMgt/compileSourceFile', body).then((res) => {
-                                console.log(res.data.compileData)
+                                console.log(res.data)
                                 props.compileResult('\n'+res.data.compileData)
                             }).catch(function (error) {
                                 SweetAlertSetting(error)
@@ -187,18 +185,15 @@ function MenuIndex(props) {
     }
 
     const executeFile = async () => {
-                    const body = {filePath:currentPath}
                     console.log(currentPath)
                     if (!currentPath) {
                         SweetAlertSetting('Please compile the  C file first')
                     }else {
-
-                    await axios.post(URL + '/routes/fileMgt/executeSourceFile', body)
-                        .then((res) => {
-                            props.executeResult('\n'+res.data.executeData)
-                        }).catch(function (error) {
-                            SweetAlertSetting(error)
+                        let socketExec = io('/executeSourceFile',{query:{filePath:`${currentPath}`}})
+                        socketExec.on('data', data => {
+                            props.executeResult('\n'+data)
                         })
+                        socketExec.emit('typing', props.consData);
                     }
     }
 
@@ -268,15 +263,15 @@ function MenuIndex(props) {
                 if (!currentPath) {
                     SweetAlertSetting('Please compile the  C file first')
                 }else {
-                    await axios.post(URL + '/routes/fileMgt/debugSourceFile', body)
-                        .then((res) => {
-                            props.visualiseResult('\n'+res.data.debugData)
-                        })
-                        .catch(function (error) {
-                            SweetAlertSetting(error)
-                        })
-                }
+                                let socketDebug = io('/debugSourceFile',{query:{filePath:`${currentPath}`}})
+                                socketDebug.on('data', data => {
+                                    props.visualiseResult('\n'+data)
+                                })
+                                socketDebug.emit('typing', props.visData);
+                            }
     }
+
+
 
     const openRenameFile = () => {
         setOpenRename(true)

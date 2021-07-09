@@ -59,7 +59,9 @@ function ProbElement() {
     const sesID = sessionStorage.getItem('sessionID')
 
     const [IPO,setIPO] = useState([]);
-    const URL = `http://${sessionStorage.getItem('ipsett')}`;  const [copied, setCopied] = useState(false)
+    const URL = `${process.env.REACT_APP_REST_HOST}:${process.env.REACT_APP_REST_PORT}`;
+    //const URL = 'http://localhost:3002'
+    const [copied, setCopied] = useState(false)
 
     const dataSubmitted = (IPOData) => {
         setIPO(IPOData)
@@ -103,7 +105,11 @@ function ProbElement() {
             setIPO(res.data.storedIPO)
             }
         }).catch(function (error) {
+            if (!error.status) {
+                SweetAlertSetting('Please check the network setting (Help -> IP Setting)')
+            } else {
             SweetAlertSetting(error)
+            }
         })
         }
     }

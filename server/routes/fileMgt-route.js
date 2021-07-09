@@ -9,6 +9,7 @@ const cmd = require("node-cmd");
 let logger = log4js.getLogger('fileMgt.js')
 let router = express.Router();
 
+
 router.route('/writeFileToServer').post((req,res) => {
             try{
                     fileConfig.uploadConfig(req,res, function (err) {
@@ -88,50 +89,6 @@ router.route('/compileSourceFile').post( async (req, res) => {
                      }
                 })
             }catch (error) {
-                logger.error(error)
-            }
-})
-
-router.route('/executeSourceFile').post(async (req, res) => {
-            let filePath = req.body.filePath;
-            logger.debug('executeSource;', filePath)
-            try {
-                await fileConfig.executeProcess(`${filePath.replace('.c','')}`,[],{stdio:'inherit',encoding:'utf8'},`${filePath.replace('.c','-process.log')}`,function (cb) {
-                    if (cb === 'process ended') {
-                        let readStream = fs.createReadStream(filePath.replace('.c','-process.log'))
-                        let data = '';
-                        readStream.on('data', function (chunk) {
-                            data += chunk
-                            res.send({executeData: data})
-                        });
-                        readStream.on('error', function(err) {
-                            res.end(err);
-                        });
-                    }
-                })
-            }catch (error) {
-                logger.error(error)
-            }
-})
-
-router.route('/debugSourceFile').post(async (req, res) => {
-            let filePath = req.body.filePath;
-            logger.debug('debugSource:', filePath)
-            try {
-                await fileConfig.debugProcess(`lldb`,`${filePath.replace('.c','')}`,{stdio:'inherit',encoding:'utf8'},`${filePath.replace('.c','-process.log')}`,function (cb) {
-                    if (cb === 'process ended') {
-                        let readStream = fs.createReadStream(filePath.replace('.c', '-process.log'))
-                        let data = '';
-                        readStream.on('data', function (chunk) {
-                            data += chunk
-                            res.send({debugData: data})
-                        });
-                        readStream.on('error', function (err) {
-                            res.end(err);
-                        });
-                    }
-                })
-            } catch (error) {
                 logger.error(error)
             }
 })

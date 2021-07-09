@@ -9,7 +9,7 @@ import "ace-builds/src-noconflict/mode-c_cpp";
 import "ace-builds/src-noconflict/theme-xcode";
 import paperImage from '../../../../assets/white-concrete-wall.jpg'
 import insertTextAtCursor from "insert-text-at-cursor";
-import Swal from "sweetalert2";
+
 
 const useStyles = makeStyles((theme) => ({
     formControl: {
@@ -47,7 +47,7 @@ const editorStyle = {
 
 function EditorIndex (props) {
 
-    const classes = useStyles(); const aceRef = useRef(); const URL = `http://${sessionStorage.getItem('ipsett')}`;
+    const classes = useStyles(); const aceRef = useRef();
 
     let newFile = props.uploadedFile;
 
@@ -128,7 +128,7 @@ function EditorIndex (props) {
                     focus={false}
                     value={props.uploadedFile}
                     onChange={onEditorChange}
-                    highlightActiveLine
+                    highlightActiveLine={false}
                     showGutter={true}
                     showPrintMargin={false}
                     setOptions={{

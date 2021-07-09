@@ -30,7 +30,8 @@ const useStyles = makeStyles((theme) => ({
 
 function Step4(props)  {
     const classes = useStyles();
-    const URL = `http://${sessionStorage.getItem('ipsett')}`;
+    const URL = `${process.env.REACT_APP_REST_HOST}:${process.env.REACT_APP_REST_PORT}`;
+    //const URL = 'http://localhost:3002'
     const [step4output,setStep4Output] = useState(''); const [step4formula, setStep4formula] = useState('')
     let processProp = ''; let formulaProp = '';
 

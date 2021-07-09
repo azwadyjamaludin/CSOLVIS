@@ -62,7 +62,8 @@ const BootstrapButton = withStyles({
 
 function Step6(props) {
     const classes = useStyles();
-    const URL = `http://${sessionStorage.getItem('ipsett')}`;
+    const URL = `${process.env.REACT_APP_REST_HOST}${process.env.REACT_APP_REST_PORT}`;
+    //const URL = 'http://localhost:3002'
     const [step6counter,setStep6counter] = useState(''); const [step6repeat,setStep6repeat] = useState('')
     const [atypes , setAtypes] = useState('')
     let processProp = ''; let varProp = ''

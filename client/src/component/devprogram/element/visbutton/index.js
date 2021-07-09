@@ -107,9 +107,10 @@ function VisButIndex(props) {
 
     return(
         <Paper variant={'elevation'} elevation={7} className={classes.paperBG}>
-            <BootstrapWhiteButton color={'secondary'} className={classes.margin} onClick={playD}>
+            {/*<BootstrapWhiteButton color={'secondary'} className={classes.margin} onClick={playD}>
                 <PlayArrowRoundedIcon/>
-            </BootstrapWhiteButton>
+            </BootstrapWhiteButton>*/}
+            &nbsp;&nbsp;
             <BootstrapWhiteButton color={'secondary'} className={classes.margin} onClick={prevln}>
                 <NavigateBeforeRoundedIcon/>
             </BootstrapWhiteButton>

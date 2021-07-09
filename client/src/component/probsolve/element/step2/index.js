@@ -34,7 +34,8 @@ const useStyles = makeStyles((theme) => ({
 const Step2 = (props) => {
     const [output2, setOutput2] = useState('')
     const [atypes , setAtypes] = useState('');
-    const URL = `http://${sessionStorage.getItem('ipsett')}`;
+    const URL = `${process.env.REACT_APP_REST_HOST}:${process.env.REACT_APP_REST_PORT}`;
+    //const URL = 'http://localhost:3002'
     let processProp = ''; let outputProp = ''; let varProp ='';
     const classes = useStyles();
     const types = [
