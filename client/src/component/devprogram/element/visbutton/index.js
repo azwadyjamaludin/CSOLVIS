@@ -9,6 +9,7 @@ import PlayArrowRoundedIcon from '@material-ui/icons/PlayArrowRounded';
 import NavigateBeforeRoundedIcon from "@material-ui/icons/NavigateBeforeRounded";
 import NavigateNextRoundedIcon from "@material-ui/icons/NavigateNextRounded";
 import StopRoundedIcon from '@material-ui/icons/StopRounded';
+import Typography from "@material-ui/core/Typography";
 
 const useStyles = makeStyles((theme) => ({
     formControl: {
@@ -39,6 +40,37 @@ const useStyles = makeStyles((theme) => ({
         display: 'none',
     },
 }));
+
+const BootstrapButton = withStyles({
+    root: {
+        boxShadow: 'none',
+        textTransform: 'none',
+        fontSize: 16,
+        padding: '6px 12px',
+        lineHeight: 1.5,
+        fontFamily: [
+            '-apple-system',
+            'BlinkMacSystemFont',
+            '"Segoe UI"',
+            'Roboto',
+            '"Helvetica Neue"',
+            'Arial',
+            'sans-serif',
+            '"Apple Color Emoji"',
+            '"Segoe UI Emoji"',
+            '"Segoe UI Symbol"',
+        ].join(','),
+        '&:hover': {
+            boxShadow: 'none',
+        },
+        '&:active': {
+            boxShadow: 'none',
+        },
+        '&:focus': {
+            boxShadow: '0 0 0 0.2rem rgba(0,123,255,.5)',
+        },
+    },
+})(Button);
 
 const BootstrapWhiteButton = withStyles({
     root: {
@@ -107,10 +139,12 @@ function VisButIndex(props) {
 
     return(
         <Paper variant={'elevation'} elevation={7} className={classes.paperBG}>
-            {/*<BootstrapWhiteButton color={'secondary'} className={classes.margin} onClick={playD}>
-                <PlayArrowRoundedIcon/>
-            </BootstrapWhiteButton>*/}
             &nbsp;&nbsp;
+            <BootstrapButton color={'secondary'} className={classes.margin} >
+                <Typography variant={'body2'} className={classes.margin} paragraph={false} >
+                    <b>Click to navigate -></b>
+                </Typography>
+            </BootstrapButton>
             <BootstrapWhiteButton color={'secondary'} className={classes.margin} onClick={prevln}>
                 <NavigateBeforeRoundedIcon/>
             </BootstrapWhiteButton>
@@ -118,13 +152,17 @@ function VisButIndex(props) {
                 <NavigateNextRoundedIcon/>
             </BootstrapWhiteButton>
             <BootstrapWhiteButton color={'secondary'} className={classes.margin} onClick={showV}>
-                Show variable
+                <Typography variant={'body2'} className={classes.margin} paragraph={false} >
+                    <b>Show variable</b>
+                </Typography>
             </BootstrapWhiteButton>
             <BootstrapWhiteButton color={'secondary'} className={classes.margin} onClick={stopD}>
                 <StopRoundedIcon/>
             </BootstrapWhiteButton>
             <BootstrapWhiteButton color={'secondary'} className={classes.margin} onClick={closeVis}>
-                Close Visualizer
+                <Typography variant={'body2'} className={classes.margin} paragraph={false} >
+                    <b> Close Visualizer</b>
+                </Typography>
             </BootstrapWhiteButton>
         </Paper>
     )

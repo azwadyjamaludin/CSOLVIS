@@ -1,6 +1,6 @@
-import React, {useEffect, useRef, useState} from 'react'
+import React, {useRef, useState} from 'react'
 import {
-    Paper
+    Paper, withStyles
 } from "@material-ui/core";
 import {makeStyles} from '@material-ui/core/styles';
 import "ace-builds/src-noconflict/mode-javascript";
@@ -8,6 +8,7 @@ import "ace-builds/src-noconflict/theme-terminal";
 import paperImage from '../../../../assets/white-concrete-wall.jpg'
 import insertTextAtCursor from 'insert-text-at-cursor';
 import AceEditor from "react-ace";
+import TextField from "@material-ui/core/TextField";
 
 const useStyles = makeStyles((theme) => ({
     formControl: {
@@ -39,17 +40,35 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function VisIndex(props) {
-    const classes = useStyles(); const tfRef = useRef(); const curPos = 0
+const StyledTextField = withStyles((theme) => ({
+    root: {
+        margin: theme.spacing(0),
+        "& .MuiInputBase-root": {
+            color: '#f5f5f5',
+            "& input": {
+                textAlign: "left"
+            }
+        }
+    }
+}))(TextField);
 
-    let newFile = props.visualiseData;
+function VisIndex(props) {
+    const classes = useStyles(); const [args, setArgs] = useState(''); const inputRef = useRef();
 
      const debugArgs = (editor) => {
             insertTextAtCursor(editor,props.debugParam)
      }
 
-    function onEditorChange(newValue) {
-        props.vistyping = newValue
+    const onPressEnter = (e) => {
+        if (e.keyCode === 13) {
+            props.visualiseData.append(debugArgs())
+            setArgs('')
+        }
+    }
+
+    const onTextChange = (newValue) => {
+        setArgs(newValue)
+        onPressEnter()
     }
 
     return(
@@ -57,38 +76,14 @@ function VisIndex(props) {
             <Paper variant={'elevation'} elevation={0} className={classes.paperBG} >
                 <AceEditor
                     name={'AceVisualiser'}
-                    readOnly={true}
-                    mode={'javascript'}
-                    theme={'terminal'}
-                    width="100%"
-                    height={'620px'}
-                    focus={false}
-                    value={props.visualiseData}
-                    onChange={onEditorChange}
-                    showGutter={false}
-                    showPrintMargin={false}
-                    highlightActiveLine={false}
-                    setOptions={{
-                        enableBasicAutocompletion: false,
-                        enableLiveAutocompletion: false,
-                        showLineNumbers: false,
-                        enableSnippets: false,
-                        tabSize: 2,
-                    }}
-                    onLoad={(editor) => {
-                        editor.getSession().setUseWrapMode(true);
-
-                    }}
-                />
-                <AceEditor
-                    name={'AceVisualiserInput'}
                     readOnly={false}
                     mode={'javascript'}
                     theme={'terminal'}
                     width="100%"
-                    focus={false}
+                    height={'610px'}
+                    focus={true}
                     value={props.visualiseData}
-                    onChange={onEditorChange}
+                    onChange={onTextChange}
                     showGutter={false}
                     showPrintMargin={false}
                     highlightActiveLine={false}
@@ -98,7 +93,6 @@ function VisIndex(props) {
                         showLineNumbers: false,
                         enableSnippets: false,
                         tabSize: 2,
-                        maxLines:1
                     }}
                     onLoad={(editor) => {
                         editor.getSession().setUseWrapMode(true);

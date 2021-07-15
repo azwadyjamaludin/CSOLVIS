@@ -8,7 +8,6 @@ import paperImage from '../../../../assets/white-concrete-wall.jpg'
 import Typography from "@material-ui/core/Typography";
 import TextField from "@material-ui/core/TextField";
 import { saveAs } from "file-saver";
-import {io} from "socket.io-client";
 
 const BootstrapGreenButton = withStyles({
     root: {
@@ -123,9 +122,6 @@ function MenuIndex(props) {
     let myFile = ''; let fileOriName = ''; let currentFilePath = '';
     console.log('MenuIndex-',props.newFile)
 
-    //io(URL);
-    io() // same domain
-
     const onFileChange =async (e) => {
         myFile = e.target.files[0]
         fileOriName = e.target.files[0].name
@@ -189,14 +185,14 @@ function MenuIndex(props) {
                     if (!currentPath) {
                         SweetAlertSetting('Please compile the  C file first')
                     }else {
-                        let socketExec = io('/executeSourceFile',{query:{filePath:`${currentPath}`}})
-                        socketExec.on('data', data => {
-                            props.executeResult('\n'+data)
+                        const body = {filePath:currentPath}
+                        axios.post(URL+'/routes/fileMgt/executeSourceFile',body).then((res) => {
+                            props.executeResult('\n'+res.data)
+                        }).catch(function (error) {
+                            SweetAlertSetting(error)
                         })
-                        socketExec.emit('typing', props.consData);
                     }
     }
-
 
     const saveToServer = () => {
             let sessionID = sessionStorage.getItem('sessionID')
@@ -258,20 +254,18 @@ function MenuIndex(props) {
 
     const visualiseFile = async () => {
                     props.visOpen('open')
-                    const body = {filePath:currentPath}
                     console.log(currentPath)
                 if (!currentPath) {
                     SweetAlertSetting('Please compile the  C file first')
                 }else {
-                                let socketDebug = io('/debugSourceFile',{query:{filePath:`${currentPath}`}})
-                                socketDebug.on('data', data => {
-                                    props.visualiseResult('\n'+data)
-                                })
-                                socketDebug.emit('typing', props.visData);
-                            }
+                    const body = {filePath:currentPath}
+                    axios.post(URL+'/routes/fileMgt/debugSourceFile',body).then((res) => {
+                        props.visualiseResult('\n'+res.data)
+                    }).catch(function (error) {
+                        SweetAlertSetting(error)
+                    })
+                }
     }
-
-
 
     const openRenameFile = () => {
         setOpenRename(true)

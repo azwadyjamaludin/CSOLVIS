@@ -1,10 +1,11 @@
-import {Paper} from "@material-ui/core";
-import React, {useEffect, useState} from "react";
+import {Paper, withStyles} from "@material-ui/core";
+import React, {useState} from "react";
 import {makeStyles} from "@material-ui/core/styles";
 import "ace-builds/src-noconflict/theme-terminal";
 import "ace-builds/src-noconflict/mode-javascript";
 import AceEditor from "react-ace";
 import Typography from "@material-ui/core/Typography";
+import TextField from "@material-ui/core/TextField";
 
 const useStyles = makeStyles((theme) => ({
     formControl: {
@@ -32,15 +33,34 @@ const useStyles = makeStyles((theme) => ({
     },
     input: {
         display: 'none',
-    },
+    }
 }));
 
-function ConsoleIndex(props) {
-    const classes = useStyles(); const showMsg = () => 'Hello World'
-    let newFile = props.displayData;
+const StyledTextField = withStyles((theme) => ({
+    root: {
+        margin: theme.spacing(0),
+        "& .MuiInputBase-root": {
+            color: '#f5f5f5',
+            "& input": {
+                textAlign: "left"
+            }
+        }
+    }
+}))(TextField);
 
-    function onEditorChange(newValue) {
-        props.constyping = newValue
+function ConsoleIndex(props) {
+    const classes = useStyles(); const [args, setArgs] = useState('');
+
+    const onPressEnter = (e) => {
+        if (e.keyCode === 13) {
+            props.displayData.append(e.target.value+'\n')
+            setArgs('')
+        }
+    }
+
+    const onTextChange = (newValue) => {
+        setArgs(newValue)
+        onPressEnter()
     }
 
     return(
@@ -52,51 +72,26 @@ function ConsoleIndex(props) {
             </Typography>
             <AceEditor
                 name={'AceConsole'}
-                readOnly={true}
-                mode={'javascript'}
-                theme={'terminal'}
-                width="100%"
-                height={'280px'}
-                focus={false}
-                value={props.displayData}
-                showGutter={false}
-                showPrintMargin={false}
-                highlightActiveLine={false}
-                setOptions={{
-                    enableBasicAutocompletion: false,
-                    enableLiveAutocompletion: false,
-                    showLineNumbers: false,
-                    enableSnippets: false,
-                    tabSize: 2,
-                }}
-                onLoad={(editor) => {
-                    editor.getSession().setUseWrapMode(true);
-
-                }}
-            />
-            <AceEditor
-                name={'AceConsoleInput'}
                 readOnly={false}
                 mode={'javascript'}
                 theme={'terminal'}
                 width="100%"
-                placeholder={'Input command / arguments here'}
+                height={'270px'}
                 focus={true}
-                onChange={onEditorChange}
+                value={props.displayData}
                 showGutter={false}
                 showPrintMargin={false}
                 highlightActiveLine={false}
+                onChange={onTextChange}
                 setOptions={{
                     enableBasicAutocompletion: false,
                     enableLiveAutocompletion: false,
                     showLineNumbers: false,
                     enableSnippets: false,
                     tabSize: 2,
-                    maxLines:1
                 }}
                 onLoad={(editor) => {
                     editor.getSession().setUseWrapMode(true);
-
                 }}
             />
         </Paper>

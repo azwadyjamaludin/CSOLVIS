@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react'
+import React from 'react'
 import {
     Paper
 } from "@material-ui/core";
@@ -7,6 +7,7 @@ import {makeStyles} from '@material-ui/core/styles';
 import AceEditor from 'react-ace';
 import "ace-builds/src-noconflict/mode-c_cpp";
 import "ace-builds/src-noconflict/theme-xcode";
+import "ace-builds/src-noconflict/ext-language_tools"
 import paperImage from '../../../../assets/white-concrete-wall.jpg'
 import insertTextAtCursor from "insert-text-at-cursor";
 
@@ -47,7 +48,7 @@ const editorStyle = {
 
 function EditorIndex (props) {
 
-    const classes = useStyles(); const aceRef = useRef();
+    const classes = useStyles();
 
     let newFile = props.uploadedFile;
 
@@ -121,7 +122,6 @@ function EditorIndex (props) {
                     name={'AceEditor'}
                     style={editorStyle}
                     readOnly={false}
-                    ref={aceRef}
                     theme={'xcode'}
                     mode="c_cpp"
                     width="99%"

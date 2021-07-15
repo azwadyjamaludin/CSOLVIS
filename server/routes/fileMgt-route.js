@@ -5,7 +5,6 @@ let fileConfig = require('../config/fileConfig.js')
 let path = require('path');
 let log4js = require('log4js');
 const dbConfig = require("../config/dbConfig");
-const cmd = require("node-cmd");
 let logger = log4js.getLogger('fileMgt.js')
 let router = express.Router();
 
@@ -73,10 +72,10 @@ router.route('/sendCurrentFile').post((req,res) => {
 router.route('/compileSourceFile').post( async (req, res) => {
             let filePath = req.body.filePath;
             logger.debug('compileSource:', filePath)
-
             try {
-             await fileConfig.compileProcess('clang', [filePath, '-o', filePath.replace('.c', '')], {},`${filePath.replace('.c','-process.log')}`,function (cb) {
+             await fileConfig.compileProcess('clang', ['-glldb',filePath, '-o', filePath.replace('.c', '')], {},`${filePath.replace('.c','')}`,function (cb) {
                  if (cb === 'process ended') {
+                     logger.debug(cb)
                         let readStream = fs.createReadStream(filePath.replace('.c','-process.log'))
                         let data = '';
                         readStream.on('data', function (chunk) {
@@ -91,6 +90,56 @@ router.route('/compileSourceFile').post( async (req, res) => {
             }catch (error) {
                 logger.error(error)
             }
+})
+
+router.route('/executeSourceFile').post(async (req, res) => {
+    let filePath = req.body.filePath;
+    logger.debug('executeSource:', filePath)
+
+    try {
+        await fileConfig.executeProcess('lldb', [`${filePath.replace('.c', '')}`], {}, `${filePath.replace('.c', '')}`,(cb) => {
+            if (cb === 'callback') {
+                logger.debug(cb)
+                let readStream = fs.createReadStream(filePath.replace('.c', '-process.log'))
+                let data = '';
+                readStream.on('data', function (chunk) {
+                    data += chunk
+                    res.write(data)
+                    res.end()
+                });
+                readStream.on('error', function (err) {
+                    res.end(err);
+                });
+            }
+        })
+    } catch (error) {
+        logger.error(error)
+    }
+})
+
+router.route('/debugSourceFile').post(async (req, res) => {
+    let filePath = req.body.filePath;
+    logger.debug('debugSource:', filePath)
+
+    try {
+        await fileConfig.debugProcess('lldb', [`${filePath.replace('.c', '')}`],{},`${filePath.replace('.c', '')}`,(cb) => {
+            if (cb === 'callback') {
+                logger.debug(cb)
+                let readStream = fs.createReadStream(filePath.replace('.c','-process.log'))
+                let data = '';
+                readStream.on('data', function (chunk) {
+                    data += chunk
+                   res.write(data)
+                    res.end()
+                });
+                readStream.on('error', function(err) {
+                    res.end(err);
+                });
+            }
+        })
+    } catch (error) {
+        logger.error(error)
+    }
 })
 
 router.route('/storedFile').post((req,res) => {
