@@ -1,8 +1,5 @@
-import React, {useEffect, useState} from 'react'
-import {
-    InputAdornment,
-    Paper
-} from "@material-ui/core";
+import React, {useState} from 'react'
+import {InputAdornment, Paper} from "@material-ui/core";
 import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
@@ -24,7 +21,7 @@ const useStyles = makeStyles((theme) => ({
         backgroundColor:"#f5f5f5"
     },
     paperBG2: {
-        backgroundColor:"#faf0e6"
+        backgroundColor:"#bcd4e6"
     },
     table: {
         minWidth: 650,
@@ -34,8 +31,7 @@ const useStyles = makeStyles((theme) => ({
 const Step2 = (props) => {
     const [output2, setOutput2] = useState('')
     const [atypes , setAtypes] = useState('');
-    const URL = `${process.env.REACT_APP_REST_HOST}:${process.env.REACT_APP_REST_PORT}`;
-    //const URL = 'http://localhost:3002'
+    const URL = `${sessionStorage.getItem('IPAddress')}`;
     let processProp = ''; let outputProp = ''; let varProp ='';
     const classes = useStyles();
     const types = [
@@ -61,12 +57,6 @@ const Step2 = (props) => {
         },
     ];
 
-    useEffect(() => {
-        if (!URL) {
-            SweetAlertSetting('Please check your network / IP setting')
-        }
-    },[])
-
     const step2OnBlur = (e) => {
         setOutput2(e.target.value)
 
@@ -84,7 +74,11 @@ const Step2 = (props) => {
         await axios.post(URL+'/routes/dataMgt/step2',data).then((res) => {
             props.IPOData(res.data.ipo)
         }).catch(function (error) {
-            SweetAlertSetting(error)
+            if (!error.status) {
+                SweetAlertSetting('Cannot communicate with server. Please check the network')
+            } else {
+                SweetAlertSetting(error)
+            }
         })
         setOutput2('');setAtypes('')
     }
@@ -100,7 +94,7 @@ const Step2 = (props) => {
 
     return(
         <div align={'center'}>
-            <Paper variant={'elevation'} elevation={5} className={classes.paperBG}>
+            <Paper variant={'elevation'} elevation={5} className={classes.paperBG2}>
                 <br/>
                 <Typography variant={'body2'} paragraph={true} align={'center'}>
                     What should be calculate?
@@ -111,7 +105,7 @@ const Step2 = (props) => {
                            name={'Output'}
                            autoFocus
                            variant={'outlined'}
-                           color={'primary'}
+                           color={'secondary'}
                            value={output2}
                            onChange={step2OnBlur}
                            helperText="Example: luasbulatan"
@@ -134,6 +128,7 @@ const Step2 = (props) => {
                     id="selectStep2"
                     select
                     label="Types"
+                    color={'secondary'}
                     onChange={step2OnSelect}
                     helperText=""
                     value={atypes}

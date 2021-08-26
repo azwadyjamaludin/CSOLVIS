@@ -1,11 +1,8 @@
 import React, {useEffect, useState} from 'react'
-import {
-    Paper
-} from "@material-ui/core";
+import {Paper} from "@material-ui/core";
 import {makeStyles, withStyles} from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import paperImage from "../../../../assets/white-concrete-wall.jpg";
-import PlayArrowRoundedIcon from '@material-ui/icons/PlayArrowRounded';
 import NavigateBeforeRoundedIcon from "@material-ui/icons/NavigateBeforeRounded";
 import NavigateNextRoundedIcon from "@material-ui/icons/NavigateNextRounded";
 import StopRoundedIcon from '@material-ui/icons/StopRounded';
@@ -24,7 +21,7 @@ const useStyles = makeStyles((theme) => ({
 
     },
     paperBG2: {
-        backgroundColor:"#faf0e6"
+        backgroundColor:"#bcd4e6"
     },
     table: {
         minWidth: 650,
@@ -138,7 +135,7 @@ function VisButIndex(props) {
     }
 
     return(
-        <Paper variant={'elevation'} elevation={7} className={classes.paperBG}>
+        <Paper variant={'elevation'} elevation={7} className={classes.paperBG2}>
             &nbsp;&nbsp;
             <BootstrapButton color={'secondary'} className={classes.margin} >
                 <Typography variant={'body2'} className={classes.margin} paragraph={false} >

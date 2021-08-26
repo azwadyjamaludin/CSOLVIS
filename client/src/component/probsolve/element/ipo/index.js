@@ -12,12 +12,13 @@ const useStyles = makeStyles((theme) => ({
     },
     selectEmpty: {
         marginTop: theme.spacing(2),
+        backgroundColor:"#bcd4e6"
     },
     paperBG: {
         backgroundImage: 'url('+paperImage+')'
     },
     paperBG2: {
-        backgroundColor:"#faf0e6"
+        backgroundColor:"#bcd4e6"
     },
     table: {
         minWidth: 650,
@@ -28,9 +29,10 @@ function IPOIndex(props) {
     const classes = useStyles();
 console.log(props.ipos)
     return(
-        <Paper variant={'elevation'} elevation={7} className={classes.paperBG}>
+        <div>
+        <Paper variant={'elevation'} elevation={7} className={classes.paperBG2}>
             <TableContainer>
-                <Typography className={classes.selectEmpty} variant={'subtitle1'}><b>IPO Chart</b><br/></Typography>
+                <Typography className={classes.selectEmpty} variant={'subtitle1'}><b></b><br/></Typography>
                 <Table className={classes.table} stickyHeader={true} aria-label="simple table">
                     <TableHead>
                         <TableRow>
@@ -50,7 +52,10 @@ console.log(props.ipos)
                     </TableBody>
                 </Table>
             </TableContainer>
-            <Paper variant={'elevation'} elevation={7} className={classes.paperBG}>
+            <div><br/></div>
+        </Paper>
+            <br/>
+            <Paper variant={'elevation'} elevation={7} className={classes.paperBG2}>
                 <Button
                     variant={'text'}
                     color={'secondary'}
@@ -62,7 +67,7 @@ console.log(props.ipos)
                 </Button>
                 &nbsp;&nbsp;
             </Paper>
-        </Paper>
+        </div>
     )
 }
 

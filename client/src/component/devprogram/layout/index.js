@@ -1,12 +1,6 @@
 import React, {Fragment} from "react";
 import {Link} from "react-router-dom";
-import {
-  Hidden,
-  Drawer,
-  CssBaseline,
-  MenuList,
-  MenuItem,
-} from "@material-ui/core";
+import {Hidden, Drawer, CssBaseline, MenuList, MenuItem} from "@material-ui/core";
 import Button from "@material-ui/core/Button";
 import {makeStyles, withStyles} from "@material-ui/core/styles";
 import DescriptionRoundedIcon from '@material-ui/icons/DescriptionRounded';
@@ -60,7 +54,8 @@ const useStyles = makeStyles((theme) => ({
 
   drawerPaper: {
     width: drawerWidth,
-    backgroundImage: 'url('+drawerImage+')',
+    //backgroundImage: 'url('+drawerImage+')',
+    backgroundColor: '#bcd4e6'
   },
 
   drawerContainer: {
@@ -135,12 +130,6 @@ const BootstrapOutlineButton = withStyles({
 
 function DevLayout(props) {
     const classes = useStyles()
-    /*const {
-      classes,
-      location: { pathname },
-      children
-    } = props;
-    //const { mobileOpen } = this.state;*/
 
     const drawer = (
       <div>
@@ -166,7 +155,7 @@ function DevLayout(props) {
           </MenuItem>
             <div align={'center'}>
               <BootstrapOutlineButton
-                  color={'primary'}
+                  color={'secondary'}
                   className={classes.margin}
                   type={'submit'}
                   component={Link} to={'/devprog/element/button1'}
@@ -177,7 +166,7 @@ function DevLayout(props) {
               </BootstrapOutlineButton>
               <br/>
               <BootstrapOutlineButton
-                  color={'primary'}
+                  color={'secondary'}
                   className={classes.margin}
                   type={'submit'}
                   component={Link} to={'/devprog/element/button2'}
@@ -188,7 +177,7 @@ function DevLayout(props) {
               </BootstrapOutlineButton>
               <br/>
              <BootstrapOutlineButton
-                 color={'primary'}
+                 color={'secondary'}
                  className={classes.margin}
                  type={'submit'}
                  component={Link} to={'/devprog/element/button3'}
@@ -199,7 +188,7 @@ function DevLayout(props) {
              </BootstrapOutlineButton>
              <br/>
              <BootstrapOutlineButton
-                 color={'primary'}
+                 color={'secondary'}
                  className={classes.margin}
                  type={'submit'}
                  component={Link} to={'/devprog/element/button4'}
@@ -210,7 +199,7 @@ function DevLayout(props) {
              </BootstrapOutlineButton>
              <br/>
                 <BootstrapOutlineButton
-                    color={'primary'}
+                    color={'secondary'}
                     className={classes.margin}
                     type={'submit'}
                     component={Link} to={'/devprog/element/button5'}
@@ -221,7 +210,7 @@ function DevLayout(props) {
                 </BootstrapOutlineButton>
               <br/>
               <BootstrapOutlineButton
-                  color={'primary'}
+                  color={'secondary'}
                   className={classes.margin}
                   type={'submit'}
                   component={Link} to={'/devprog/element/button6'}
@@ -232,7 +221,7 @@ function DevLayout(props) {
               </BootstrapOutlineButton>
               <br/>
               <BootstrapOutlineButton
-                  color={'primary'}
+                  color={'secondary'}
                   className={classes.margin}
                   type={'submit'}
                   component={Link} to={'/devprog/element/button7'}
@@ -243,7 +232,7 @@ function DevLayout(props) {
               </BootstrapOutlineButton>
               <br/>
               <BootstrapOutlineButton
-                  color={'primary'}
+                  color={'secondary'}
                   className={classes.margin}
                   type={'submit'}
                   component={Link} to={'/devprog/element/button8'}
@@ -254,7 +243,7 @@ function DevLayout(props) {
               </BootstrapOutlineButton>
               <br/>
               <BootstrapOutlineButton
-                  color={'primary'}
+                  color={'secondary'}
                   className={classes.margin}
                   type={'submit'}
                   component={Link} to={'/devprog/element/button9'}
@@ -265,7 +254,7 @@ function DevLayout(props) {
               </BootstrapOutlineButton>
               <br/>
               <BootstrapOutlineButton
-                  color={'primary'}
+                  color={'secondary'}
                   className={classes.margin}
                   type={'submit'}
                   component={Link} to={'/devprog/element/button10'}

@@ -16,7 +16,7 @@ const useStyles = makeStyles((theme) => ({
         backgroundImage: 'url('+paperImage+')'
     },
     paperBG2: {
-        backgroundColor:"#faf0e6"
+        backgroundColor:"#bcd4e6"
     },
     table: {
         minWidth: 650,
@@ -26,7 +26,7 @@ const useStyles = makeStyles((theme) => ({
 function TitleIndex() {
     const classes = useStyles();
     return(
-        <Paper variant={'elevation'} elevation={7} className={classes.paperBG}>
+        <Paper variant={'elevation'} elevation={7} className={classes.paperBG2}>
             <Typography variant={'body1'} paragraph={true} align={'center'}>
                 Each step can be <b>REPEATED</b> or <b>IGNORED</b> if not related.
             </Typography>

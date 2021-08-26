@@ -1,12 +1,6 @@
 import React, {Fragment} from "react";
 import {Link} from "react-router-dom";
-import {
-  Hidden,
-  Drawer,
-  CssBaseline,
-  MenuList,
-  MenuItem,
-} from "@material-ui/core";
+import {Hidden, Drawer, CssBaseline, MenuList, MenuItem} from "@material-ui/core";
 import Button from "@material-ui/core/Button";
 import {makeStyles, withStyles} from "@material-ui/core/styles";
 import Typography from '@material-ui/core/Typography';
@@ -59,7 +53,8 @@ const useStyles = makeStyles((theme) => ({
 
   drawerPaper: {
     width: drawerWidth,
-    backgroundImage: 'url('+drawerImage+')',
+    //backgroundImage: 'url('+drawerImage+')',
+    backgroundColor: '#bcd4e6'
 
   },
 
@@ -131,12 +126,6 @@ const BootstrapTextButton = withStyles({
 
 function HelpLayout(props) {
   const classes = useStyles()
-    /*const {
-      classes,
-      location: { pathname },
-      children
-    } = props;*/
-    //const { mobileOpen } = this.state;
 
     const drawer = (
       <div>
@@ -159,6 +148,7 @@ function HelpLayout(props) {
            </MenuItem>
              <div align={'center'}>
              <BootstrapTextButton
+                 color={'secondary'}
                  className={classes.margin}
                  component={Link} to={'/help/element/info'}
                  type={'submit'}>
@@ -167,6 +157,7 @@ function HelpLayout(props) {
              </Typography>
              </BootstrapTextButton>
                <BootstrapTextButton
+                   color={'secondary'}
                    className={classes.margin}
                    component={Link} to={'/help/element/setting'}
                    type={'submit'}>

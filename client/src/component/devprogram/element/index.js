@@ -9,7 +9,6 @@ import {useParams} from "react-router-dom";
 import axios from "axios";
 import Swal from "sweetalert2";
 
-
 function DevElement() {
     let {params} = useParams();
     console.log(params)
@@ -18,10 +17,9 @@ function DevElement() {
     const [consoleData,setConsoleData] = useState(''); const [debugData,setDebugData] = useState('');
 
     let fileName = ''; const [visopen,setVisOpen] = useState(false); let compiledata = ''; let executedata = ''; let debugdata = ''; let filenamedata = ''; let argdata = ''
-    let newFile = ''; const [visbutparam, setVisButParam] = useState('');
-
-    const URL = `${process.env.REACT_APP_REST_HOST}:${process.env.REACT_APP_REST_PORT}`;
-    //const URL = 'http://localhost:3002'
+    let newFile = ''; const [visbutparam, setVisButParam] = useState(''); let pathD = ''; const [pData, setPData] = useState('');
+    const [boolData, setBoolData] = useState(false); const [vbp,setVBP] = useState('');
+    const URL = `${sessionStorage.getItem('IPAddress')}`;
 
     useEffect(() => {
         getVarsAndFormulas()
@@ -40,7 +38,7 @@ function DevElement() {
             }
         }).catch(function (error) {
             if (!error.status) {
-                SweetAlertSetting('Please check the network setting (Help -> IP Setting)')
+                SweetAlertSetting('Cannot communicate with server. Please check the network')
             } else {
                 SweetAlertSetting(error)
             }
@@ -61,16 +59,19 @@ function DevElement() {
         const data = {sessionID: sessionStorage.getItem('sessionID') }
         axios.post(URL+'/routes/fileMgt/getStoredData', data).then((res) => {
                 if (res.data.fileContents === 'enoent') {
-                    SweetAlertSetting('No file found for the given session. Please create a new session and save a new file or you may try to insert the previous session id (Help/setting)')
+                    //SweetAlertSetting('No source file found. Please create / insert a new source file and save it')
+                    newFile = ''
                 } else if (res.data.fileContents === 'something wrong somewhere') {
                     SweetAlertSetting('Something got wrong!!')
                 } else {
                 newFile = res.data.fileContents; filenamedata = res.data.fileName;
-                setNewFile(newFile); setFileName(filenamedata)
+                let alteredFilename = filenamedata.replace(filenamedata.substring(0,filenamedata.indexOf('+')+1),'')
+                    console.log('alteredFilename:',alteredFilename)
+                setNewFile(newFile); setFileName(alteredFilename)
                 }
         }).catch(function (error) {
             if (!error.status) {
-                SweetAlertSetting('Please check the network setting (Help -> IP Setting)')
+                SweetAlertSetting('Cannot communicate with server. Please check the network')
             } else {
                 SweetAlertSetting(error)
             }
@@ -102,19 +103,29 @@ function DevElement() {
             setVisButParam('breakpoint set --line 2\n run\n')
         }
         if (visValue === 'next') {
-            setVisButParam('n\n')
+            console.log(visValue)
+            setVBP('next')
         }
         if (visValue === 'prev') {
-            setVisButParam('up\n')
+            console.log(visValue)
+            setVBP('bt')
         }
         if (visValue === 'show') {
-            setVisButParam('frame variable\n')
+            console.log(visValue)
+            setVBP('frame variable')
         }
         if (visValue === 'stop') {
-            setVisButParam('exit\n')
+            console.log(visValue)
+            setVBP('exit')
         }
         if  (visValue === 'close') {
             setVisOpen(false)
+        }
+    }
+
+    const rvbp = (rvbpData) => {
+        if (rvbpData === true) {
+            setVBP('')
         }
     }
 
@@ -128,15 +139,39 @@ function DevElement() {
         setConsoleData(executedata)
     }
 
+    const executeResult2 = (executeResults2) => {
+        executedata = executeResults2
+        setConsoleData(executedata)
+    }
+
     const debugResult = (debugResults) => {
         debugdata = debugResults
         setDebugData(debugdata)
     }
 
+    const debugResult2 = (debugResults2) => {
+        debugdata = debugResults2
+        setDebugData(debugdata)
+    }
+
+    const openSTF = (bd) => {
+        if (bd === true) {
+            setBoolData(true)
+        } else if (bd === false) {
+            setBoolData(false)
+        }
+    }
+
+    const pathData = (pd) => {
+        pathD = pd
+        console.log('pathD:',pathD)
+        setPData(pathD)
+    }
+
         return(
             <div>
                 <MenuIndex latestFile={myLatestFile} Filename={myFilename} visOpen={openVis} compileResult={compileResult} executeResult={executeResult}
-                           visualiseResult={debugResult} newFile={newfile} newFileName={filename} />
+                           visualiseResult={debugResult} newFile={newfile} newFileName={filename} openSTF={openSTF} currentPath={pathData} />
                 <br/>
                 <Grid container spacing={3} direction={"row"} >
                     <Grid item xs={true}>
@@ -174,19 +209,19 @@ function DevElement() {
                             <EditorIndex  uploadedFile={newfile} myFileName={filename} newValueFile={myNewFileValue} myparam={params} />
                         ):null}
                     </Grid>
-                    {visopen === true?(
+                    {visopen === true && visbutparam === ''?(
                         <Grid item xs={3}>
-                            <VisIndex visualiseData={debugData} debugParam={visbutparam} />
+                            <VisIndex visualiseData={debugData} debugParam={visbutparam} vbp={vbp} rvbp={rvbp} pData={pData} visResult={debugResult2}/>
                         </Grid>
                     ):null}
                 </Grid>
                 <br/>
                 {visopen === true?(
-                    <VisButIndex playD={visButParam} nextln={visButParam} prevln={visButParam} showV={visButParam} stopD={visButParam} visOpen={visButParam} />
+                    <VisButIndex playD={visButParam} nextln={visButParam} prevln={visButParam} showV={visButParam} stopD={visButParam} visOpen={visButParam}/>
                 ):null}
                 <br/>
                 <div>
-                <ConsoleIndex displayData={consoleData} />
+                <ConsoleIndex displayData={consoleData} stfOpen={boolData} pData={pData} consResult={executeResult2}/>
                 </div>
             </div>
             )

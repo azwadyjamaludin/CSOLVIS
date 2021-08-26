@@ -1,8 +1,5 @@
-import React, {useEffect, useState} from 'react'
-import {
-    InputAdornment,
-    Paper
-} from "@material-ui/core";
+import React, {useState} from 'react'
+import {InputAdornment, Paper} from "@material-ui/core";
 import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
@@ -23,7 +20,7 @@ const useStyles = makeStyles((theme) => ({
         backgroundColor:"#f5f5f5"
     },
     paperBG2: {
-        backgroundColor:"#faf0e6"
+        backgroundColor:"#bcd4e6"
     },
     table: {
         minWidth: 650,
@@ -32,8 +29,7 @@ const useStyles = makeStyles((theme) => ({
 
 function Step1(props)  {
     const [input, setInput] = useState(''); const [atypes, setAtypes] = useState('')
-    const URL = `${process.env.REACT_APP_REST_HOST}:${process.env.REACT_APP_REST_PORT}`;
-    //const URL = 'http://localhost:3002'
+    const URL = `${sessionStorage.getItem('IPAddress')}`;
     let inputProp = ''; let processProp = ''; let varProp = '';
     const classes = useStyles();
     const types = [
@@ -59,12 +55,6 @@ function Step1(props)  {
         },
     ];
 
-    useEffect(() => {
-        if (!URL) {
-            SweetAlertSetting('Please check your network / IP setting')
-        }
-    },[])
-
     function step1OnBlur(e) {
         setInput(e.target.value)
     }
@@ -82,7 +72,11 @@ function Step1(props)  {
         await axios.post(URL+'/routes/dataMgt/step1',data).then((res) => {
              props.IPOData(res.data.ipo)
         }).catch(function (error) {
-            SweetAlertSetting(error)
+            if (!error.status) {
+                SweetAlertSetting('Cannot communicate with server. Please check the network')
+            } else {
+                SweetAlertSetting(error)
+            }
         })
         setInput(''); setAtypes('');
     }
@@ -98,7 +92,7 @@ function Step1(props)  {
 
     return(
         <div align={'center'}>
-            <Paper variant={'elevation'} elevation={5} className={classes.paperBG}>
+            <Paper variant={'elevation'} elevation={5} className={classes.paperBG2}>
                 <br/>
                 <Typography variant={'body2'} paragraph={true} align={'center'}>
                     What data will you get from user?
@@ -109,7 +103,7 @@ function Step1(props)  {
                            name={'Input'}
                            autoFocus
                            variant={'outlined'}
-                           color={'primary'}
+                           color={'secondary'}
                            value={input}
                            onChange={step1OnBlur}
                            helperText="Example: jejari"
@@ -132,6 +126,7 @@ function Step1(props)  {
                     id="selectStep1"
                     select
                     label="Types"
+                    color={'secondary'}
                     onChange={step1OnSelect}
                     helperText=""
                     variant="outlined"

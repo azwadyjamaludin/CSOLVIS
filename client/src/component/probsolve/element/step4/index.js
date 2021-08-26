@@ -1,7 +1,5 @@
-import React, {useEffect, useState} from 'react'
-import {
-    Paper
-} from "@material-ui/core";
+import React, {useState} from 'react'
+import {Paper} from "@material-ui/core";
 import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
@@ -21,7 +19,7 @@ const useStyles = makeStyles((theme) => ({
         backgroundColor:"#f5f5f5"
     },
     paperBG2: {
-        backgroundColor:"#faf0e6"
+        backgroundColor:"#bcd4e6"
     },
     table: {
         minWidth: 650,
@@ -30,16 +28,9 @@ const useStyles = makeStyles((theme) => ({
 
 function Step4(props)  {
     const classes = useStyles();
-    const URL = `${process.env.REACT_APP_REST_HOST}:${process.env.REACT_APP_REST_PORT}`;
-    //const URL = 'http://localhost:3002'
+    const URL = `${sessionStorage.getItem('IPAddress')}`;
     const [step4output,setStep4Output] = useState(''); const [step4formula, setStep4formula] = useState('')
     let processProp = ''; let formulaProp = '';
-
-    useEffect(() => {
-        if (!URL) {
-            SweetAlertSetting('Please check your network / IP setting')
-        }
-    },[])
 
     const step4OnBlur1 = (e) => {
         setStep4Output(e.target.value)
@@ -56,7 +47,11 @@ function Step4(props)  {
         await axios.post(URL+'/routes/dataMgt/step4', data).then((res) => {
                 props.IPOData(res.data.ipo)
         }).catch(function (error) {
-            SweetAlertSetting(error)
+            if (!error.status) {
+                SweetAlertSetting('Cannot communicate with server. Please check the network')
+            } else {
+                SweetAlertSetting(error)
+            }
         })
         setStep4Output('');setStep4formula('')
     }
@@ -72,7 +67,7 @@ function Step4(props)  {
 
   return(
         <div align={'center'}>
-            <Paper variant={'elevation'} elevation={5} className={classes.paperBG}>
+            <Paper variant={'elevation'} elevation={5} className={classes.paperBG2}>
                 <br/>
                 <Typography variant={'body2'} paragraph={true} align={'center'}>
                     Insert a formula to calculate the output
@@ -83,7 +78,7 @@ function Step4(props)  {
                            name={'Output'}
                            autoFocus
                            variant={'outlined'}
-                           color={'primary'}
+                           color={'secondary'}
                            value={step4output}
                            onChange={step4OnBlur1}
                            helperText="Example: luasbulatan"
@@ -99,7 +94,7 @@ function Step4(props)  {
                            label={'Arithmetic formula'}
                            name={'Formula'}
                            variant={'outlined'}
-                           color={'primary'}
+                           color={'secondary'}
                            value={step4formula}
                            onChange={step4OnBlur2}
                            helperText="PI * jejari * jejari"

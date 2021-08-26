@@ -5,14 +5,12 @@ const {spawn} = require('child_process')
 let logger = log4js.getLogger('fileConfig.js')
 let multer = require('multer');
 
-let uploadPathUser = ''; let uploadPathUserNormalise = ''
+let uploadPathUser = ''; let uploadPathUserNormalise = ''; let uploadPathUserLog; let uploadPathUserLogNormalise
 uploadPathUser = path.join(__dirname, '../files/saveFile');
+uploadPathUserLog = path.join(__dirname, '../files/logs/');
 uploadPathUserNormalise = path.normalize(uploadPathUser)
-logger.debug(uploadPathUserNormalise)
-
-if (!fs.existsSync(uploadPathUserNormalise)) {
-    fs.mkdirSync(uploadPathUserNormalise)
-}
+uploadPathUserLogNormalise = path.normalize(uploadPathUserLog)
+logger.debug(uploadPathUserNormalise); logger.debug(uploadPathUserLogNormalise)
 
 let storage = multer.diskStorage({
     destination: async function (req, file, cb) {
@@ -27,72 +25,119 @@ let uploadConfig = multer({
     storage: storage
 }).single('file');
 
+async function compileProcess(request,response) {
+    let filePath = request.body.filePath;
+    logger.debug('compileSource:', filePath)
 
-async function compileProcess(cmd,args,opt,path,callback) {
-    let chunkFile = fs.createWriteStream(path + '-process.log');
-    let childProcess = spawn(cmd, args, opt);
+    let childProcess = spawn('clang', ['-g',filePath, '-o', filePath.replace('.c', '')]);
 
     childProcess.stdout.on('data', (data) => {
-        chunkFile.write(`stdout:${data}`)
+        response.write(`stdout:${data}`)
     })
     childProcess.stderr.on('data', (data) => {
-        chunkFile.write(`stderr: ${data}`)
+        response.write(`stderr: ${data}`)
     })
     childProcess.on('close', (code) => {
-        chunkFile.end(`process exited with code ${code}`)
-        callback('process ended')
+        response.end(`process exited with code ${code}`)
     });
 }
 
-async function executeProcess(cmd,args,opt,path,callback) {
-    let chunkFile = fs.createWriteStream(path + '-process.log');
-    let childProcess = spawn(cmd, args, opt);
+async function initialExecuteProcess(socket) {
+    let filePath  = socket.handshake.query.filePath; let sesID = socket.handshake.query.sesID;
+    logger.debug('initialExecuteProcess:', filePath)
 
-    childProcess.stdin.pipe(chunkFile)
+    let childProcess = spawn('lldb', [`${filePath.replace('.c','')}`]);
+    fs.createWriteStream(`${uploadPathUserLogNormalise}${sesID}+cmdX.log`)
+    let data = '';
+
+    process.stdin.pipe(childProcess.stdin)
     childProcess.stdin.write(`run\n`)
 
-    childProcess.stdout.on('data', (data) => {
-        chunkFile.write(`stdout:${data}`)
-        callback('callback')
+    childProcess.stdout.on('data', (chunk) => {
+        data += chunk
+        socket.emit('stdout' ,data)
+
     })
-    childProcess.stderr.on('data', (data) => {
-        chunkFile.write(`stderr: ${data}`)
+    childProcess.stderr.on('data', (err) => {
+        data += err
+        socket.emit('stderr' ,data)
     })
     childProcess.on('close', (code) => {
-        if (code !== 0) {
-            chunkFile.end(`process exited with code ${code}`);
-            callback('process ended')
-        }
-        else {
-            chunkFile.end()
-            callback('process ended')
-        }
+        logger.debug(`process exited with code ${code}`)
     });
 }
 
-async function debugProcess(cmd,args,opt,path,callback) {
-    let chunkFile = fs.createWriteStream(path + '-process.log');
-    let childProcess = spawn(cmd, args, opt);
+async function executeProcess(socket) {
+    let filePath = socket.handshake.query.filePath; let cmd = socket.handshake.query.command; let sesID = socket.handshake.query.sesID;
+    logger.debug('executeProcess:', filePath, 'cmd:',cmd, 'sesID:',sesID)
 
-    childProcess.stdin.pipe(chunkFile)
+    let childProcess = spawn('lldb', [`${filePath.replace('.c','')}`]);
+    fs.appendFileSync(`${uploadPathUserLogNormalise}${sesID}+cmdX.log`, `${cmd}\n`)
+    let data = '';
+
+    process.stdin.pipe(childProcess.stdin)
+        let readLog = fs.readFileSync(`${uploadPathUserLogNormalise}${sesID}+cmdX.log`)
+        childProcess.stdin.write(`run\n ${readLog.toString()}`)
+
+    childProcess.stdout.on('data', function (chunk) {
+        data += chunk
+        socket.emit('stdout',data)
+    })
+    childProcess.stderr.on('data', function (err)  {
+        data += err
+        socket.emit('stderr',data)
+    })
+    childProcess.on('close', (code) => {
+        logger.debug(`process exited with code ${code}`)
+    });
+}
+
+async function initialDebugProcess(socket) {
+    let filePath  = socket.handshake.query.filePath; let sesID = socket.handshake.query.sesID;
+    logger.debug('initialDebugProcess:', filePath)
+
+    let childProcess = spawn('lldb', [`${filePath.replace('.c', '')}`]);
+    fs.createWriteStream(`${uploadPathUserLogNormalise}${sesID}+cmdD.log`)
+    let data = ''
+
+    process.stdin.pipe(childProcess.stdin)
     childProcess.stdin.write(`b main\n run\n`)
 
-    childProcess.stdout.on('data', (data) => {
-        chunkFile.write(`stdout:${data}`)
-        callback('callback')
+    childProcess.stdout.on('data', (chunk) => {
+        data += chunk
+        socket.emit('stdout',data)
     })
-    childProcess.stderr.on('data', (data) => {
-        chunkFile.write(`stderr:${data}`)
+    childProcess.stderr.on('data', function(err) {
+        data += err
+        socket.emit('stderr' ,data)
     })
     childProcess.on('close', (code) => {
-        if (code !== 0) {
-            chunkFile.end(`process exited with code ${code}`);
-            callback('process ended')
-        }
-        else {
-            chunkFile.end()
-            callback('process ended')
-        }
+        logger.debug(`process exited with code ${code}`)
     });
 }
-module.exports = {uploadConfig,compileProcess,executeProcess,debugProcess,spawn}
+
+async function debugProcess(socket) {
+    let filePath = socket.handshake.query.filePath; let cmd = socket.handshake.query.command; let sesID = socket.handshake.query.sesID;
+    logger.debug('debugProcess:', filePath, 'cmd:',cmd, 'sesID:',sesID)
+
+    let childProcess = spawn('lldb', [`${filePath.replace('.c', '')}`]);
+    fs.appendFileSync(`${uploadPathUserLogNormalise}${sesID}+cmdD.log`,`${cmd}\n`)
+    let data = '';
+
+    process.stdin.pipe(childProcess.stdin)
+       let readLog= fs.readFileSync(`${uploadPathUserLogNormalise}${sesID}+cmdD.log`)
+       childProcess.stdin.write(`b main\n run\n ${readLog.toString()}`)
+
+    childProcess.stdout.on('data', function(chunk)  {
+        data += chunk
+        socket.emit('stdout' ,data)
+    })
+    childProcess.stderr.on('data', (err) => {
+        data += err
+        socket.emit('stderr' ,data)
+    })
+    childProcess.on('close', (code) => {
+        logger.debug(`process exited with code ${code}`)
+    });
+}
+module.exports = {uploadConfig,compileProcess,initialExecuteProcess,executeProcess,initialDebugProcess,debugProcess,uploadPathUserLogNormalise}

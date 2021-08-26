@@ -1,9 +1,5 @@
-import React, {useEffect, useState} from 'react'
-import {
-    InputAdornment,
-    Paper,
-    withStyles
-} from "@material-ui/core";
+import React, {useState} from 'react'
+import {InputAdornment, Paper, withStyles} from "@material-ui/core";
 import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
@@ -23,7 +19,7 @@ const useStyles = makeStyles((theme) => ({
         backgroundColor:"#f5f5f5"
     },
     paperBG2: {
-        backgroundColor:"#faf0e6"
+        backgroundColor:"#bcd4e6"
     },
     table: {
         minWidth: 650,
@@ -63,17 +59,10 @@ const BootstrapButton = withStyles({
 
 function Step5(props)  {
     const classes = useStyles();
-    const URL = `${process.env.REACT_APP_REST_HOST}:${process.env.REACT_APP_REST_PORT}`;
-    //const URL = 'http://localhost:3002'
+    const URL = `${sessionStorage.getItem('IPAddress')}`;
     const [step5if, setStep5if] = useState(''); const [step5do, setStep5do] = useState('');
     const [step5else, setStep5else] = useState('')
     let processProp = '';
-
-    useEffect(() => {
-        if (!URL) {
-            SweetAlertSetting('Please check your network / IP setting')
-        }
-    },[])
 
     const step5OnBlur1 = (e) => {
         setStep5if(e.target.value)
@@ -93,7 +82,11 @@ function Step5(props)  {
         await axios.post(URL+'/routes/dataMgt/step5', data).then((res) => {
                 props.IPOData(res.data.ipo)
         }).catch(function (error) {
-            SweetAlertSetting(error)
+            if (!error.status) {
+                SweetAlertSetting('Cannot communicate with server. Please check the network')
+            } else {
+                SweetAlertSetting(error)
+            }
         })
         setStep5if('');setStep5do('');setStep5else('')
     }
@@ -109,7 +102,7 @@ function Step5(props)  {
 
     return(
         <div align={'center'}>
-            <Paper variant={'elevation'} elevation={5} className={classes.paperBG}>
+            <Paper variant={'elevation'} elevation={5} className={classes.paperBG2}>
                 <br/>
                 <Typography variant={'body2'} paragraph={true} align={'center'}>
                     <u>CONDITIONAL ACTION</u>
@@ -120,7 +113,7 @@ function Step5(props)  {
                            name={'Condition'}
                            autoFocus
                            variant={'outlined'}
-                           color={'primary'}
+                           color={'secondary'}
                            value={step5if}
                            onChange={step5OnBlur1}
                            helperText="Example: jejari < 0"
@@ -147,7 +140,7 @@ function Step5(props)  {
                            label={'if-true action/formula'}
                            name={'Action'}
                            variant={'outlined'}
-                           color={'primary'}
+                           color={'secondary'}
                            value={step5do}
                            onChange={step5OnBlur2}
                            helperText="Example: luasbulatan = 0"
@@ -170,7 +163,7 @@ function Step5(props)  {
                            label={'if-false action/formula'}
                            name={'Action'}
                            variant={'outlined'}
-                           color={'primary'}
+                           color={'secondary'}
                            value={step5else}
                            onChange={step5OnBlur3}
                            helperText="Example: proceed"

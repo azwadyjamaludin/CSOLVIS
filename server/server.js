@@ -14,6 +14,7 @@ let myapp = express()
 let FMR = '/routes/fileMgt'
 let DataMgtRoute = require('./routes/dataMgt-route')
 let FileMgtRoute = require('./routes/fileMgt-route')
+let FileConfig = require('./config/fileConfig')
 let DMR = '/routes/dataMgt'
 
 async function main() {
@@ -23,12 +24,11 @@ async function main() {
         extended: true
     }));
     //allow cors
-    myapp.use(cors())
-    /*myapp.use(function (req, res, next) {
+    myapp.use(function (req, res, next) {
         res.header("Access-Control-Allow-Origin", "*");
         res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
         next();
-    });*/
+    });
 
     //API
     myapp.use(FMR, FileMgtRoute)
@@ -45,26 +45,66 @@ async function main() {
     })
 
     const cb = () => {
-        logger.info('---------------------------------------------------------------------------');
-        logger.info('****************** C SOLVIS FULLSTACK SERVER STARTED **********************');
-        logger.info('***********************   http://%s:%s   *************************',
+        logger.debug('---------------------------------------------------------------------------');
+        logger.debug('****************** C SOLVIS FULLSTACK SERVER STARTED **********************');
+        logger.debug('***********************   http://%s:%s   *************************',
             host,
             port
         );
-        logger.info('---------------------------------------------------------------------------');
+        logger.debug('---------------------------------------------------------------------------');
     }
 
-    let server = http.createServer(myapp).listen(port, cb);
+    let server = http.createServer(myapp);
     server.timeout = 240000;
+
+    let io = require('socket.io')(server,{cors:{origins:'*',methods:['GET','POST']}});
+
+    let myExecute1 = io.of('/initialExecuteProcess')
+    myExecute1.setMaxListeners(0)
+    myExecute1.on('connection', socket => {
+        FileConfig.initialExecuteProcess(socket)
+    })
+    myExecute1.on('forceDisconnect', function () {
+        myExecute1.disconnect()
+    })
+
+    let myExecute2 = io.of('/executeProcess')
+    myExecute2.setMaxListeners(0)
+    myExecute2.on('connection', socket => {
+        FileConfig.executeProcess(socket)
+    })
+    myExecute2.on('forceDisconnect', function () {
+        myExecute2.disconnect()
+    })
+
+    let myDebug1 = io.of('/initialDebugProcess')
+    myDebug1.setMaxListeners(0)
+    myDebug1.on('connection', socket => {
+        FileConfig.initialDebugProcess(socket)
+    })
+    myDebug1.on('forceDisconnect', function () {
+        myDebug1.disconnect()
+    })
+
+    let myDebug2 = io.of('/debugProcess')
+    myDebug2.setMaxListeners(0)
+    myDebug2.on('connection', socket => {
+        FileConfig.debugProcess(socket)
+    })
+    myDebug2.on('forceDisconnect', function (socket) {
+        myDebug2.disconnect()
+    })
+
+    server.listen(port, cb)
 }
 
 // Running main
 (async () => {
     await main();
-    logger.info('Ready to serve ...');
+    logger.debug('Ready to serve ...');
 })().catch(err => {
-    logger.info('error occurred in main!');
-    logger.info(err.message);
+    logger.error('error occurred in main!');
+    logger.error(err.message);
 });
 
 

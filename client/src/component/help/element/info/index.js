@@ -1,7 +1,5 @@
 import React from 'react';
-import {
-    Paper,
-} from "@material-ui/core";
+import {Paper} from "@material-ui/core";
 import {makeStyles} from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import CSOLVISImage from '../../../../assets/CSOLVIS.png'
@@ -12,7 +10,7 @@ const useStyles = makeStyles((theme) => ({
         backgroundImage: 'url('+paperImage+')'
     },
     paperBG2: {
-        backgroundColor:"#faf0e6"
+        backgroundColor:"#bcd4e6"
     },
 }));
 
@@ -21,7 +19,7 @@ const IFIndex = () => {
 
     return(
         <div><br/>
-            <Paper className={classes.paperBG} variant={'elevation'} elevation={7} >
+            <Paper className={classes.paperBG2} variant={'elevation'} elevation={7} >
                 <br/>
                 <Typography variant={'h1'} paragraph={true} align={'center'}>
                     <img src={CSOLVISImage} />

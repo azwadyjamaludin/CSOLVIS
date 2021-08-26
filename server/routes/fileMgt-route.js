@@ -8,7 +8,6 @@ const dbConfig = require("../config/dbConfig");
 let logger = log4js.getLogger('fileMgt.js')
 let router = express.Router();
 
-
 router.route('/writeFileToServer').post((req,res) => {
             try{
                     fileConfig.uploadConfig(req,res, function (err) {
@@ -35,8 +34,7 @@ router.route('/writeFileToServer').post((req,res) => {
                         res.json({
                             uploadPath: filePath,
                             fileContents:fileContents.toString(),
-                            fileName: fileName,
-                            token: 'uploadedFile'
+                            fileName: fileName
                         })
                     })
             }catch (error) {
@@ -70,77 +68,26 @@ router.route('/sendCurrentFile').post((req,res) => {
 })
 
 router.route('/compileSourceFile').post( async (req, res) => {
-            let filePath = req.body.filePath;
-            logger.debug('compileSource:', filePath)
             try {
-             await fileConfig.compileProcess('clang', ['-glldb',filePath, '-o', filePath.replace('.c', '')], {},`${filePath.replace('.c','')}`,function (cb) {
-                 if (cb === 'process ended') {
-                     logger.debug(cb)
-                        let readStream = fs.createReadStream(filePath.replace('.c','-process.log'))
-                        let data = '';
-                        readStream.on('data', function (chunk) {
-                            data += chunk
-                            res.json({compileData: data})
-                        });
-                        readStream.on('error', function(err) {
-                            res.end(err);
-                        });
-                     }
-                })
+             await fileConfig.compileProcess(req,res)
             }catch (error) {
                 logger.error(error)
             }
 })
 
-router.route('/executeSourceFile').post(async (req, res) => {
-    let filePath = req.body.filePath;
-    logger.debug('executeSource:', filePath)
-
-    try {
-        await fileConfig.executeProcess('lldb', [`${filePath.replace('.c', '')}`], {}, `${filePath.replace('.c', '')}`,(cb) => {
-            if (cb === 'callback') {
-                logger.debug(cb)
-                let readStream = fs.createReadStream(filePath.replace('.c', '-process.log'))
-                let data = '';
-                readStream.on('data', function (chunk) {
-                    data += chunk
-                    res.write(data)
-                    res.end()
-                });
-                readStream.on('error', function (err) {
-                    res.end(err);
-                });
+router.route('/removeLogFiles').post(async (req,res) => {
+    let normaliseDir = fileConfig.uploadPathUserLogNormalise; let sesID = req.body.sesID
+            if (fs.existsSync(path.join(normaliseDir+sesID+'+cmdX.log'))) {
+            fs.unlink(path.join(normaliseDir+sesID+'+cmdX.log'), err => {
+                if (err) throw err;
+                })
             }
-        })
-    } catch (error) {
-        logger.error(error)
-    }
-})
-
-router.route('/debugSourceFile').post(async (req, res) => {
-    let filePath = req.body.filePath;
-    logger.debug('debugSource:', filePath)
-
-    try {
-        await fileConfig.debugProcess('lldb', [`${filePath.replace('.c', '')}`],{},`${filePath.replace('.c', '')}`,(cb) => {
-            if (cb === 'callback') {
-                logger.debug(cb)
-                let readStream = fs.createReadStream(filePath.replace('.c','-process.log'))
-                let data = '';
-                readStream.on('data', function (chunk) {
-                    data += chunk
-                   res.write(data)
-                    res.end()
-                });
-                readStream.on('error', function(err) {
-                    res.end(err);
-                });
+            if (fs.existsSync(path.join(normaliseDir+sesID+'+cmdD.log'))) {
+            fs.unlink(path.join(normaliseDir+sesID+'+cmdD.log'), err => {
+                if (err) throw err;
+                })
             }
-        })
-    } catch (error) {
-        logger.error(error)
-    }
-})
+    })
 
 router.route('/storedFile').post((req,res) => {
             try {
@@ -194,5 +141,4 @@ router.route('/getStoredData').post (async (req, res) => {
                     logger.error(error)
                 }
 })
-
 module.exports = router

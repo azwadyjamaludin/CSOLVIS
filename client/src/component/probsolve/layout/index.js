@@ -1,21 +1,13 @@
-import React, {Fragment} from "react";
+import React, {Fragment, useState} from "react";
 import {Link} from "react-router-dom";
-import {
-  AppBar,
-  Toolbar,
-  Hidden,
-  Drawer,
-  CssBaseline,
-  MenuList,
-  MenuItem,
-  Divider
-} from "@material-ui/core";
+import {AppBar, Toolbar, Hidden, Drawer, CssBaseline, MenuList, MenuItem} from "@material-ui/core";
 import Button from "@material-ui/core/Button";
 import Typography from '@material-ui/core/Typography';
 import KeyboardRoundedIcon from '@material-ui/icons/KeyboardRounded';
 import logo from '../../../assets/CSOLVIS.png'
-import drawerImage from '../../../assets/blue-concrete-textured-background.jpg'
-import {makeStyles} from "@material-ui/core/styles";
+import {makeStyles, withStyles} from "@material-ui/core/styles";
+import {CopyToClipboard} from "react-copy-to-clipboard";
+import TextField from "@material-ui/core/TextField";
 
 
 const drawerWidth = 210;
@@ -28,7 +20,8 @@ const useStyles = makeStyles((theme) => ({
     [theme.breakpoints.up("sm")]: {
       width: `calc(100% - ${drawerWidth}px)`,
       marginLeft: drawerWidth,
-      backgroundImage: 'url('+drawerImage+')',
+      //backgroundImage: 'url('+drawerImage+')',
+      backgroundColor: '#bcd4e6',
       zIndex: theme.zIndex.drawer + 1,
     }
   },
@@ -42,12 +35,16 @@ const useStyles = makeStyles((theme) => ({
       display: 'flex',
     },
   },
+  margin: {
+    margin: theme.spacing(0.1),
+  },
   sectionMobile: {
     display: 'flex',
     [theme.breakpoints.up('md')]: {
       display: 'none',
     },
   },
+
   nested: {
     paddingLeft: theme.spacing(10)
   },
@@ -60,8 +57,8 @@ const useStyles = makeStyles((theme) => ({
 
   drawerPaper: {
     width: drawerWidth,
-    backgroundImage: 'url('+drawerImage+')',
-    //backgroundColor: '#c0c0c0'
+    //backgroundImage: 'url('+drawerImage+')',
+    backgroundColor: '#bcd4e6'
 
   },
 
@@ -93,14 +90,10 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
+
+
 function ProbLayout(props) {
-    const classes = useStyles()
-    /*const myprops = ({
-      classes,
-      location: { pathname },
-      children
-}) => (props);
-    //const { mobileOpen } = this.state;*/
+    const classes = useStyles();
 
     const drawer = (
       <div>
@@ -120,35 +113,8 @@ function ProbLayout(props) {
              Problem Design
             </Typography>
           </MenuItem>
-            <MenuItem className={classes.nested} component={Link} to="/probdes/element/step1" selected={"/probdes/element/step1" === props.pathname}>
-              <Typography color={'secondary'} variant="subtitle2" noWrap >
-              Step 1 ->
-              </Typography>
-            </MenuItem>
-            <MenuItem className={classes.nested} component={Link} to="/probdes/element/step2" selected={"/probdes/element/step2" === props.pathname}>
-              <Typography color={'secondary'} variant="subtitle2" noWrap >
-              Step 2 ->
-              </Typography>
-            </MenuItem>
-            <MenuItem className={classes.nested} component={Link} to="/probdes/element/step3" selected={"/probdes/element/step3" === props.pathname}>
-              <Typography color={'secondary'} variant="subtitle2" noWrap >
-              Step 3 ->
-              </Typography>
-            </MenuItem>
-            <MenuItem className={classes.nested} component={Link} to="/probdes/element/step4" selected={"/probdes/element/step4" === props.pathname}>
-              <Typography color={'secondary'} variant="subtitle2" noWrap >
-              Step 4 ->
-              </Typography>
-            </MenuItem>
-            <MenuItem className={classes.nested} component={Link} to="/probdes/element/step5" selected={"/probdes/element/step5" === props.pathname}>
-              <Typography color={'secondary'} variant="subtitle2" noWrap >
-              Step 5 ->
-              </Typography>
-            </MenuItem>
-            <MenuItem className={classes.nested} component={Link} to="/probdes/element/step6" selected={"/probdes/element/step6" === props.pathname}>
-              <Typography color={'secondary'} variant="subtitle2" noWrap >
-              Step 6 ->
-              </Typography>
+            <MenuItem >
+
             </MenuItem>
           </MenuList>
          <MenuList>
@@ -166,8 +132,7 @@ function ProbLayout(props) {
               <div className={classes.toolbarButtons}>
                 <Button
                   variant="text"
-                  color="primary"
-                  className={classes.button}
+                  color="secondary"
                   component={Link} to={'/probdes/element/step1'}
                   type={'submit'}
                   edge="start"
@@ -179,8 +144,7 @@ function ProbLayout(props) {
 
                 <Button
                     variant="text"
-                    color="primary"
-                    className={classes.button}
+                    color="secondary"
                     component={Link} to={'/devprog/element/dev'}
                     type={'submit'}
                     edge="start"
@@ -192,8 +156,7 @@ function ProbLayout(props) {
 
                 <Button
                     variant="text"
-                    color="primary"
-                    className={classes.button}
+                    color="secondary"
                     component={Link} to={'/help/element/info'}
                     edge="start"
                 >
@@ -201,7 +164,6 @@ function ProbLayout(props) {
                     Help
                   </Typography>
                 </Button>{" "}&nbsp;&nbsp;
-
               </div>
             </Toolbar>
           </AppBar>

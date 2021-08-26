@@ -1,7 +1,5 @@
-import React, {useEffect, useState} from 'react'
-import {
-    Paper
-} from "@material-ui/core";
+import React, {useState} from 'react'
+import {Paper} from "@material-ui/core";
 import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
@@ -22,7 +20,7 @@ const useStyles = makeStyles((theme) => ({
         backgroundColor:"#f5f5f5"
     },
     paperBG2: {
-        backgroundColor:"#faf0e6"
+        backgroundColor:"#bcd4e6"
     },
     table: {
         minWidth: 650,
@@ -30,8 +28,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function Step3(props) {
-    const URL = `${process.env.REACT_APP_REST_HOST}:${process.env.REACT_APP_REST_PORT}`;
-    //const URL = 'http://localhost:3002'
+    const URL = `${sessionStorage.getItem('IPAddress')}`;
     const classes = useStyles();
     const types = [
         {
@@ -60,12 +57,6 @@ function Step3(props) {
     const [atypes , setAtypes] = useState('');
     let inputProp = ''; let processProp = ''; let varProp = '';
 
-    useEffect(() => {
-        if (!URL) {
-            SweetAlertSetting('Please check your network / IP setting')
-        }
-    },[])
-
     const step3OnBlur1 = (e) => {
         setDataname(e.target.value)
     }
@@ -86,7 +77,11 @@ function Step3(props) {
         await axios.post(URL+'/routes/dataMgt/step3',data).then((res) => {
             props.IPOData(res.data.ipo)
         }).catch(function (error) {
-            SweetAlertSetting(error)
+            if (!error.status) {
+                SweetAlertSetting('Cannot communicate with server. Please check the network')
+            } else {
+                SweetAlertSetting(error)
+            }
         })
         setDataname(''); setDatavalue(''); setAtypes('')
     }
@@ -102,7 +97,7 @@ function Step3(props) {
 
     return(
         <div align={'center'}>
-            <Paper variant={'elevation'} elevation={5} className={classes.paperBG}>
+            <Paper variant={'elevation'} elevation={5} className={classes.paperBG2}>
                 <br/>
                 <Typography variant={'body2'} paragraph={true} align={'center'}>
                     What other data is given/needed?
@@ -113,7 +108,7 @@ function Step3(props) {
                            name={'data_name'}
                            autoFocus
                            variant={'outlined'}
-                           color={'primary'}
+                           color={'secondary'}
                            value={dataname}
                            onChange={step3OnBlur1}
                            helperText="Eample : Pi"
@@ -129,7 +124,7 @@ function Step3(props) {
                            label={'Data value'}
                            name={'data_value'}
                            variant={'outlined'}
-                           color={'primary'}
+                           color={'secondary'}
                            value={datavalue}
                            onChange={step3OnBlur2}
                            helperText="3.142"
@@ -145,6 +140,7 @@ function Step3(props) {
                     id="selectStep3"
                     select
                     label="Types"
+                    color={'secondary'}
                     onChange={step3OnSelect}
                     variant="outlined"
                     value={atypes}

@@ -1,5 +1,5 @@
 import {Backdrop, Paper} from "@material-ui/core";
-import React, {useEffect, useState} from "react";
+import React, {useState} from "react";
 import {makeStyles, withStyles} from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import axios from "axios";
@@ -8,6 +8,7 @@ import paperImage from '../../../../assets/white-concrete-wall.jpg'
 import Typography from "@material-ui/core/Typography";
 import TextField from "@material-ui/core/TextField";
 import { saveAs } from "file-saver";
+import {io} from 'socket.io-client'
 
 const BootstrapGreenButton = withStyles({
     root: {
@@ -97,7 +98,7 @@ const useStyles = makeStyles((theme) => ({
         backgroundImage: 'url('+paperImage+')'
     },
     paperBG2: {
-        backgroundColor:"#faf0e6"
+        backgroundColor:"#bcd4e6"
     },
     table: {
         minWidth: 650,
@@ -116,16 +117,15 @@ const useStyles = makeStyles((theme) => ({
 
 function MenuIndex(props) {
     const classes = useStyles();
-    const URL = `${process.env.REACT_APP_REST_HOST}:${process.env.REACT_APP_REST_PORT}`;
-    //const URL = 'http://localhost:3002'
+    const URL = `${sessionStorage.getItem('IPAddress')}`;
     const [openRename, setOpenRename] = useState(false); const [currentPath, setCurrentPath] = useState('');
     let myFile = ''; let fileOriName = ''; let currentFilePath = '';
-    console.log('MenuIndex-',props.newFile)
+
+    console.log('MenuIndex-',props.newFile);
 
     const onFileChange =async (e) => {
         myFile = e.target.files[0]
         fileOriName = e.target.files[0].name
-        console.log('MenuIndex-filename:', fileOriName, 'MenuIndex-uploadfile:', myFile)
 
         if (!e.target.files[0].name.includes('.c')) {
             SweetAlertSetting('Opps...Wrong file format,Please choose file with .c file format!')
@@ -140,17 +140,22 @@ function MenuIndex(props) {
 
         await axios.post(URL + '/routes/fileMgt/writeFileToServer', body)
             .then((res) => {
-                props.Filename(fileOriName)
+                props.Filename(res.data.fileName)
                 props.latestFile(res.data.fileContents)
             })
             .catch(function (error) {
-                SweetAlertSetting(error)
+                if (!error.status) {
+                    SweetAlertSetting('Cannot communicate with server. Please check the network')
+                } else {
+                    SweetAlertSetting(error)
+                }
             })
     }
 
     const onSaveFile = async () => {
                     let blob = new Blob([props.newFile])
                     let file = new File([blob], props.newFileName)
+
                     saveToServer()
         console.log('MenuIndex-onSaveFile:',file)
                     saveAs(file,props.newFileName)
@@ -158,25 +163,33 @@ function MenuIndex(props) {
 
     const compileFile = async () => {
                 let blob = new Blob([props.newFile])
-                let file = new File([blob],`${props.newFileName}`)
+                let alteredfilename = sessionStorage.getItem('sessionID')+'+'+props.newFileName
+                let file = new File([blob],`${alteredfilename}`)
 
                 const body = new FormData()
                 body.append('file', file)
 
                     await axios.post(URL + '/routes/fileMgt/sendCurrentFile', body)
                         .then((res) => {
+                            removeLogFiles()
+                            props.openSTF(false)
                             currentFilePath = res.data.currentFilePath
+                            props.currentPath(currentFilePath)
                             setCurrentPath(currentFilePath)
                             const body = {filePath:currentFilePath}
                             console.log(currentFilePath)
                             axios.post(URL+'/routes/fileMgt/compileSourceFile', body).then((res) => {
                                 console.log(res.data)
-                                props.compileResult('\n'+res.data.compileData)
+                                props.compileResult('\n'+res.data)
                             }).catch(function (error) {
                                 SweetAlertSetting(error)
                             })
                         }).catch(function (error) {
-                            SweetAlertSetting(error)
+                            if (!error.status) {
+                                SweetAlertSetting('Cannot communicate with server. Please check the network')
+                            } else {
+                                SweetAlertSetting(error)
+                            }
                         })
     }
 
@@ -185,19 +198,29 @@ function MenuIndex(props) {
                     if (!currentPath) {
                         SweetAlertSetting('Please compile the  C file first')
                     }else {
-                        const body = {filePath:currentPath}
-                        axios.post(URL+'/routes/fileMgt/executeSourceFile',body).then((res) => {
-                            props.executeResult('\n'+res.data)
-                        }).catch(function (error) {
-                            SweetAlertSetting(error)
+                    try {
+                        props.openSTF(true)
+                        let socketExec = io(URL+'/initialExecuteProcess',{query:{filePath:`${currentPath}`,sesID:sessionStorage.getItem('sessionID')}})
+                        socketExec.on('stdout', data => {
+                            console.log('stdout:',data)
+                            props.executeResult('\n'+data)
+                            socketExec.emit('forceDisconnect')
                         })
+                        socketExec.on('stderr', data => {
+                            console.log('stderr:',data)
+                            props.executeResult('\n'+data)
+                            socketExec.emit('forceDisconnect')
+                        })
+                    }catch(error) {
+                         SweetAlertSetting(error)
+                        }
                     }
     }
 
     const saveToServer = () => {
             let sessionID = sessionStorage.getItem('sessionID')
             let blob = new Blob([props.newFile])
-            let file = new File([blob], sessionID+'-'+props.newFileName)
+            let file = new File([blob], sessionID+'+'+props.newFileName)
             let storedfilepath = '';
             let storedfilename = '';
 
@@ -224,20 +247,13 @@ function MenuIndex(props) {
                     })
                 })
                 .catch(function (error) {
-                    SweetAlertSetting(error)
+                    if (!error.status) {
+                        SweetAlertSetting('Cannot communicate with server. Please check the network')
+                    } else {
+                        SweetAlertSetting(error)
+                    }
                 })
         }
-
-
-    const SweetAlertSetting = (error) => {
-        Swal.fire({
-            icon: 'error',
-            title: '',
-            text: `${error}`,
-        }).then((r) => {
-        })
-    }
-
 
     const Upload = () => {
         return (
@@ -253,23 +269,30 @@ function MenuIndex(props) {
     }
 
     const visualiseFile = async () => {
-                    props.visOpen('open')
                     console.log(currentPath)
                 if (!currentPath) {
                     SweetAlertSetting('Please compile the  C file first')
                 }else {
-                    const body = {filePath:currentPath}
-                    axios.post(URL+'/routes/fileMgt/debugSourceFile',body).then((res) => {
-                        props.visualiseResult('\n'+res.data)
-                    }).catch(function (error) {
-                        SweetAlertSetting(error)
+                try {
+                    props.visOpen('open')
+                    props.openSTF(false)
+                    let socketDebug = io(URL+'/initialDebugProcess',{query:{filePath:`${currentPath}`,sesID:sessionStorage.getItem('sessionID')}})
+                    socketDebug.on('stdout', data => {
+                        props.visualiseResult('\n'+data)
+                        socketDebug.emit('forceDisconnect')
                     })
+                    socketDebug.on('stderr', data => {
+                        props.visualiseResult('\n'+data)
+                        socketDebug.emit('forceDisconnect')
+                    })
+                }catch (error) {
+                    SweetAlertSetting(error)
+                    }
                 }
     }
 
     const openRenameFile = () => {
         setOpenRename(true)
-
     }
 
     const onChangeRenameFile = (e) => {
@@ -281,10 +304,35 @@ function MenuIndex(props) {
         setOpenRename(false)
     }
 
+    const removeLogFiles = () => {
+        const body = {sesID:sessionStorage.getItem('sessionID')}
+        try {
+        axios.post(URL + '/routes/fileMgt/removeLogFiles', body).then((res) => {
+        }).catch(function (error) {
+            if (!error.status) {
+                SweetAlertSetting('Cannot communicate with server. Please check the network')
+            } else {
+                SweetAlertSetting(error)
+            }
+        })
+        }catch (error) {
+            SweetAlertSetting(error)
+        }
+    }
+
+    const SweetAlertSetting = (error) => {
+        Swal.fire({
+            icon: 'error',
+            title: '',
+            text: `${error}`,
+        }).then((r) => {
+        })
+    }
+
     return(
         <div>
         <Upload/>
-    <Paper variant={'elevation'} elevation={7} className={classes.paperBG}>
+    <Paper variant={'elevation'} elevation={7} className={classes.paperBG2}>
         &nbsp;&nbsp;&nbsp;
         <label htmlFor="contained-button-file">
             <BootstrapGreenButton color={'secondary'} className={classes.margin} component={'span'}>
@@ -342,7 +390,7 @@ function MenuIndex(props) {
             Execute
         </BootstrapYellowButton>
         &nbsp;&nbsp;
-        <BootstrapYellowButton color={'primary'} className={classes.margin} onClick={visualiseFile}>
+        <BootstrapYellowButton color={'primary'} className={classes.margin} onClick={visualiseFile} disabled={false}>
             Visualize
         </BootstrapYellowButton>
     </Paper>

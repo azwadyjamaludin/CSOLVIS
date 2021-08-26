@@ -1,7 +1,5 @@
 import React from 'react'
-import {
-    Paper
-} from "@material-ui/core";
+import {Paper} from "@material-ui/core";
 import Typography from '@material-ui/core/Typography';
 import {makeStyles} from '@material-ui/core/styles';
 import AceEditor from 'react-ace';
@@ -25,7 +23,7 @@ const useStyles = makeStyles((theme) => ({
 
     },
     paperBG2: {
-        backgroundColor:"#faf0e6"
+        backgroundColor:"#bcd4e6"
     },
     table: {
         minWidth: 650,
@@ -60,7 +58,7 @@ function EditorIndex (props) {
 
 
     const stdio = stdioButton; const main = mainButton; const printf = printfButton; const scanf = scanfButton; const ifElse = ifElseButton; const forLoop = forLoopButton;
-    const While = whilebutton; const doWhile = doWhileButton; const myVars = props.myVars; const myFormulas = props.myFormulas;
+    const While = whilebutton; const doWhile = doWhileButton;
 
     const butPattern = (editor) => {
         console.log('EditorIndex-butPattern:',editor)
@@ -109,7 +107,7 @@ function EditorIndex (props) {
 
     return(
         <div>
-            <Paper variant={'elevation'} elevation={7} className={classes.paperBG}>
+            <Paper variant={'elevation'} elevation={7} className={classes.paperBG2}>
                 <Typography variant={'body2'} className={classes.margin} paragraph={true} align={'center'}>
                     <br/>
                     <b>Editor</b>
@@ -124,8 +122,10 @@ function EditorIndex (props) {
                     readOnly={false}
                     theme={'xcode'}
                     mode="c_cpp"
+                    height={460}
                     width="99%"
                     focus={false}
+                    fontSize={11}
                     value={props.uploadedFile}
                     onChange={onEditorChange}
                     highlightActiveLine={false}

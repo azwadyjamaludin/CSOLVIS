@@ -8,7 +8,7 @@ const db = new sqlite3.Database(mydb, err => {
     if (err) {
         return console.error(err.message);
     }
-    logger.info("Successful connection to the database 'csolvis.db'");
+    logger.debug("Successful connection to the database 'csolvis.db'");
     db.close
 });
 
@@ -24,7 +24,7 @@ async function insertData(sqlStatement,params,cb) {
             };
             cb(sqlRes)
         } else {
-            logger.info("SQL call successful. Result: ", this.lastID);
+            logger.debug("SQL call successful. Result: ", this.lastID);
             sqlRes = {
                 "success": true,
                 "message": this.lastID,
@@ -34,6 +34,31 @@ async function insertData(sqlStatement,params,cb) {
     })
     db.close
     }
+}
+
+async function updateData(sqlStatement,params,cb) {
+    let sqlData;
+    if (params != null) {
+        db.run(sqlStatement,params,function (err)  {
+            if (err) {
+                logger.error("SQL Error: ", err);
+                sqlData = {
+                    "success": false,
+                    "message": err.message
+                };
+                cb(sqlData)
+            } else {
+                logger.debug("SQL call successful. Row(s) updated: ", this.changes);
+                sqlData = {
+                    "success": true,
+                    "message": `Row(s) updated: ${this.changes}`,
+                };
+                cb(sqlData);
+            }
+        })
+        db.close
+    }
+
 }
 
 async function getData(sqlStatement,params,cb) {
@@ -48,7 +73,7 @@ async function getData(sqlStatement,params,cb) {
                 };
                 cb(sqlRes);
             } else {
-                logger.info("SQL call successful. Result: ", rows);
+                logger.debug("SQL call successful. Result: ", rows);
                 sqlRes = {
                     "success": true,
                     "message": rows
@@ -72,7 +97,7 @@ async function getDataBy(sqlStatement,params,cb) {
             };
             cb(sqlRes);
         } else {
-            logger.info("SQL call successful. Result: ", row);
+            logger.debug("SQL call successful. Result: ", row);
             sqlRes = {
                 "success": true,
                 "message":row
@@ -96,7 +121,7 @@ async function deleteRow(sqlStatement,params,cb) {
                 };
                 cb(sqlRes)
             } else {
-                logger.info(`Row(s) deleted ${this.changes}`);
+                logger.debug(`Row(s) deleted ${this.changes}`);
                 sqlRes = {
                     "success": true,
                     "message": this.changes,
@@ -108,4 +133,4 @@ async function deleteRow(sqlStatement,params,cb) {
     }
 }
 
-module.exports = {insertData,getData,getDataBy,deleteRow};
+module.exports = {insertData,updateData,getData,getDataBy,deleteRow};

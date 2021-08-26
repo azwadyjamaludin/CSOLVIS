@@ -3,16 +3,17 @@ let log4js = require('log4js');
 let logger = log4js.getLogger('dataMgt.js')
 let router = express.Router();
 let dbConfig = require('../config/dbConfig')
+let fs = require("fs");
 
 router.route('/createSessionID').post(async (req, res) => {
-        let sesionID = req.body.sessionID;
+        let sessionID = req.body.sessionID;
         let sqlInsert = 'INSERT INTO session (session_id) VALUES (?)'
-        let data = [sesionID]
+        let data = [sessionID]
         try {
         await dbConfig.insertData(sqlInsert, data, function (cb) {
                 if (cb.success === true) {
                         let queryData = 'SELECT session_id FROM session WHERE session_id = (?)'
-                        let params = [sesionID]
+                        let params = [sessionID]
                         let data = ''
                         dbConfig.getData(queryData, params, function (cb) {
                                 for (let result of cb.message) {
@@ -28,16 +29,53 @@ router.route('/createSessionID').post(async (req, res) => {
         }
 })
 
+router.route('/storeIPAddress').post(async (req, res) => {
+        let ipAddress = req.body.ipAddress
+        let sqlUpdate = 'UPDATE ipSett SET ipAddr = (?) WHERE table_id = (?)'
+        let params = [ipAddress, 1]
+        try {
+                await dbConfig.updateData(sqlUpdate,params, function (cb) {
+                        for (let result of cb.message) {
+                                let queryData = `SELECT ipAddr FROM ipSett WHERE table_id = (?)`
+                                let params = [1]
+                                dbConfig.getData(queryData,params, function (cb) {
+                                        for (let result of cb.message) {
+                                                res.json({ipAddress: result['ipAddr']})
+                                        }
+                                })
+                        }
+                })
+
+        } catch (error) {
+                logger.error(error)
+        }
+})
+
+router.route('/getStoredIPAddress').get(async (req,res) => {
+        let queryData = `SELECT ipAddr FROM ipSett WHERE table_id = (?)`
+        let params = [1]
+        try {
+                await dbConfig.getData(queryData, params, function (cb) {
+                        for (let result of cb.message) {
+                        logger.debug('result:',result['ipAddr'])
+                        res.json({ipAddress: result['ipAddr']})
+                        }
+                })
+        } catch (error) {
+                logger.error(error)
+        }
+})
+
 router.route('/step1').post( async (req, res) => {
-        let sesionID = req.body.sessionID; let input = req.body.input; let process = req.body.process; let variable = req.body.variable
-        logger.info(sesionID,input,process,variable)
+        let sessionID = req.body.sessionID; let input = req.body.input; let process = req.body.process; let variable = req.body.variable
+        logger.info(sessionID,input,process,variable)
         let sqlInsert = `INSERT INTO ipo(input,process,variable,session_id) VALUES(?,?,?,?)`
-        let data = [input,process,variable,sesionID]
+        let data = [input,process,variable,sessionID]
         try {
         await dbConfig.insertData(sqlInsert,data, function (cb) {
                 if (cb.success === true) {
                         let queryData = `SELECT input,process,output FROM ipo WHERE session_id = (?)`
-                        let params = [sesionID]
+                        let params = [sessionID]
 
                         dbConfig.getData(queryData,params,function (cb) {
                                         res.json({ipo:cb.message})
@@ -159,9 +197,9 @@ router.route('/getVarsAndFormulas').post(async (req, res) => {
                                 res.json({emptyData:emptyData})
                         } else {
                         for (let result of cb.message) {
-                                if(result['variable'] != '' ) {
+                                if(result['variable'] !== '' ) {
                             varArray.push(result['variable']);}
-                                if (result['formula'] != '') {
+                                if (result['formula'] !== '') {
                                 formulaArray.push(result['formula'])}
                         }
                         logger.debug('variable:',varArray.join('\n'), 'formula:',formulaArray.join('\n'))
@@ -176,22 +214,51 @@ router.route('/getVarsAndFormulas').post(async (req, res) => {
 })
 
 router.route('/deleteRows').post(async (req, res) => {
-        let sesionID = req.body.sessionID;
+        let sessionID = req.body.sessionID;
         let deleteData = `DELETE FROM session WHERE session_id = (?)`
-        let params = [sesionID]
+        let params = [sessionID]
         try {
         await dbConfig.deleteRow(deleteData, params, function (cb) {
                 if(cb.success === true) {
                         let deleteOtherData = `DELETE FROM ipo WHERE session_id = (?)`
-                        let params = [sesionID]
+                        let params = [sessionID]
                         dbConfig.deleteRow(deleteOtherData,params,function (cb) {
                                 if(cb.success === true) {
-                                        let deleteOtherData = `DELETE FROM file WHERE session_id = (?)`
-                                        let params = [sesionID]
-                                        dbConfig.deleteRow(deleteOtherData,params,function (cb) {
-                                                if(cb.success === true) {
+                                        let query =  `SELECT filepath from file WHERE session_id = (?)`
+                                        let params = [sessionID]
+                                        dbConfig.getData(query,params, function (cb) {
+                                                if (cb.success === true) {
+                                                        for (let item of cb.message) {
+                                                            if (fs.existsSync(item['filepath'])) {
+                                                                fs.unlink(item['filepath'],(err) => {
+                                                                        logger.debug('C file removed:',item['filepath'])
+                                                                })
+                                                            }
+                                                            if (fs.existsSync(item['filepath'].replace('.c',''))) {
+                                                                fs.unlink(item['filepath'].replace('.c',''),(err) => {
+                                                                        logger.debug('file removed:',item['filepath'].replace('.c',''))
+                                                                })
+                                                            }
+                                                             if (fs.existsSync(item['filepath'].replace('.c','.dSYM'))) {
+                                                                fs.unlink(item['filepath'].replace('.c','.dSym'),(err) => {
+                                                                        logger.debug('file removed:',item['filepath'].replace('.c','.dSYM'))
+                                                                 })
+                                                             }
+                                                        }
+                                                        let deleteOtherData = `DELETE FROM file WHERE session_id = (?)`
+                                                        let params = [sessionID]
+                                                        dbConfig.deleteRow(deleteOtherData,params,function (cb) {
+                                                                if(cb.success === true) {
+                                                                        let queryData = `SELECT input,process,output FROM ipo WHERE session_id = (?)`
+                                                                        let params = [sessionID]
+                                                                        dbConfig.getData(queryData,params,function (cb) {
+                                                                                res.json({ipo:cb.message})
+                                                                        })
+                                                                }
+                                                        })
+                                                }else if (cb.success === false) {
                                                         let queryData = `SELECT input,process,output FROM ipo WHERE session_id = (?)`
-                                                        let params = [sesionID]
+                                                        let params = [sessionID]
                                                         dbConfig.getData(queryData,params,function (cb) {
                                                                 res.json({ipo:cb.message})
                                                         })
@@ -225,9 +292,9 @@ router.route('/storedData').post(async (req, res) => {
 })
 
 router.route('/getStoredIPOData').post(async (req, res) => {
-        let sesionID = req.body.sessionID; let emptyData = false;
+        let sessionID = req.body.sessionID; let emptyData = false;
         let queryData = `SELECT input,process,output from ipo WHERE session_id = (?)`
-        let params = [sesionID]
+        let params = [sessionID]
         try {
                 await dbConfig.getData(queryData, params, function (cb) {
                         if (cb.success === true) {

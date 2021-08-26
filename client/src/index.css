@@ -5,7 +5,8 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-image: url("assets/gradient_multicolored_color.jpg");
+  /*background-image: url("assets/gradient_multicolored_color.jpg");*/
+  background-color: snow;
   background-size: 120%;
 }
 
