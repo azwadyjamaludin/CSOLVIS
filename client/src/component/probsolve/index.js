@@ -29,10 +29,10 @@ function PSIndex(){
             <BrowserRouter >
                 <ProbLayout >
                     <Switch>
-                        <Route exact path={'/probdes/element/:params'} render={() => <div><ProbElement storedIP={sessionStorage.getItem('IPAddress')}/></div>}/>
+                        <Route exact path={'/probdes/element/:params'} render={() => <div><ProbElement /></div>}/>
                     </Switch>
                 </ProbLayout>
-                <Route exact path={'/devprog/element/dev'} render={() => <div><DevProg storedIP={sessionStorage.getItem('IPAddress')}/></div>}/>
+                <Route exact path={'/devprog/element/dev'} render={() => <div><DevProg /></div>}/>
                 <Route exact path={'/help/element/info'} component={Help}/>
             </BrowserRouter>
 
