@@ -93,13 +93,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const BootstrapOutlineButton = withStyles({
-  root: {
-    boxShadow: 'none',
-    textTransform: 'none',
-    fontSize: 16,
-    padding: '6px 12px',
-    border: '1px solid',
-    lineHeight: 1.5,
+  root: {boxShadow: 'none', textTransform: 'none', fontSize: 16, padding: '6px 12px', border: '1px solid', lineHeight: 1.5,
     fontFamily: [
       '-apple-system',
       'BlinkMacSystemFont',
@@ -113,19 +107,67 @@ const BootstrapOutlineButton = withStyles({
       '"Segoe UI Symbol"',
     ].join(','),
     '&:hover': {
-      backgroundColor: '#90ee90',
-      borderColor: '#90ee90',
-      boxShadow: 'none',
+      backgroundColor: '#90ee90', borderColor: '#90ee90', boxShadow: 'none',
     },
     '&:active': {
-      boxShadow: 'none',
-      backgroundColor: '#0062cc',
-      borderColor: '#005cbf',
+      boxShadow: 'none', backgroundColor: '#0062cc', borderColor: '#005cbf',
     },
     '&:focus': {
       boxShadow: '0 0 0 0.2rem rgba(0,123,255,.5)',
     },
   },
+})(Button);
+
+const BootstrapWhiteButton = withStyles({
+    root: {boxShadow: 'none', textTransform: 'none', fontSize: 16, padding: '6px 12px', border: '1px solid', lineHeight: 1.5, backgroundColor: '#f5f5f5', borderColor: '#f5f5f5',
+        fontFamily: [
+            '-apple-system',
+            'BlinkMacSystemFont',
+            '"Segoe UI"',
+            'Roboto',
+            '"Helvetica Neue"',
+            'Arial',
+            'sans-serif',
+            '"Apple Color Emoji"',
+            '"Segoe UI Emoji"',
+            '"Segoe UI Symbol"',
+        ].join(','),
+        '&:hover': {
+            backgroundColor: '#90ee90', borderColor: '#90ee90', boxShadow: 'none',
+        },
+        '&:active': {
+            boxShadow: 'none', backgroundColor: '#0062cc', borderColor: '#005cbf',
+        },
+        '&:focus': {
+            boxShadow: '0 0 0 0.2rem rgba(0,123,255,.5)',
+        },
+    },
+})(Button);
+
+const BootstrapGreenButton = withStyles({
+    root: {boxShadow: 'none', textTransform: 'none', fontSize: 16, padding: '6px 12px', border: '1px solid', lineHeight: 1.5, backgroundColor: '#90ee90', borderColor: '#90ee90',
+        fontFamily: [
+            '-apple-system',
+            'BlinkMacSystemFont',
+            '"Segoe UI"',
+            'Roboto',
+            '"Helvetica Neue"',
+            'Arial',
+            'sans-serif',
+            '"Apple Color Emoji"',
+            '"Segoe UI Emoji"',
+            '"Segoe UI Symbol"',
+        ].join(','),
+        '&:hover': {
+            backgroundColor: '#f5f5f5', borderColor: '#f5f5f5', boxShadow: 'none',
+        },
+        '&:active': {
+            boxShadow: 'none', backgroundColor: '#f5f5f5', borderColor: '#f5f5f5',
+        },
+        '&:focus': {
+            boxShadow: '0 0 0 0.2rem rgba(0,123,255,.5)',
+        },
+    },
 })(Button);
 
 function DevLayout(props) {
@@ -144,7 +186,7 @@ function DevLayout(props) {
         <MenuList>
          <MenuList>
               <Typography className={classes.nested2} variant="body2" >
-                <b>Place cursor after the last line and click code pattern</b>
+                Place cursor on the last line of editor and click the code pattern
               </Typography>
               <br/>
           <MenuItem >
@@ -154,7 +196,7 @@ function DevLayout(props) {
             </Typography>
           </MenuItem>
             <div align={'center'}>
-              <BootstrapOutlineButton
+              <BootstrapWhiteButton
                   color={'secondary'}
                   className={classes.margin}
                   type={'submit'}
@@ -163,30 +205,30 @@ function DevLayout(props) {
                 <Typography variant="subtitle2" noWrap >
                   include stdio.h
                 </Typography>
-              </BootstrapOutlineButton>
+              </BootstrapWhiteButton>
               <br/>
-              <BootstrapOutlineButton
+                <BootstrapWhiteButton
+                    color={'secondary'}
+                    className={classes.margin}
+                    type={'submit'}
+                    component={Link} to={'/devprog/element/button3'}
+                >
+                    <Typography variant="subtitle2" noWrap >
+                        declare variables
+                    </Typography>
+                </BootstrapWhiteButton>
+                <br/>
+              <BootstrapGreenButton
                   color={'secondary'}
                   className={classes.margin}
                   type={'submit'}
-                  component={Link} to={'/devprog/element/button2'}
+                  component={Link} to={'/devprog/element/button2-1'}
               >
                 <Typography variant="subtitle2" noWrap >
-                  main()
+                    {'main {'}
                 </Typography>
-              </BootstrapOutlineButton>
+              </BootstrapGreenButton>
               <br/>
-             <BootstrapOutlineButton
-                 color={'secondary'}
-                 className={classes.margin}
-                 type={'submit'}
-                 component={Link} to={'/devprog/element/button3'}
-               >
-               <Typography variant="subtitle2" noWrap >
-                 declare variables
-               </Typography>
-             </BootstrapOutlineButton>
-             <br/>
              <BootstrapOutlineButton
                  color={'secondary'}
                  className={classes.margin}
@@ -263,6 +305,17 @@ function DevLayout(props) {
                   do-while loop
                 </Typography>
               </BootstrapOutlineButton>
+                <br/>
+                <BootstrapGreenButton
+                    color={'secondary'}
+                    className={classes.margin}
+                    type={'submit'}
+                    component={Link} to={'/devprog/element/button2-2'}
+                >
+                    <Typography variant="subtitle2" noWrap >
+                        {'return 0 }'}
+                    </Typography>
+                </BootstrapGreenButton>
             </div>
           </MenuList>
         </MenuList>

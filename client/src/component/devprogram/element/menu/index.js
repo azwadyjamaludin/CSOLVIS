@@ -8,18 +8,9 @@ import paperImage from '../../../../assets/white-concrete-wall.jpg'
 import Typography from "@material-ui/core/Typography";
 import TextField from "@material-ui/core/TextField";
 import { saveAs } from "file-saver";
-import {io} from 'socket.io-client'
 
 const BootstrapGreenButton = withStyles({
-    root: {
-        boxShadow: 'none',
-        textTransform: 'none',
-        fontSize: 16,
-        padding: '6px 12px',
-        border: '1px solid',
-        lineHeight: 1.5,
-        backgroundColor: '#90ee90',
-        borderColor: '#90ee90',
+    root: {boxShadow: 'none', textTransform: 'none', fontSize: 16, padding: '6px 12px', border: '1px solid', lineHeight: 1.5, backgroundColor: '#90ee90', borderColor: '#90ee90',
         fontFamily: [
             '-apple-system',
             'BlinkMacSystemFont',
@@ -33,14 +24,10 @@ const BootstrapGreenButton = withStyles({
             '"Segoe UI Symbol"',
         ].join(','),
         '&:hover': {
-            backgroundColor: '#f5f5f5',
-            borderColor: '#f5f5f5',
-            boxShadow: 'none',
+            backgroundColor: '#f5f5f5', borderColor: '#f5f5f5', boxShadow: 'none',
         },
         '&:active': {
-            boxShadow: 'none',
-            backgroundColor: '#0062cc',
-            borderColor: '#005cbf',
+            boxShadow: 'none', backgroundColor: '#0062cc', borderColor: '#005cbf',
         },
         '&:focus': {
             boxShadow: '0 0 0 0.2rem rgba(0,123,255,.5)',
@@ -49,15 +36,7 @@ const BootstrapGreenButton = withStyles({
 })(Button);
 
 const BootstrapYellowButton = withStyles({
-    root: {
-        boxShadow: 'none',
-        textTransform: 'none',
-        fontSize: 16,
-        padding: '6px 12px',
-        border: '1px solid',
-        lineHeight: 1.5,
-        backgroundColor: '#ffff00',
-        borderColor: '#ffff00',
+    root: {boxShadow: 'none', textTransform: 'none', fontSize: 16, padding: '6px 12px', border: '1px solid', lineHeight: 1.5, backgroundColor: '#ffff00', borderColor: '#ffff00',
         fontFamily: [
             '-apple-system',
             'BlinkMacSystemFont',
@@ -76,9 +55,7 @@ const BootstrapYellowButton = withStyles({
             boxShadow: 'none',
         },
         '&:active': {
-            boxShadow: 'none',
-            backgroundColor: '#0062cc',
-            borderColor: '#005cbf',
+            boxShadow: 'none', backgroundColor: '#0062cc', borderColor: '#005cbf',
         },
         '&:focus': {
             boxShadow: '0 0 0 0.2rem rgba(0,123,255,.5)',
@@ -145,7 +122,7 @@ function MenuIndex(props) {
             })
             .catch(function (error) {
                 if (!error.status) {
-                    SweetAlertSetting('Cannot communicate with server. Please check the network')
+                    SweetAlertSetting('Cannot communicate with server. Please check the network (Help > Preference > C SOLVIS Setting)')
                 } else {
                     SweetAlertSetting(error)
                 }
@@ -176,17 +153,22 @@ function MenuIndex(props) {
                             currentFilePath = res.data.currentFilePath
                             props.currentPath(currentFilePath)
                             setCurrentPath(currentFilePath)
-                            const body = {filePath:currentFilePath}
+                            const body = {filePath:currentFilePath,sessionID:sessionStorage.getItem('sessionID')}
                             console.log(currentFilePath)
                             axios.post(URL+'/routes/fileMgt/compileSourceFile', body).then((res) => {
                                 console.log(res.data)
                                 props.compileResult('\n'+res.data)
+                                const body = {filePath:currentFilePath,sessionID:sessionStorage.getItem('sessionID')}
+                                axios.post(URL+'/routes/fileMgt/compileSourceForDebug', body).then((res) => {
+                                }).catch(function (error) {
+                                    SweetAlertSetting(error)
+                                })
                             }).catch(function (error) {
                                 SweetAlertSetting(error)
                             })
                         }).catch(function (error) {
                             if (!error.status) {
-                                SweetAlertSetting('Cannot communicate with server. Please check the network')
+                                SweetAlertSetting('Cannot communicate with server. Please check the network (Help > Preference > C SOLVIS Setting)')
                             } else {
                                 SweetAlertSetting(error)
                             }
@@ -200,19 +182,13 @@ function MenuIndex(props) {
                     }else {
                     try {
                         props.openSTF(true)
-                        let socketExec = io(URL+'/initialExecuteProcess',{query:{filePath:`${currentPath}`,sesID:sessionStorage.getItem('sessionID')}})
-                        socketExec.on('stdout', data => {
-                            console.log('stdout:',data)
-                            props.executeResult('\n'+data)
-                            socketExec.emit('forceDisconnect')
-                        })
-                        socketExec.on('stderr', data => {
-                            console.log('stderr:',data)
-                            props.executeResult('\n'+data)
-                            socketExec.emit('forceDisconnect')
-                        })
+                        props.xClicked(true)
                     }catch(error) {
-                         SweetAlertSetting(error)
+                        if (!error.status) {
+                            SweetAlertSetting('Cannot communicate with server. Please check the network (Help > Preference > C SOLVIS Setting)')
+                        } else {
+                            SweetAlertSetting(error)
+                            }
                         }
                     }
     }
@@ -232,9 +208,9 @@ function MenuIndex(props) {
                 .then((res) => {
                     storedfilename = res.data.filename;
                     storedfilepath = res.data.filepath
-                    fileOriName = storedfilename
+                    fileOriName = storedfilename.replace(storedfilename.substring(0,storedfilename.indexOf('+')+1),'')
                     props.Filename(fileOriName)
-                    console.log('storedfilename:', storedfilename, 'storedfilepath:', storedfilepath)
+
                     const data = {
                         filepath: storedfilepath,
                         filename: storedfilename,
@@ -248,7 +224,7 @@ function MenuIndex(props) {
                 })
                 .catch(function (error) {
                     if (!error.status) {
-                        SweetAlertSetting('Cannot communicate with server. Please check the network')
+                        SweetAlertSetting('Cannot communicate with server. Please check the network (Help > Preference > C SOLVIS Setting)')
                     } else {
                         SweetAlertSetting(error)
                     }
@@ -276,17 +252,13 @@ function MenuIndex(props) {
                 try {
                     props.visOpen('open')
                     props.openSTF(false)
-                    let socketDebug = io(URL+'/initialDebugProcess',{query:{filePath:`${currentPath}`,sesID:sessionStorage.getItem('sessionID')}})
-                    socketDebug.on('stdout', data => {
-                        props.visualiseResult('\n'+data)
-                        socketDebug.emit('forceDisconnect')
-                    })
-                    socketDebug.on('stderr', data => {
-                        props.visualiseResult('\n'+data)
-                        socketDebug.emit('forceDisconnect')
-                    })
+                    props.dClicked(true)
                 }catch (error) {
-                    SweetAlertSetting(error)
+                    if (!error.status) {
+                        SweetAlertSetting('Cannot communicate with server. Please check the network (Help > Preference > C SOLVIS Setting)')
+                    } else {
+                        SweetAlertSetting(error)
+                        }
                     }
                 }
     }
@@ -309,14 +281,14 @@ function MenuIndex(props) {
         try {
         axios.post(URL + '/routes/fileMgt/removeLogFiles', body).then((res) => {
         }).catch(function (error) {
+                SweetAlertSetting(error)
+        })
+        }catch (error) {
             if (!error.status) {
-                SweetAlertSetting('Cannot communicate with server. Please check the network')
+                SweetAlertSetting('Cannot communicate with server. Please check the network (Help > Preference > C SOLVIS Setting)')
             } else {
                 SweetAlertSetting(error)
             }
-        })
-        }catch (error) {
-            SweetAlertSetting(error)
         }
     }
 
@@ -340,10 +312,6 @@ function MenuIndex(props) {
             </BootstrapGreenButton>
         </label>
         &nbsp;&nbsp;
-        <BootstrapGreenButton color={'secondary'} className={classes.margin} onClick={onSaveFile}>
-            Save .c file
-        </BootstrapGreenButton>
-        &nbsp;&nbsp;&nbsp;
         <BootstrapGreenButton color={'secondary'} className={classes.margin} onClick={openRenameFile}>
             Rename .c file
         </BootstrapGreenButton>
@@ -381,7 +349,11 @@ function MenuIndex(props) {
                 <div><br/></div>
             </Paper>
         </Backdrop>
-        &nbsp;&nbsp;&nbsp;
+        &nbsp;&nbsp;
+        <BootstrapGreenButton color={'secondary'} className={classes.margin} onClick={onSaveFile}>
+            Save .c file
+        </BootstrapGreenButton>
+        &nbsp;&nbsp;&nbsp;&nbsp;
         <BootstrapYellowButton color={'primary'} className={classes.margin} onClick={compileFile}>
             Compile
         </BootstrapYellowButton>

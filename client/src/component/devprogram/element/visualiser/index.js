@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React from 'react'
 import {Paper, withStyles} from "@material-ui/core";
 import {makeStyles} from '@material-ui/core/styles';
 import "ace-builds/src-noconflict/mode-io";
@@ -8,6 +8,7 @@ import AceEditor from "react-ace";
 import {io} from "socket.io-client";
 import Swal from "sweetalert2";
 import TextField from "@material-ui/core/TextField";
+import axios from "axios";
 
 const useStyles = makeStyles((theme) => ({
     formControl: {
@@ -46,6 +47,7 @@ const StyledTextField = withStyles((theme) => ({
         "& .MuiInputBase-root": {
             backgroundColor: '#000000',
             color: '#f5f5f5',
+            fontWeight:'bold',
             fontSize: 12,
             "& input": {
                 textAlign: "left",
@@ -65,40 +67,37 @@ const SweetAlertSetting = (error) => {
 
 function VisIndex(props) {
     const classes = useStyles(); const URL = `${sessionStorage.getItem('IPAddress')}`;
-    const next = 'next'; const prev = 'bt'; const fv = 'frame variable'; const exit = 'exit';
 
-    const debugProcess2 = (curPath,data) => {
+    const debugProcess = (currP) => {
         try {
-            let socketDebug = io(URL+'/debugProcess',{query:{filePath:`${curPath}`,command:`${data}`,sesID:sessionStorage.getItem('sessionID')}})
-            console.log('filePath:',curPath,'command:',data)
-            socketDebug.on('stdout', data => {
-                props.visResult('\n'+data)
-                socketDebug.emit('forceDisconnect')
-            })
-            socketDebug.on('stderr', data => {
-                props.visResult('\n'+data)
-                socketDebug.emit('forceDisconnect')
-            })
+            socketDebug = io(URL+'/debugProcess',{query:{filePath:`${currP}`, sesID:sessionStorage.getItem('sessionID')}})
+                socketDebug.on('stdout', data => {
+                    props.visResult('\n'+data)
+                })
+                socketDebug.on('stderr', data => {
+                    props.visResult('\n'+data)
+                })
         }catch (error) {
-            SweetAlertSetting(error)
+            if (!error.status) {
+                SweetAlertSetting('Cannot communicate with server. Please check the network (Help > Preference > C SOLVIS Setting)')
+            } else {
+                SweetAlertSetting(error)
+            }
         }
     }
+    let currPath = ''; let cmd = '';
+    let socketDebug = io(URL+'/debugProcess',{query:{filePath:`${currPath}`,command:`${cmd}`,sesID:sessionStorage.getItem('sessionID')}})
 
-    let currP = props.pData;
-    if (props.vbp === 'next') {
-        debugProcess2(currP, next)
-        props.rvbp(true)
+    if (props.myDd === 'd') {
+        currPath = props.pData;
+        debugProcess(currPath)
+        props.rMyDd(true)
     }
-    if (props.vbp === 'bt') {
-        debugProcess2(currP, prev)
-        props.rvbp(true)
-    }
-    if (props.vbp === 'frame variable') {
-        debugProcess2(currP, fv)
-        props.rvbp(true)
-    }
-    if (props.vbp === 'exit') {
-        debugProcess2(currP, exit)
+
+    if (props.vbp === 'next'||props.vbp === 'up'||props.vbp === 'frame variable'||props.vbp === 'exit') {
+        currPath = props.pData; cmd = props.vbp
+        debugProcess(currPath)
+        socketDebug.emit('cmd', cmd)
         props.rvbp(true)
     }
 
@@ -110,23 +109,26 @@ function VisIndex(props) {
         <div>
             <Paper variant={'elevation'} elevation={0} className={classes.paperBG2} >
                 <AceEditor id={'visualiserDisplay'}
-                       readOnly={true}
+                       readOnly={false}
                        value={props.visualiseData}
-                       height={585}
+                       height={564}
+                       width="99%"
                        theme={'terminal'}
                        mode={'io'}
-                       fontSize={11}
+                       fontSize={12}
                        highlightActiveLine={false}
                        showGutter={false}
                        showPrintMargin={false}
-                       focus={true}
+                       focus={false}
                        style={{
                            width:'100%',
+                           fontWeight:'bold',
                            border:'none',
                            outline:'none'
                        }}
                        onLoad={(editor) => {
                            editor.getSession().setUseWrapMode(true);
+                           editor.navigateLineEnd()
                        }}
                 />
                 <StyledTextField id={'visInput'}

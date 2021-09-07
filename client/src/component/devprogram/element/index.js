@@ -10,16 +10,15 @@ import axios from "axios";
 import Swal from "sweetalert2";
 
 function DevElement() {
-    let {params} = useParams();
-    console.log(params)
-
     const [filename,setFileName] = useState(''); const [newfile,setNewFile] = useState(''); const [vars, setVars] = useState(''); const [formulas, setFormulas] = useState('')
-    const [consoleData,setConsoleData] = useState(''); const [debugData,setDebugData] = useState('');
+    const [consoleData,setConsoleData] = useState(''); const [debugData,setDebugData] = useState(''); const [paramValue,setParamValue] = useState('')
 
     let fileName = ''; const [visopen,setVisOpen] = useState(false); let compiledata = ''; let executedata = ''; let debugdata = ''; let filenamedata = ''; let argdata = ''
-    let newFile = ''; const [visbutparam, setVisButParam] = useState(''); let pathD = ''; const [pData, setPData] = useState('');
-    const [boolData, setBoolData] = useState(false); const [vbp,setVBP] = useState('');
+    let newFile = ''; const [visbutparam, setVisButParam] = useState(''); const [pData, setPData] = useState('');
+    const [boolData, setBoolData] = useState(false); const [vbp,setVBP] = useState(''); const [myPd, setMyPd] = useState('');
     const URL = `${sessionStorage.getItem('IPAddress')}`;
+
+    let {params} = useParams();
 
     useEffect(() => {
         getVarsAndFormulas()
@@ -31,14 +30,14 @@ function DevElement() {
         const data = {sessionID: sessionStorage.getItem('sessionID')}
         axios.post(URL + '/routes/dataMgt/getVarsAndFormulas', data).then((res) => {
             if (res.data.emptyData) {
-                SweetAlertSetting('No data found in the given session, Please create a new session or you may try to insert the previous session id (Help/setting)')
+                SweetAlertSetting('No data found in the given session, Please create a new session or you may try to insert the previous session id (Help > Preference > C SOLVIS Setting)')
             } else {
             setVars(res.data.variable)
             setFormulas(res.data.formula)
             }
         }).catch(function (error) {
             if (!error.status) {
-                SweetAlertSetting('Cannot communicate with server. Please check the network')
+                SweetAlertSetting('Cannot communicate with server. Please check the network (Help > Preference > C SOLVIS Setting)')
             } else {
                 SweetAlertSetting(error)
             }
@@ -71,7 +70,7 @@ function DevElement() {
                 }
         }).catch(function (error) {
             if (!error.status) {
-                SweetAlertSetting('Cannot communicate with server. Please check the network')
+                SweetAlertSetting('Cannot communicate with server. Please check the network (Help > Preference > C SOLVIS Setting)')
             } else {
                 SweetAlertSetting(error)
             }
@@ -100,7 +99,7 @@ function DevElement() {
 
     const visButParam = (visValue) => {
         if (visValue === 'play') {
-            setVisButParam('breakpoint set --line 2\n run\n')
+            setVBP('run')
         }
         if (visValue === 'next') {
             console.log(visValue)
@@ -108,7 +107,7 @@ function DevElement() {
         }
         if (visValue === 'prev') {
             console.log(visValue)
-            setVBP('bt')
+            setVBP('up')
         }
         if (visValue === 'show') {
             console.log(visValue)
@@ -123,7 +122,7 @@ function DevElement() {
         }
     }
 
-    const rvbp = (rvbpData) => {
+    const rVBP = (rvbpData) => {
         if (rvbpData === true) {
             setVBP('')
         }
@@ -163,15 +162,39 @@ function DevElement() {
     }
 
     const pathData = (pd) => {
-        pathD = pd
+        let pathD = pd
         console.log('pathD:',pathD)
         setPData(pathD)
     }
 
+    const xClicked = (xd) => {
+        if (xd === true) {
+       setMyPd('x')
+        }
+    }
+
+    const rXClicked = (rxd) => {
+        if (rxd === true) {
+            setMyPd('')
+        }
+    }
+
+    const dClicked = (dd) => {
+        if (dd === true) {
+            setMyPd('d')
+        }
+    }
+
+    const rDClicked = (rdd) => {
+        if (rdd === true) {
+            setMyPd('')
+        }
+    }
+
         return(
             <div>
-                <MenuIndex latestFile={myLatestFile} Filename={myFilename} visOpen={openVis} compileResult={compileResult} executeResult={executeResult}
-                           visualiseResult={debugResult} newFile={newfile} newFileName={filename} openSTF={openSTF} currentPath={pathData} />
+                <MenuIndex latestFile={myLatestFile} Filename={myFilename} visOpen={openVis} compileResult={compileResult} executeResult={executeResult} visualiseResult={debugResult}
+                           newFile={newfile} newFileName={filename} openSTF={openSTF} currentPath={pathData} xClicked={xClicked} dClicked={dClicked}/>
                 <br/>
                 <Grid container spacing={3} direction={"row"} >
                     <Grid item xs={true}>
@@ -181,9 +204,12 @@ function DevElement() {
                         {params === 'button1'?(
                             <EditorIndex  uploadedFile={newfile} myFileName={filename} newValueFile={myNewFileValue} myparam={params} />
                             ):null}
-                        {params === 'button2'?(
+                        {params === 'button2-1'?(
                             <EditorIndex  uploadedFile={newfile} myFileName={filename} newValueFile={myNewFileValue} myparam={params} />
                             ):null}
+                        {params === 'button2-2'?(
+                            <EditorIndex  uploadedFile={newfile} myFileName={filename} newValueFile={myNewFileValue} myparam={params} />
+                        ):null}
                         {params === 'button3'?(
                             <EditorIndex  uploadedFile={newfile} myFileName={filename} newValueFile={myNewFileValue} myparam={params} myVars={vars} />
                             ):null}
@@ -211,7 +237,7 @@ function DevElement() {
                     </Grid>
                     {visopen === true && visbutparam === ''?(
                         <Grid item xs={3}>
-                            <VisIndex visualiseData={debugData} debugParam={visbutparam} vbp={vbp} rvbp={rvbp} pData={pData} visResult={debugResult2}/>
+                            <VisIndex visualiseData={debugData} vbp={vbp} rvbp={rVBP} pData={pData} visResult={debugResult2} myDd={myPd} rMyDd={rDClicked}/>
                         </Grid>
                     ):null}
                 </Grid>
@@ -221,7 +247,7 @@ function DevElement() {
                 ):null}
                 <br/>
                 <div>
-                <ConsoleIndex displayData={consoleData} stfOpen={boolData} pData={pData} consResult={executeResult2}/>
+                <ConsoleIndex displayData={consoleData} stfOpen={boolData} pData={pData} consResult={executeResult2} myXd={myPd} rMyXd={rXClicked}/>
                 </div>
             </div>
             )

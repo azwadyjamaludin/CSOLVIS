@@ -51,13 +51,13 @@ function EditorIndex (props) {
     let newFile = props.uploadedFile;
 
     let n = "\n";
-    let stdioButton = `${'#include'} ${'<'}${'stdio.h'}${'>'}` ; let mainButton = `${n}${'int main()'} {${n}${n}${n}${'return 0'}${n}}`; let printfButton = `${n}printf(${'insert your text here'});`; let scanfButton = `${n}scanf(%v,${'variable'});`;
-    let ifElseButton = `${n}if(${'selection condition'}) {${n}${n}${'if-true action/formula'}${n}${n}} ${n}else() {${n}${n}${'if-false action/formula'}${n}${n}}${n}`;
-    let forLoopButton = `${n}for (${"counter"}=0;${"repeat condition"};${"counter++"}) {${n}${n}}`
-    let whilebutton = `${n}while(${"repeat condition"}) {${n}${n}}`; let doWhileButton = `${n}do{${n}${n}}${n}while(${"repeat condition"});`
+    let stdioButton = `${'  #include'} ${'<'}${'stdio.h'}${'>'}` ; let mainButton = `${n}  ${'int main()'} {`;let mainButton2 = ` ${'return 0'}${';'}${n}  }`; let printfButton = `${n}  printf(${'insert your text here'});`; let scanfButton = `${n}  scanf(%v,${'variable'});`;
+    let ifElseButton = `${n}  if(${'selection condition'}) {${n}${n}  ${'if-true action/formula'}${n}${n}  } ${n}  else() {${n}${n}  ${'if-false action/formula'}${n}${n}  }`;
+    let forLoopButton = `${n}  for (${"counter"}=0;${"repeat condition"};${"counter++"}) {${n}${n}  }`
+    let whilebutton = `${n}  while(${"repeat condition"}) {${n}${n}  }`; let doWhileButton = `${n}  do{${n}${n}  }${n}  while(${"repeat condition"});`
 
 
-    const stdio = stdioButton; const main = mainButton; const printf = printfButton; const scanf = scanfButton; const ifElse = ifElseButton; const forLoop = forLoopButton;
+    const stdio = stdioButton; const main = mainButton; const main2 = mainButton2; const printf = printfButton; const scanf = scanfButton; const ifElse = ifElseButton; const forLoop = forLoopButton;
     const While = whilebutton; const doWhile = doWhileButton;
 
     const butPattern = (editor) => {
@@ -68,8 +68,11 @@ function EditorIndex (props) {
             insertTextAtCursor(editor, stdio)
             console.log('insertTextAtCursor-button1',stdioButton)
         }
-        if(props.myparam === 'button2') {
+        if(props.myparam === 'button2-1') {
             insertTextAtCursor(editor, main)
+        }
+        if(props.myparam === 'button2-2') {
+            insertTextAtCursor(editor, main2)
         }
         if (props.myparam === 'button3') {
             console.log('insertTextAtCursor-button3',props.myVars.replace(',',' '))

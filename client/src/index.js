@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
+import '@fontsource/roboto/400.css'
 import App from './component/probsolve';
 import { BrowserRouter } from "react-router-dom";
 import reportWebVitals from './reportWebVitals';

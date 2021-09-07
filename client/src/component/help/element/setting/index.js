@@ -16,7 +16,6 @@ const useStyles = makeStyles((theme) => ({
 
 const STIndex = () => {
     const classes = useStyles(); const [lastSesID, setLastSesID] = useState(''); const [ipAdd, setIpAdd] = useState('');
-    const URL = `${sessionStorage.getItem('IPAddress')}`;
 
     const onBlurIPAdd = (e) => {
         setIpAdd(e.target.value)
@@ -24,7 +23,7 @@ const STIndex = () => {
     const onClickSubmitIPAdd = async () => {
         const body = {ipAddress:ipAdd}
         console.log('ipAdd:',ipAdd)
-        await axios.post(URL+'/routes/dataMgt/storeIPAddress',body).then((res) => {
+        await axios.post(ipAdd+'/routes/dataMgt/storeIPAddress',body).then((res) => {
             const data = res.data
             sessionStorage.setItem('IPAddress',data.ipAddress)
         })

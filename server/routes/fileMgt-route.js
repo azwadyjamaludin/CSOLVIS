@@ -75,6 +75,14 @@ router.route('/compileSourceFile').post( async (req, res) => {
             }
 })
 
+router.route('/compileSourceForDebug').post( async (req, res) => {
+    try {
+        await fileConfig.compileProcess2(req,res)
+    }catch (error) {
+        logger.error(error)
+    }
+})
+
 router.route('/removeLogFiles').post(async (req,res) => {
     let normaliseDir = fileConfig.uploadPathUserLogNormalise; let sesID = req.body.sesID
             if (fs.existsSync(path.join(normaliseDir+sesID+'+cmdX.log'))) {

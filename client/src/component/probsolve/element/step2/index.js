@@ -75,7 +75,7 @@ const Step2 = (props) => {
             props.IPOData(res.data.ipo)
         }).catch(function (error) {
             if (!error.status) {
-                SweetAlertSetting('Cannot communicate with server. Please check the network')
+                SweetAlertSetting('Cannot communicate with server. Please check the network (Help > Preference > C SOLVIS Setting)')
             } else {
                 SweetAlertSetting(error)
             }
@@ -97,7 +97,7 @@ const Step2 = (props) => {
             <Paper variant={'elevation'} elevation={5} className={classes.paperBG2}>
                 <br/>
                 <Typography variant={'body2'} paragraph={true} align={'center'}>
-                    What should be calculate?
+                    <b>What should be calculate?</b>
                 </Typography>
                 <form >
                 <TextField id={'step2'}

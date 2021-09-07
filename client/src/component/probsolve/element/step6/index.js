@@ -85,7 +85,7 @@ function Step6(props) {
             props.IPOData(res.data.ipo)
         }).catch(function (error) {
             if (!error.status) {
-                SweetAlertSetting('Cannot communicate with server. Please check the network')
+                SweetAlertSetting('Cannot communicate with server. Please check the network (Help > Preference > C SOLVIS Setting)')
             } else {
                 SweetAlertSetting(error)
             }
@@ -130,7 +130,7 @@ function Step6(props) {
             <Paper variant={'elevation'} elevation={5} className={classes.paperBG2}>
                 <br/>
                 <Typography variant={'body2'} paragraph={true} align={'center'}>
-                    <u>REPEATING ACTION</u>
+                    <b><u>REPEATING ACTION</u></b>
                 </Typography>
                 <form  >
                 <BootstrapButton >

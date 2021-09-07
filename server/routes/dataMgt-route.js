@@ -35,7 +35,7 @@ router.route('/storeIPAddress').post(async (req, res) => {
         let params = [ipAddress, 1]
         try {
                 await dbConfig.updateData(sqlUpdate,params, function (cb) {
-                        for (let result of cb.message) {
+                        if (cb.success === true) {
                                 let queryData = `SELECT ipAddr FROM ipSett WHERE table_id = (?)`
                                 let params = [1]
                                 dbConfig.getData(queryData,params, function (cb) {
@@ -198,9 +198,9 @@ router.route('/getVarsAndFormulas').post(async (req, res) => {
                         } else {
                         for (let result of cb.message) {
                                 if(result['variable'] !== '' ) {
-                            varArray.push(result['variable']);}
+                            varArray.push('  '+result['variable']);}
                                 if (result['formula'] !== '') {
-                                formulaArray.push(result['formula'])}
+                                formulaArray.push('  '+result['formula'])}
                         }
                         logger.debug('variable:',varArray.join('\n'), 'formula:',formulaArray.join('\n'))
                         res.json({variable:varArray.join('\n'),
@@ -239,11 +239,21 @@ router.route('/deleteRows').post(async (req, res) => {
                                                                         logger.debug('file removed:',item['filepath'].replace('.c',''))
                                                                 })
                                                             }
+                                                                if (fs.existsSync(item['filepath'].replace('.c','-2'))) {
+                                                                        fs.unlink(item['filepath'].replace('.c','-2'),(err) => {
+                                                                                logger.debug('file removed:',item['filepath'].replace('.c','-2'))
+                                                                        })
+                                                                }
                                                              if (fs.existsSync(item['filepath'].replace('.c','.dSYM'))) {
                                                                 fs.unlink(item['filepath'].replace('.c','.dSym'),(err) => {
                                                                         logger.debug('file removed:',item['filepath'].replace('.c','.dSYM'))
                                                                  })
                                                              }
+                                                                if (fs.existsSync(item['filepath'].replace('.c','-2.dSYM'))) {
+                                                                        fs.unlink(item['filepath'].replace('.c','-2.dSym'),(err) => {
+                                                                                logger.debug('file removed:',item['filepath'].replace('.c','-2.dSYM'))
+                                                                        })
+                                                                }
                                                         }
                                                         let deleteOtherData = `DELETE FROM file WHERE session_id = (?)`
                                                         let params = [sessionID]

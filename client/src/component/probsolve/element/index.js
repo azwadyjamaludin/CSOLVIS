@@ -85,7 +85,7 @@ const useStyles = makeStyles((theme) => ({
     root: {
         flexGrow: 1,
         width: '100%',
-        backgroundColor: theme.palette.background.paper
+        backgroundColor: '#fffafa'//theme.palette.background.paper
     },
 }));
 
@@ -127,7 +127,7 @@ function ProbElement() {
             })
         }).catch(function (error) {
             if (!error.status) {
-                SweetAlertSetting('Cannot communicate with server. Please check the network')
+                SweetAlertSetting('Cannot communicate with server. Please check the network (Help > Preference > C SOLVIS Setting)')
             } else {
                 SweetAlertSetting(error)
             }
@@ -159,7 +159,7 @@ function ProbElement() {
             }
         }).catch(function (error) {
             if (!error.status) {
-                SweetAlertSetting('Cannot communicate with server. Please check the network')
+                SweetAlertSetting('Cannot communicate with server. Please check the network (Help > Preference > C SOLVIS Setting)')
             } else {
             SweetAlertSetting(error)
             }

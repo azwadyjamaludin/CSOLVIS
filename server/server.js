@@ -59,40 +59,22 @@ async function main() {
 
     let io = require('socket.io')(server,{cors:{origins:'*',methods:['GET','POST']}});
 
-    let myExecute1 = io.of('/initialExecuteProcess')
-    myExecute1.setMaxListeners(0)
-    myExecute1.on('connection', socket => {
-        FileConfig.initialExecuteProcess(socket)
-    })
-    myExecute1.on('forceDisconnect', function () {
-        myExecute1.disconnect()
-    })
-
-    let myExecute2 = io.of('/executeProcess')
-    myExecute2.setMaxListeners(0)
-    myExecute2.on('connection', socket => {
+    let myExecute = io.of('/executeProcess')
+    myExecute.setMaxListeners(0)
+    myExecute.on('connection', socket => {
         FileConfig.executeProcess(socket)
     })
-    myExecute2.on('forceDisconnect', function () {
-        myExecute2.disconnect()
+    myExecute.on('forceDisconnect', function () {
+        myExecute.disconnect()
     })
 
-    let myDebug1 = io.of('/initialDebugProcess')
-    myDebug1.setMaxListeners(0)
-    myDebug1.on('connection', socket => {
-        FileConfig.initialDebugProcess(socket)
-    })
-    myDebug1.on('forceDisconnect', function () {
-        myDebug1.disconnect()
-    })
-
-    let myDebug2 = io.of('/debugProcess')
-    myDebug2.setMaxListeners(0)
-    myDebug2.on('connection', socket => {
+    let myDebug = io.of('/debugProcess')
+    myDebug.setMaxListeners(0)
+    myDebug.on('connection', socket => {
         FileConfig.debugProcess(socket)
     })
-    myDebug2.on('forceDisconnect', function (socket) {
-        myDebug2.disconnect()
+    myDebug.on('forceDisconnect', function () {
+        myDebug.disconnect()
     })
 
     server.listen(port, cb)

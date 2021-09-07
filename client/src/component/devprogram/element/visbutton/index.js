@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react'
+import React from 'react'
 import {Paper} from "@material-ui/core";
 import {makeStyles, withStyles} from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
@@ -110,15 +110,11 @@ const BootstrapWhiteButton = withStyles({
 function VisButIndex(props) {
     const classes = useStyles();
 
-    const playD = () => {
-        props.playD('play')
-    }
-
-    const prevln = () => {
+    const prevLn = () => {
         props.prevln('prev')
     }
 
-    const nextln = () => {
+    const nextLn = () => {
         props.nextln('next')
     }
 
@@ -142,15 +138,15 @@ function VisButIndex(props) {
                     <b>Click to navigate -></b>
                 </Typography>
             </BootstrapButton>
-            <BootstrapWhiteButton color={'secondary'} className={classes.margin} onClick={prevln}>
+            <BootstrapWhiteButton color={'secondary'} className={classes.margin} onClick={prevLn}>
                 <NavigateBeforeRoundedIcon/>
             </BootstrapWhiteButton>
-            <BootstrapWhiteButton color={'secondary'} className={classes.margin} onClick={nextln}>
+            <BootstrapWhiteButton color={'secondary'} className={classes.margin} onClick={nextLn}>
                 <NavigateNextRoundedIcon/>
             </BootstrapWhiteButton>
             <BootstrapWhiteButton color={'secondary'} className={classes.margin} onClick={showV}>
                 <Typography variant={'body2'} className={classes.margin} paragraph={false} >
-                    <b>Show variable</b>
+                    <b>Show variables</b>
                 </Typography>
             </BootstrapWhiteButton>
             <BootstrapWhiteButton color={'secondary'} className={classes.margin} onClick={stopD}>
