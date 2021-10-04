@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useState} from 'react'
 import {Paper, withStyles} from "@material-ui/core";
 import {makeStyles} from '@material-ui/core/styles';
 import "ace-builds/src-noconflict/mode-io";
@@ -8,7 +8,6 @@ import AceEditor from "react-ace";
 import {io} from "socket.io-client";
 import Swal from "sweetalert2";
 import TextField from "@material-ui/core/TextField";
-import axios from "axios";
 
 const useStyles = makeStyles((theme) => ({
     formControl: {
@@ -66,17 +65,17 @@ const SweetAlertSetting = (error) => {
 }
 
 function VisIndex(props) {
-    const classes = useStyles(); const URL = `${sessionStorage.getItem('IPAddress')}`;
+    const classes = useStyles(); const URL = `${sessionStorage.getItem('IPAddress')}`; let currPath = props.pData;
 
-    const debugProcess = (currP) => {
+    const debugProcess = (socketDebug) => {
         try {
-            socketDebug = io(URL+'/debugProcess',{query:{filePath:`${currP}`, sesID:sessionStorage.getItem('sessionID')}})
-                socketDebug.on('stdout', data => {
-                    props.visResult('\n'+data)
-                })
-                socketDebug.on('stderr', data => {
-                    props.visResult('\n'+data)
-                })
+            socketDebug.on('stdout', data => {
+                props.visResult('\n'+data)
+            })
+            socketDebug.on('stderr', data => {
+                props.visResult('\n'+data)
+            })
+            props.rMyDd(true)
         }catch (error) {
             if (!error.status) {
                 SweetAlertSetting('Cannot communicate with server. Please check the network (Help > Preference > C SOLVIS Setting)')
@@ -85,24 +84,34 @@ function VisIndex(props) {
             }
         }
     }
-    let currPath = ''; let cmd = '';
-    let socketDebug = io(URL+'/debugProcess',{query:{filePath:`${currPath}`,command:`${cmd}`,sesID:sessionStorage.getItem('sessionID')}})
+
+    const debugProcessCmd = (socketDebug,cmd) => {
+        try {
+            socketDebug.on('stdout', data => {
+                props.visResult('\n'+data)
+            })
+            socketDebug.on('stderr', data => {
+                props.visResult('\n'+data)
+            })
+            socketDebug.emit('cmd', cmd)
+            props.rvbp(true)
+        }catch (error) {
+            if (!error.status) {
+                SweetAlertSetting('Cannot communicate with server. Please check the network (Help > Preference > C SOLVIS Setting)')
+            } else {
+                SweetAlertSetting(error)
+            }
+        }
+    }
 
     if (props.myDd === 'd') {
-        currPath = props.pData;
-        debugProcess(currPath)
-        props.rMyDd(true)
+        const socketDebug = io(URL+'/debugProcess',{query:{filePath:`${currPath}`, sesID:sessionStorage.getItem('sessionID')}})
+        debugProcess(socketDebug)
     }
 
-    if (props.vbp === 'next'||props.vbp === 'up'||props.vbp === 'frame variable'||props.vbp === 'exit') {
-        currPath = props.pData; cmd = props.vbp
-        debugProcess(currPath)
-        socketDebug.emit('cmd', cmd)
-        props.rvbp(true)
-    }
-
-    const onTextChange = (e) => {
-        console.log(e.target.value)
+    if (props.vbp) {
+        const socketDebug = io(URL+'/debugProcessCmd',{query:{filePath:`${currPath}`, sesID:sessionStorage.getItem('sessionID')}})
+        debugProcessCmd(socketDebug,props.vbp)
     }
 
     return(
@@ -132,10 +141,10 @@ function VisIndex(props) {
                        }}
                 />
                 <StyledTextField id={'visInput'}
-                                 readOnly={false}
+                                 readOnly={true}
                                  multiline={false}
                                  placeholder={'Click visualiser button to navigate'}
-                                 onChange={onTextChange}
+                                 value={props.vbp}
                                  style={{
                                      border:'none',
                                      outline:'none'

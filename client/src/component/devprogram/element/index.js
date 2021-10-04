@@ -11,10 +11,10 @@ import Swal from "sweetalert2";
 
 function DevElement() {
     const [filename,setFileName] = useState(''); const [newfile,setNewFile] = useState(''); const [vars, setVars] = useState(''); const [formulas, setFormulas] = useState('')
-    const [consoleData,setConsoleData] = useState(''); const [debugData,setDebugData] = useState(''); const [paramValue,setParamValue] = useState('')
+    const [consoleData,setConsoleData] = useState(''); const [debugData,setDebugData] = useState('');
 
-    let fileName = ''; const [visopen,setVisOpen] = useState(false); let compiledata = ''; let executedata = ''; let debugdata = ''; let filenamedata = ''; let argdata = ''
-    let newFile = ''; const [visbutparam, setVisButParam] = useState(''); const [pData, setPData] = useState('');
+    let fileName = ''; const [visopen,setVisOpen] = useState(false); let compiledata = ''; let executedata = ''; let debugdata = ''; let filenamedata = '';
+    let newFile = ''; const [pData, setPData] = useState('');
     const [boolData, setBoolData] = useState(false); const [vbp,setVBP] = useState(''); const [myPd, setMyPd] = useState('');
     const URL = `${sessionStorage.getItem('IPAddress')}`;
 
@@ -138,18 +138,8 @@ function DevElement() {
         setConsoleData(executedata)
     }
 
-    const executeResult2 = (executeResults2) => {
-        executedata = executeResults2
-        setConsoleData(executedata)
-    }
-
     const debugResult = (debugResults) => {
         debugdata = debugResults
-        setDebugData(debugdata)
-    }
-
-    const debugResult2 = (debugResults2) => {
-        debugdata = debugResults2
         setDebugData(debugdata)
     }
 
@@ -193,8 +183,8 @@ function DevElement() {
 
         return(
             <div>
-                <MenuIndex latestFile={myLatestFile} Filename={myFilename} visOpen={openVis} compileResult={compileResult} executeResult={executeResult} visualiseResult={debugResult}
-                           newFile={newfile} newFileName={filename} openSTF={openSTF} currentPath={pathData} xClicked={xClicked} dClicked={dClicked}/>
+                <MenuIndex latestFile={myLatestFile} Filename={myFilename} visOpen={openVis} compileResult={compileResult} newFile={newfile} newFileName={filename} openSTF={openSTF}
+                           currentPath={pathData} xClicked={xClicked} dClicked={dClicked}/>
                 <br/>
                 <Grid container spacing={3} direction={"row"} >
                     <Grid item xs={true}>
@@ -235,9 +225,9 @@ function DevElement() {
                             <EditorIndex  uploadedFile={newfile} myFileName={filename} newValueFile={myNewFileValue} myparam={params} />
                         ):null}
                     </Grid>
-                    {visopen === true && visbutparam === ''?(
+                    {visopen === true?(
                         <Grid item xs={3}>
-                            <VisIndex visualiseData={debugData} vbp={vbp} rvbp={rVBP} pData={pData} visResult={debugResult2} myDd={myPd} rMyDd={rDClicked}/>
+                            <VisIndex visualiseData={debugData} vbp={vbp} rvbp={rVBP} pData={pData} visResult={debugResult} myDd={myPd} rMyDd={rDClicked}/>
                         </Grid>
                     ):null}
                 </Grid>
@@ -247,7 +237,7 @@ function DevElement() {
                 ):null}
                 <br/>
                 <div>
-                <ConsoleIndex displayData={consoleData} stfOpen={boolData} pData={pData} consResult={executeResult2} myXd={myPd} rMyXd={rXClicked}/>
+                <ConsoleIndex displayData={consoleData} stfOpen={boolData} pData={pData} consResult={executeResult} myXd={myPd} rMyXd={rXClicked}/>
                 </div>
             </div>
             )

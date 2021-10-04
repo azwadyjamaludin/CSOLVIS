@@ -56,8 +56,8 @@ const StyledTextField = withStyles((theme) => ({
 }))(TextField);
 
 function ConsoleIndex(props) {
-    const classes = useStyles(); const [kid, setKid] = useState(''); const URL = `${sessionStorage.getItem('IPAddress')}`;
-    let currP = props.pData; let cmd = ''; let socketExec = io(URL+'/executeProcess',{query:{filePath:`${currP}`, sesID:sessionStorage.getItem('sessionID')}})
+    const classes = useStyles(); const [kid, setKid] = useState(''); const URL = `${sessionStorage.getItem('IPAddress')}`; let cmd = '';
+
 
     const onTextChange = (e) => {
         setKid(e.target.value)
@@ -65,30 +65,8 @@ function ConsoleIndex(props) {
 
     const onPressEnter = (e) => {
         if (e.key === 'Enter') {
-            currP = props.pData; cmd = kid
-            executeProcess(currP)
-            socketExec.emit('cmd', cmd)
-            setKid('')
-        }
-    }
-
-    const executeProcess = (curPath) => {
-        try {
-            socketExec = io(URL+'/executeProcess',{query:{filePath:`${curPath}`, sesID:sessionStorage.getItem('sessionID')}})
-            socketExec.on('stdout', data => {
-                props.consResult('\n'+data)
-                socketExec.emit('forceDisconnect')
-            })
-            socketExec.on('stderr', data => {
-                props.consResult('\n'+data)
-                socketExec.emit('forceDisconnect')
-            })
-        }catch(error) {
-            if (!error.status) {
-                SweetAlertSetting('Cannot communicate with server. Please check the network (Help > Preference > C SOLVIS Setting)')
-            } else {
-                SweetAlertSetting(error)
-            }
+            const socketExec = io(URL+'/executeProcessCmd',{query:{filePath:`${props.pData}`, sesID:sessionStorage.getItem('sessionID')}})
+            executeProcessCmd(socketExec)
         }
     }
 
@@ -101,10 +79,49 @@ function ConsoleIndex(props) {
         })
     }
 
+    const executeProcess = (socketExec) => {
+        try {
+            cmd = ''
+            socketExec.emit('cmd',cmd)
+            socketExec.on('stdout', data => {
+                props.consResult('\n'+data)
+            })
+            socketExec.on('stderr', data => {
+                props.consResult('\n'+data)
+            })
+            props.rMyXd(true)
+        }catch(error) {
+            if (!error.status) {
+                SweetAlertSetting('Cannot communicate with server. Please check the network (Help > Preference > C SOLVIS Setting)')
+            } else {
+                SweetAlertSetting(error)
+            }
+        }
+    }
+
+    const executeProcessCmd = (socketExec) => {
+        try {
+            cmd = kid
+            socketExec.emit('cmd',cmd)
+            socketExec.on('stdout', data => {
+                props.consResult('\n'+data)
+            })
+            socketExec.on('stderr', data => {
+                props.consResult('\n'+data)
+            })
+            setKid('')
+        }catch(error) {
+            if (!error.status) {
+                SweetAlertSetting('Cannot communicate with server. Please check the network (Help > Preference > C SOLVIS Setting)')
+            } else {
+                SweetAlertSetting(error)
+            }
+        }
+    }
+
     if (props.myXd === 'x') {
-        currP = props.pData; cmd = ''
-        executeProcess(currP)
-        props.rMyXd(true)
+        const socketExec = io(URL+'/executeProcess',{query:{filePath:`${props.pData}`, sesID:sessionStorage.getItem('sessionID')}})
+        executeProcess(socketExec)
     }
 
     return(

@@ -8,6 +8,7 @@ let cors = require('cors')
 
 const host = process.env.APPREST_HOST || 'localhost';
 const port = process.env.APPREST_PORT || 3002;
+const fs = require('fs');
 
 let logger = log4js.getLogger('server.js')
 let myapp = express()
@@ -57,24 +58,25 @@ async function main() {
     let server = http.createServer(myapp);
     server.timeout = 240000;
 
-    let io = require('socket.io')(server,{cors:{origins:'*',methods:['GET','POST']}});
+    const { Server } = require("socket.io");
+    const io = new Server(server,{cors:{origins:'*',methods:['GET','POST']}});
 
     let myExecute = io.of('/executeProcess')
-    myExecute.setMaxListeners(0)
     myExecute.on('connection', socket => {
         FileConfig.executeProcess(socket)
     })
-    myExecute.on('forceDisconnect', function () {
-        myExecute.disconnect()
+    let myExecuteCmd = io.of('/executeProcessCmd')
+    myExecuteCmd.on('connection', socket => {
+        FileConfig.executeProcess(socket)
     })
 
     let myDebug = io.of('/debugProcess')
-    myDebug.setMaxListeners(0)
     myDebug.on('connection', socket => {
         FileConfig.debugProcess(socket)
     })
-    myDebug.on('forceDisconnect', function () {
-        myDebug.disconnect()
+    let myDebugCmd = io.of('/debugProcessCmd')
+    myDebugCmd.on('connection', socket => {
+        FileConfig.debugProcess(socket)
     })
 
     server.listen(port, cb)
