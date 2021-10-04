@@ -3,6 +3,7 @@ import {Paper} from "@material-ui/core";
 import {makeStyles, withStyles} from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import paperImage from "../../../../assets/white-concrete-wall.jpg";
+import PlayArrowRoundedIcon from "@material-ui/icons/PlayArrowRounded";
 import NavigateBeforeRoundedIcon from "@material-ui/icons/NavigateBeforeRounded";
 import NavigateNextRoundedIcon from "@material-ui/icons/NavigateNextRounded";
 import StopRoundedIcon from '@material-ui/icons/StopRounded';
@@ -110,6 +111,10 @@ const BootstrapWhiteButton = withStyles({
 function VisButIndex(props) {
     const classes = useStyles();
 
+    const playD = () => {
+        props.playD('play')
+    }
+
     const prevLn = () => {
         props.prevln('prev')
     }
@@ -138,6 +143,9 @@ function VisButIndex(props) {
                     <b>Click to navigate -></b>
                 </Typography>
             </BootstrapButton>
+            <BootstrapWhiteButton color={'secondary'} className={classes.margin} onClick={playD}>
+                <PlayArrowRoundedIcon/>
+            </BootstrapWhiteButton>
             <BootstrapWhiteButton color={'secondary'} className={classes.margin} onClick={prevLn}>
                 <NavigateBeforeRoundedIcon/>
             </BootstrapWhiteButton>

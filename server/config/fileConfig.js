@@ -142,48 +142,55 @@ async function executeProcess(socket) {
 }
 
 async function debugProcess(socket) {
-    let filePath = socket.handshake.query.filePath; let sesID = socket.handshake.query.sesID; let platform = process.platform
+    let filePath = socket.handshake.query.filePath; let sesID = socket.handshake.query.sesID; let cmd = socket.handshake.query.cmd; let platform = process.platform
     logger.debug('debugProcess:', filePath, 'sesID:',sesID)
 
     if (platform === 'darwin' || platform === 'linux') {
     let childProcess = spawn('lldb', [`${filePath.replace('.c', '-2')}`]);
         let data = '';
     process.stdin.pipe(childProcess.stdin)
-
-        childProcess.stdin.write(`breakpoint set --name main\n run\n`)
-        childProcess.stdout.on('data', function(chunk)  {
-            data += chunk
-            socket.emit('stdout' ,data)
-        })
-        childProcess.stderr.on('data', (err) => {
-            data += err
-            socket.emit('stderr' ,data)
-        })
-        socket.on('cmd', function (cmd) {
-            fs.appendFileSync(`${uploadPathUserLogNormalise}${sesID}+cmdD.log`,`${cmd}\n`)
-            let readLog= fs.readFileSync(`${uploadPathUserLogNormalise}${sesID}+cmdD.log`)
-            childProcess.stdin.write(`${readLog.toString()}`)
-        })
+        if (cmd === '') {
+            childProcess.stdin.write(`breakpoint set --name main\n`)
+        } else if (cmd !== '') {
+            fs.appendFileSync(`${uploadPathUserLogNormalise}${sesID}+cmdD.log`,`${cmd}`)
+            let readLog= fs.readFileSync(`${uploadPathUserLogNormalise}${sesID}+cmdD.log`); let myLog = readLog.toString().split(',')
+            let arrayParams = ['breakpoint set --name main']; arrayParams.concat(myLog); logger.debug('arrayParams:',arrayParams)
+            for (let item in arrayParams) {
+                childProcess.stdin.write(`${item}\n`)
+                childProcess.stdout.on('data', function(chunk)  {
+                    data += chunk
+                    socket.emit('stdout' ,data)
+                })
+                childProcess.stderr.on('data', (err) => {
+                    data += err
+                    socket.emit('stderr' ,data)
+                })
+            }
+        }
     }
     else if (platform === 'win32') {
     let childProcess = spawn('lldb', [`${filePath.replace('.c', '-2.exe')}`]);
         let data = '';
     process.stdin.pipe(childProcess.stdin)
+        if (cmd === '') {
+            childProcess.stdin.write(`breakpoint set --name main\n`)
+        } else if (cmd !== '') {
+            fs.appendFileSync(`${uploadPathUserLogNormalise}${sesID}+cmdD.log`,`${cmd}`)
+            let readLog= fs.readFileSync(`${uploadPathUserLogNormalise}${sesID}+cmdD.log`); let myLog = readLog.toString().split(',')
+            let arrayParams = ['breakpoint set --name main']; arrayParams.concat(myLog);
+            for (let item in arrayParams) {
+                childProcess.stdin.write(`${item}\n`)
+                childProcess.stdout.on('data', function(chunk)  {
+                    data += chunk
+                    socket.emit('stdout' ,data)
+                })
+                childProcess.stderr.on('data', (err) => {
+                    data += err
+                    socket.emit('stderr' ,data)
+                })
 
-        childProcess.stdin.write(`breakpoint set --name main\n run\n`)
-        childProcess.stdout.on('data', function(chunk)  {
-            data += chunk
-            socket.emit('stdout' ,data)
-        })
-        childProcess.stderr.on('data', (err) => {
-            data += err
-            socket.emit('stderr' ,data)
-        })
-        socket.on('cmd', function (cmd) {
-            fs.appendFileSync(`${uploadPathUserLogNormalise}${sesID}+cmdD.log`,`${cmd}\n`)
-            let readLog= fs.readFileSync(`${uploadPathUserLogNormalise}${sesID}+cmdD.log`)
-            childProcess.stdin.write(`${readLog.toString()}`)
-        })
+            }
+        }
     }
 }
 module.exports = {uploadConfig,compileProcess,compileProcess2,executeProcess,debugProcess,uploadPathUserLogNormalise}

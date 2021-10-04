@@ -85,33 +85,14 @@ function VisIndex(props) {
         }
     }
 
-    const debugProcessCmd = (socketDebug,cmd) => {
-        try {
-            socketDebug.on('stdout', data => {
-                props.visResult('\n'+data)
-            })
-            socketDebug.on('stderr', data => {
-                props.visResult('\n'+data)
-            })
-            socketDebug.emit('cmd', cmd)
-            props.rvbp(true)
-        }catch (error) {
-            if (!error.status) {
-                SweetAlertSetting('Cannot communicate with server. Please check the network (Help > Preference > C SOLVIS Setting)')
-            } else {
-                SweetAlertSetting(error)
-            }
-        }
-    }
-
     if (props.myDd === 'd') {
-        const socketDebug = io(URL+'/debugProcess',{query:{filePath:`${currPath}`, sesID:sessionStorage.getItem('sessionID')}})
+        const socketDebug = io(URL+'/debugProcess',{query:{filePath:`${currPath}`, sesID:sessionStorage.getItem('sessionID'), cmd:''}})
         debugProcess(socketDebug)
     }
 
     if (props.vbp) {
-        const socketDebug = io(URL+'/debugProcessCmd',{query:{filePath:`${currPath}`, sesID:sessionStorage.getItem('sessionID')}})
-        debugProcessCmd(socketDebug,props.vbp)
+        const socketDebug = io(URL+'/debugProcessCmd',{query:{filePath:`${currPath}`, sesID:sessionStorage.getItem('sessionID'), cmd:props.vbp}})
+        debugProcess(socketDebug)
     }
 
     return(
