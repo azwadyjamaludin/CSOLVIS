@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useState} from 'react'
 import {Paper} from "@material-ui/core";
 import {makeStyles, withStyles} from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
@@ -8,6 +8,7 @@ import NavigateBeforeRoundedIcon from "@material-ui/icons/NavigateBeforeRounded"
 import NavigateNextRoundedIcon from "@material-ui/icons/NavigateNextRounded";
 import StopRoundedIcon from '@material-ui/icons/StopRounded';
 import Typography from "@material-ui/core/Typography";
+import TextField from "@material-ui/core/TextField";
 
 const useStyles = makeStyles((theme) => ({
     formControl: {
@@ -29,6 +30,9 @@ const useStyles = makeStyles((theme) => ({
     },
     margin: {
         margin: theme.spacing(1),
+    },
+    margin2: {
+        margin: theme.spacing(2),
     },
     backdrop: {
         zIndex: theme.zIndex.drawer + 1,
@@ -109,30 +113,40 @@ const BootstrapWhiteButton = withStyles({
 })(Button);
 
 function VisButIndex(props) {
-    const classes = useStyles();
+    const classes = useStyles(); const [kid, setKid] = useState('')
 
-    const playD = () => {
+    const playD = async() => {
         props.playD('play')
     }
 
-    const prevLn = () => {
+    const prevLn = async() => {
         props.prevln('prev')
     }
 
-    const nextLn = () => {
+    const nextLn = async() => {
         props.nextln('next')
     }
 
-    const showV = () => {
+    const keyIn = async (e) => {
+        if (e.key === 'Enter') {
+            props.keyIn(kid)
+        }
+    }
+
+    const showV = async() => {
         props.showV('show')
     }
 
-    const stopD = () => {
+    const stopD = async() => {
         props.stopD('stop')
     }
 
-    const closeVis = () => {
+    const closeVis = async() => {
         props.visOpen('close')
+    }
+
+    const onTextChange = async(e) => {
+        setKid(e.target.value)
     }
 
     return(
@@ -160,6 +174,23 @@ function VisButIndex(props) {
             <BootstrapWhiteButton color={'secondary'} className={classes.margin} onClick={stopD}>
                 <StopRoundedIcon/>
             </BootstrapWhiteButton>
+            <TextField id={'keyIn'}
+                       placeholder={'Key in and press enter'}
+                       className={classes.margin2}
+                       variant={'outlined'}
+                       color={'secondary'}
+                       onChange={onTextChange}
+                       onKeyPress={keyIn}
+                       size={'small'}
+                       style={{
+                           backgroundColor: '#f5f5f5',
+                           width: 200,
+                           textAlign:'left'
+                       }}
+            />
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             <BootstrapWhiteButton color={'secondary'} className={classes.margin} onClick={closeVis}>
                 <Typography variant={'body2'} className={classes.margin} paragraph={false} >
                     <b> Close Visualizer</b>

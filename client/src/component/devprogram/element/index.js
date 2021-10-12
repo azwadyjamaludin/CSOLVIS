@@ -109,6 +109,7 @@ function DevElement() {
             console.log(visValue)
             setVBP('up')
         }
+
         if (visValue === 'show') {
             console.log(visValue)
             setVBP('frame variable')
@@ -120,6 +121,11 @@ function DevElement() {
         if  (visValue === 'close') {
             setVisOpen(false)
         }
+        //setVBP(visValue)
+    }
+
+    const keyInParam = (kip) => {
+        setVBP(kip)
     }
 
     const rVBP = (rvbpData) => {
@@ -226,14 +232,14 @@ function DevElement() {
                         ):null}
                     </Grid>
                     {visopen === true?(
-                        <Grid item xs={3}>
+                        <Grid item xs={4}>
                             <VisIndex visualiseData={debugData} vbp={vbp} rvbp={rVBP} pData={pData} visResult={debugResult} myDd={myPd} rMyDd={rDClicked}/>
                         </Grid>
                     ):null}
                 </Grid>
                 <br/>
                 {visopen === true?(
-                    <VisButIndex playD={visButParam} nextln={visButParam} prevln={visButParam} showV={visButParam} stopD={visButParam} visOpen={visButParam}/>
+                    <VisButIndex playD={visButParam} nextln={visButParam} prevln={visButParam} showV={visButParam} keyIn={keyInParam} stopD={visButParam} visOpen={visButParam}/>
                 ):null}
                 <br/>
                 <div>

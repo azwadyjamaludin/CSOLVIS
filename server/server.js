@@ -65,10 +65,10 @@ async function main() {
     myExecute.on('connection', socket => {
         FileConfig.executeProcess(socket)
     })
-    let myExecuteCmd = io.of('/executeProcessCmd')
+    /*let myExecuteCmd = io.of('/executeProcessCmd')
     myExecuteCmd.on('connection', socket => {
         FileConfig.executeProcess(socket)
-    })
+    })*/
 
     let myDebug = io.of('/debugProcess')
     myDebug.on('connection', socket => {

@@ -63,6 +63,7 @@ const SweetAlertSetting = (error) => {
     }).then((r) => {
     })
 }
+let socketDebug = io(URL+'/debugProcessCmd',{query:{filePath:``, sesID:sessionStorage.getItem('sessionID')}})
 
 function VisIndex(props) {
     const classes = useStyles(); const URL = `${sessionStorage.getItem('IPAddress')}`; let currPath = props.pData;
@@ -85,14 +86,32 @@ function VisIndex(props) {
         }
     }
 
+    const debugProcessCmd = (socketDebug,cmd) => {
+        try {
+            socketDebug.emit('cmd',cmd)
+            socketDebug.on('stdout', data => {
+                props.visResult('\n'+data)
+            })
+            socketDebug.on('stderr', data => {
+                props.visResult('\n'+data)
+            })
+            props.rvbp(true)
+        }catch (error) {
+            if (!error.status) {
+                SweetAlertSetting('Cannot communicate with server. Please check the network (Help > Preference > C SOLVIS Setting)')
+            } else {
+                SweetAlertSetting(error)
+            }
+        }
+    }
+
     if (props.myDd === 'd') {
-        const socketDebug = io(URL+'/debugProcess',{query:{filePath:`${currPath}`, sesID:sessionStorage.getItem('sessionID'), cmd:''}})
+        socketDebug = io(URL+'/debugProcess',{query:{filePath:`${currPath}`, sesID:sessionStorage.getItem('sessionID')}})
         debugProcess(socketDebug)
     }
 
     if (props.vbp) {
-        const socketDebug = io(URL+'/debugProcessCmd',{query:{filePath:`${currPath}`, sesID:sessionStorage.getItem('sessionID'), cmd:props.vbp}})
-        debugProcess(socketDebug)
+        debugProcessCmd(socketDebug,props.vbp)
     }
 
     return(

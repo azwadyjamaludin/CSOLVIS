@@ -55,6 +55,8 @@ const StyledTextField = withStyles((theme) => ({
     }
 }))(TextField);
 
+let socketExec = io(URL+'/executeProcess',{query:{filePath:``, sesID:sessionStorage.getItem('sessionID')}})
+
 function ConsoleIndex(props) {
     const classes = useStyles(); const [kid, setKid] = useState(''); const URL = `${sessionStorage.getItem('IPAddress')}`; let cmd = '';
 
@@ -65,8 +67,8 @@ function ConsoleIndex(props) {
 
     const onPressEnter = (e) => {
         if (e.key === 'Enter') {
-            const socketExec = io(URL+'/executeProcessCmd',{query:{filePath:`${props.pData}`, sesID:sessionStorage.getItem('sessionID')}})
-            executeProcessCmd(socketExec)
+            cmd = kid
+            executeProcessCmd(socketExec,cmd)
         }
     }
 
@@ -81,8 +83,6 @@ function ConsoleIndex(props) {
 
     const executeProcess = (socketExec) => {
         try {
-            cmd = ''
-            socketExec.emit('cmd',cmd)
             socketExec.on('stdout', data => {
                 props.consResult('\n'+data)
             })
@@ -99,9 +99,8 @@ function ConsoleIndex(props) {
         }
     }
 
-    const executeProcessCmd = (socketExec) => {
+    const executeProcessCmd = (socketExec,cmd) => {
         try {
-            cmd = kid
             socketExec.emit('cmd',cmd)
             socketExec.on('stdout', data => {
                 props.consResult('\n'+data)
@@ -120,7 +119,7 @@ function ConsoleIndex(props) {
     }
 
     if (props.myXd === 'x') {
-        const socketExec = io(URL+'/executeProcess',{query:{filePath:`${props.pData}`, sesID:sessionStorage.getItem('sessionID')}})
+        socketExec = io(URL+'/executeProcess',{query:{filePath:`${props.pData}`, sesID:sessionStorage.getItem('sessionID')}})
         executeProcess(socketExec)
     }
 
@@ -158,7 +157,7 @@ function ConsoleIndex(props) {
                    readOnly={false}
                    multiline={false}
                    autoFocus
-                   placeholder={'Type here'}
+                   placeholder={'Type here and press enter'}
                    value={kid}
                    onChange={onTextChange}
                    onKeyPress={onPressEnter}
