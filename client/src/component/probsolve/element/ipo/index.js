@@ -1,32 +1,9 @@
 import React from 'react'
-import {makeStyles} from "@material-ui/core/styles";
-import paperImage from "../../../../assets/white-concrete-wall.jpg";
-import {Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow} from "@material-ui/core";
-import Typography from "@material-ui/core/Typography";
-import Button from "@material-ui/core/Button";
-
-const useStyles = makeStyles((theme) => ({
-    formControl: {
-        margin: theme.spacing(1),
-        minWidth: 120,
-    },
-    selectEmpty: {
-        marginTop: theme.spacing(2),
-        backgroundColor:"#bcd4e6"
-    },
-    paperBG: {
-        backgroundImage: 'url('+paperImage+')'
-    },
-    paperBG2: {
-        backgroundColor:"#bcd4e6"
-    },
-    table: {
-        minWidth: 650,
-    },
-}));
+import {Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography, Button} from "@material-ui/core";
+import UIIndex from '../../ui/index.js'
 
 function IPOIndex(props) {
-    const classes = useStyles();
+    const classes = UIIndex.useStylesIPO();
 console.log(props.ipos)
     return(
         <div>

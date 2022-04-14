@@ -1,122 +1,17 @@
 import React, {useState} from 'react'
-import {Paper} from "@material-ui/core";
-import {makeStyles, withStyles} from "@material-ui/core/styles";
-import Button from "@material-ui/core/Button";
-import paperImage from "../../../../assets/white-concrete-wall.jpg";
+import {Paper,Typography,TextField} from "@material-ui/core";
 import PlayArrowRoundedIcon from "@material-ui/icons/PlayArrowRounded";
 import NavigateBeforeRoundedIcon from "@material-ui/icons/NavigateBeforeRounded";
 import NavigateNextRoundedIcon from "@material-ui/icons/NavigateNextRounded";
 import StopRoundedIcon from '@material-ui/icons/StopRounded';
-import Typography from "@material-ui/core/Typography";
-import TextField from "@material-ui/core/TextField";
-
-const useStyles = makeStyles((theme) => ({
-    formControl: {
-        margin: theme.spacing(1),
-        minWidth: 120,
-    },
-    selectEmpty: {
-        marginTop: theme.spacing(2),
-    },
-    paperBG: {
-        backgroundImage: 'url('+paperImage+')',
-
-    },
-    paperBG2: {
-        backgroundColor:"#bcd4e6"
-    },
-    table: {
-        minWidth: 650,
-    },
-    margin: {
-        margin: theme.spacing(1),
-    },
-    margin2: {
-        margin: theme.spacing(2),
-    },
-    backdrop: {
-        zIndex: theme.zIndex.drawer + 1,
-        color: '#fff',
-    },
-    input: {
-        display: 'none',
-    },
-}));
-
-const BootstrapButton = withStyles({
-    root: {
-        boxShadow: 'none',
-        textTransform: 'none',
-        fontSize: 16,
-        padding: '6px 12px',
-        lineHeight: 1.5,
-        fontFamily: [
-            '-apple-system',
-            'BlinkMacSystemFont',
-            '"Segoe UI"',
-            'Roboto',
-            '"Helvetica Neue"',
-            'Arial',
-            'sans-serif',
-            '"Apple Color Emoji"',
-            '"Segoe UI Emoji"',
-            '"Segoe UI Symbol"',
-        ].join(','),
-        '&:hover': {
-            boxShadow: 'none',
-        },
-        '&:active': {
-            boxShadow: 'none',
-        },
-        '&:focus': {
-            boxShadow: '0 0 0 0.2rem rgba(0,123,255,.5)',
-        },
-    },
-})(Button);
-
-const BootstrapWhiteButton = withStyles({
-    root: {
-        boxShadow: 'none',
-        textTransform: 'none',
-        fontSize: 16,
-        padding: '6px 12px',
-        border: '1px solid',
-        lineHeight: 1.5,
-        backgroundColor: '#f5f5f5',
-        borderColor: '#f5f5f5',
-        fontFamily: [
-            '-apple-system',
-            'BlinkMacSystemFont',
-            '"Segoe UI"',
-            'Roboto',
-            '"Helvetica Neue"',
-            'Arial',
-            'sans-serif',
-            '"Apple Color Emoji"',
-            '"Segoe UI Emoji"',
-            '"Segoe UI Symbol"',
-        ].join(','),
-        '&:hover': {
-            backgroundColor: '#f5f5f5',
-            borderColor: '#f5f5f5',
-            boxShadow: 'none',
-        },
-        '&:active': {
-            boxShadow: 'none',
-            backgroundColor: '#0062cc',
-            borderColor: '#005cbf',
-        },
-        '&:focus': {
-            boxShadow: '0 0 0 0.2rem rgba(0,123,255,.5)',
-        },
-    },
-})(Button);
+import UIIndex from "../../ui/index";
 
 function VisButIndex(props) {
-    const classes = useStyles(); const [kid, setKid] = useState('')
+    const classes = UIIndex.useStylesElements(); const [kid, setKid] = useState(''); const [hideButton, setHideButton] = useState(true)
 
     const playD = async() => {
         props.playD('play')
+        setHideButton(false)
     }
 
     const prevLn = async() => {
@@ -130,6 +25,7 @@ function VisButIndex(props) {
     const keyIn = async (e) => {
         if (e.key === 'Enter') {
             props.keyIn(kid)
+            setKid('')
         }
     }
 
@@ -152,33 +48,34 @@ function VisButIndex(props) {
     return(
         <Paper variant={'elevation'} elevation={7} className={classes.paperBG2}>
             &nbsp;&nbsp;
-            <BootstrapButton color={'secondary'} className={classes.margin} >
+            <UIIndex.BootstrapWhiteButton color={'secondary'} className={classes.margin} onClick={playD}>
+                <PlayArrowRoundedIcon/>
+            </UIIndex.BootstrapWhiteButton>
+            <UIIndex.BootstrapButton color={'secondary'} className={classes.margin} disabled={hideButton} >
                 <Typography variant={'body2'} className={classes.margin} paragraph={false} >
                     <b>Click to navigate -></b>
                 </Typography>
-            </BootstrapButton>
-            <BootstrapWhiteButton color={'secondary'} className={classes.margin} onClick={playD}>
-                <PlayArrowRoundedIcon/>
-            </BootstrapWhiteButton>
-            <BootstrapWhiteButton color={'secondary'} className={classes.margin} onClick={prevLn}>
+            </UIIndex.BootstrapButton>
+            <UIIndex.BootstrapWhiteButton color={'secondary'} className={classes.margin} onClick={prevLn} disabled={hideButton}>
                 <NavigateBeforeRoundedIcon/>
-            </BootstrapWhiteButton>
-            <BootstrapWhiteButton color={'secondary'} className={classes.margin} onClick={nextLn}>
+            </UIIndex.BootstrapWhiteButton>
+            <UIIndex.BootstrapWhiteButton color={'secondary'} className={classes.margin} onClick={nextLn} disabled={hideButton}>
                 <NavigateNextRoundedIcon/>
-            </BootstrapWhiteButton>
-            <BootstrapWhiteButton color={'secondary'} className={classes.margin} onClick={showV}>
+            </UIIndex.BootstrapWhiteButton>
+            <UIIndex.BootstrapWhiteButton color={'secondary'} className={classes.margin} onClick={showV} disabled={hideButton}>
                 <Typography variant={'body2'} className={classes.margin} paragraph={false} >
                     <b>Show variables</b>
                 </Typography>
-            </BootstrapWhiteButton>
-            <BootstrapWhiteButton color={'secondary'} className={classes.margin} onClick={stopD}>
+            </UIIndex.BootstrapWhiteButton>
+            <UIIndex.BootstrapWhiteButton color={'secondary'} className={classes.margin} onClick={stopD} disabled={hideButton}>
                 <StopRoundedIcon/>
-            </BootstrapWhiteButton>
+            </UIIndex.BootstrapWhiteButton>
             <TextField id={'keyIn'}
                        placeholder={'Key in and press enter'}
                        className={classes.margin2}
                        variant={'outlined'}
                        color={'secondary'}
+                       value={kid}
                        onChange={onTextChange}
                        onKeyPress={keyIn}
                        size={'small'}
@@ -191,11 +88,11 @@ function VisButIndex(props) {
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            <BootstrapWhiteButton color={'secondary'} className={classes.margin} onClick={closeVis}>
+            <UIIndex.BootstrapWhiteButton color={'secondary'} className={classes.margin} onClick={closeVis}>
                 <Typography variant={'body2'} className={classes.margin} paragraph={false} >
                     <b> Close Visualizer</b>
                 </Typography>
-            </BootstrapWhiteButton>
+            </UIIndex.BootstrapWhiteButton>
         </Paper>
     )
 }

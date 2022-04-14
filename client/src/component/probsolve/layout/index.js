@@ -1,99 +1,12 @@
-import React, {Fragment, useState} from "react";
+import React, {Fragment} from "react";
 import {Link} from "react-router-dom";
-import {AppBar, Toolbar, Hidden, Drawer, CssBaseline, MenuList, MenuItem} from "@material-ui/core";
-import Button from "@material-ui/core/Button";
-import Typography from '@material-ui/core/Typography';
+import {AppBar, Toolbar, Hidden, Drawer, CssBaseline, MenuList, MenuItem, Button, Typography} from "@material-ui/core";
 import KeyboardRoundedIcon from '@material-ui/icons/KeyboardRounded';
 import logo from '../../../assets/CSOLVIS.png'
-import {makeStyles, withStyles} from "@material-ui/core/styles";
-import {CopyToClipboard} from "react-copy-to-clipboard";
-import TextField from "@material-ui/core/TextField";
-
-
-const drawerWidth = 210;
-
-const useStyles = makeStyles((theme) => ({
-  root: {
-    display: "flex",
-  },
-  appBar: {
-    [theme.breakpoints.up("sm")]: {
-      width: `calc(100% - ${drawerWidth}px)`,
-      marginLeft: drawerWidth,
-      //backgroundImage: 'url('+drawerImage+')',
-      backgroundColor: '#bcd4e6',
-      zIndex: theme.zIndex.drawer + 1,
-    }
-  },
-  backdrop: {
-    zIndex: theme.zIndex.drawer + 1,
-    color: '#fff',
-  },
-  sectionDesktop: {
-    display: 'none',
-    [theme.breakpoints.up('md')]: {
-      display: 'flex',
-    },
-  },
-  margin: {
-    margin: theme.spacing(0.1),
-  },
-  sectionMobile: {
-    display: 'flex',
-    [theme.breakpoints.up('md')]: {
-      display: 'none',
-    },
-  },
-
-  nested: {
-    paddingLeft: theme.spacing(10)
-  },
-  drawer: {
-    [theme.breakpoints.up("sm")]: {
-      width: drawerWidth,
-      flexShrink: 0
-    }
-  },
-
-  drawerPaper: {
-    width: drawerWidth,
-    //backgroundImage: 'url('+drawerImage+')',
-    backgroundColor: '#bcd4e6'
-
-  },
-
-  drawerContainer: {
-    overflow: 'auto',
-  },
-
-  toolbar: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "flex",
-    padding: theme.spacing(0, 1),
-    ...theme.mixins.toolbar
-  },
-
-  toolbarButtons: {
-    marginLeft: '5%'
-  },
-
-  menuButton: {
-    marginLeft: theme.spacing(8),
-    [theme.breakpoints.up("sm")]: {
-      display: "none"
-    }
-  },
-  content: {
-    flexGrow: 1,
-    padding: theme.spacing(3)
-  }
-}));
-
-
+import UIIndex from "../ui/index"
 
 function ProbLayout(props) {
-    const classes = useStyles();
+    const classes = UIIndex.useStylesLayout();
 
     const drawer = (
       <div>

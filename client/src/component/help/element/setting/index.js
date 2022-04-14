@@ -1,21 +1,10 @@
 import React, {useState} from 'react';
-import {Paper} from "@material-ui/core";
-import {makeStyles} from "@material-ui/core/styles";
-import TextField from "@material-ui/core/TextField";
-import Button from "@material-ui/core/Button";
+import {Paper, TextField, Button} from "@material-ui/core";
 import axios from "axios";
-
-const useStyles = makeStyles((theme) => ({
-    paperBG: {
-        backgroundColor:"#f5f5f5"
-    },
-    paperBG2: {
-        backgroundColor:"#bcd4e6",
-    },
-}));
+import UIIndex from "../../ui/index"
 
 const STIndex = () => {
-    const classes = useStyles(); const [lastSesID, setLastSesID] = useState(''); const [ipAdd, setIpAdd] = useState('');
+    const classes = UIIndex.useStyles(); const [lastSesID, setLastSesID] = useState(''); const [ipAdd, setIpAdd] = useState('');
 
     const onBlurIPAdd = (e) => {
         setIpAdd(e.target.value)

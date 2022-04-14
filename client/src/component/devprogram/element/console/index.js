@@ -1,64 +1,15 @@
-import {Paper, withStyles} from "@material-ui/core";
+import {Paper, Typography} from "@material-ui/core";
 import React, {useState} from "react";
-import {makeStyles} from "@material-ui/core/styles";
 import AceEditor from "react-ace";
 import "ace-builds/src-noconflict/theme-terminal";
-import Typography from "@material-ui/core/Typography";
-import TextField from "@material-ui/core/TextField";
 import {io} from 'socket.io-client'
-import Swal from "sweetalert2";
-
-const useStyles = makeStyles((theme) => ({
-    formControl: {
-        margin: theme.spacing(1),
-        minWidth: 120,
-    },
-    selectEmpty: {
-        marginTop: theme.spacing(2),
-    },
-    paperBG: {
-        backgroundColor:"#f5f5f5"
-    },
-    paperBG2: {
-        backgroundColor:"#bcd4e6"
-    },
-    table: {
-        minWidth: 650,
-    },
-    margin: {
-        margin: theme.spacing(1),
-    },
-    backdrop: {
-        zIndex: theme.zIndex.drawer + 1,
-        color: '#fff',
-    },
-    input: {
-        display: 'none',
-    },
-    resize:{
-        fontSize:12
-    },
-}));
-const StyledTextField = withStyles((theme) => ({
-    root: {
-        margin: theme.spacing(0),
-        width: '100%',
-        "& .MuiInputBase-root": {
-            backgroundColor: '#000000',
-            color: '#f5f5f5',
-            fontWeight:'bold',
-            fontSize: 12,
-            "& input": {
-                textAlign: "left",
-            }
-        }
-    }
-}))(TextField);
+import UIIndex from "../../ui/index.js"
+import UiAlertIndex from "../../uiAlert/index";
 
 let socketExec = io(URL+'/executeProcess',{query:{filePath:``, sesID:sessionStorage.getItem('sessionID')}})
 
 function ConsoleIndex(props) {
-    const classes = useStyles(); const [kid, setKid] = useState(''); const URL = `${sessionStorage.getItem('IPAddress')}`; let cmd = '';
+    const classes = UIIndex.useStylesElements(); const [kid, setKid] = useState(''); const URL = `${sessionStorage.getItem('IPAddress')}`; let cmd = '';
 
 
     const onTextChange = (e) => {
@@ -72,15 +23,6 @@ function ConsoleIndex(props) {
         }
     }
 
-    const SweetAlertSetting = (error) => {
-        Swal.fire({
-            icon: 'error',
-            title: '',
-            text: `${error}`,
-        }).then((r) => {
-        })
-    }
-
     const executeProcess = (socketExec) => {
         try {
             socketExec.on('stdout', data => {
@@ -92,9 +34,9 @@ function ConsoleIndex(props) {
             props.rMyXd(true)
         }catch(error) {
             if (!error.status) {
-                SweetAlertSetting('Cannot communicate with server. Please check the network (Help > Preference > C SOLVIS Setting)')
+                UiAlertIndex.SweetAlertSetting('Cannot communicate with server. Please check the network (Help > Preference > C SOLVIS Setting)')
             } else {
-                SweetAlertSetting(error)
+                UiAlertIndex.SweetAlertSetting(error)
             }
         }
     }
@@ -111,9 +53,9 @@ function ConsoleIndex(props) {
             setKid('')
         }catch(error) {
             if (!error.status) {
-                SweetAlertSetting('Cannot communicate with server. Please check the network (Help > Preference > C SOLVIS Setting)')
+                UiAlertIndex.SweetAlertSetting('Cannot communicate with server. Please check the network (Help > Preference > C SOLVIS Setting)')
             } else {
-                SweetAlertSetting(error)
+                UiAlertIndex.SweetAlertSetting(error)
             }
         }
     }
@@ -153,7 +95,7 @@ function ConsoleIndex(props) {
                        }}
             />
             {props.stfOpen === true ? (
-            <StyledTextField id={'consoleInput'}
+            <UIIndex.StyledTextField id={'consoleInput'}
                    readOnly={false}
                    multiline={false}
                    autoFocus

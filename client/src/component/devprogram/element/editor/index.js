@@ -1,44 +1,11 @@
 import React from 'react'
-import {Paper} from "@material-ui/core";
-import Typography from '@material-ui/core/Typography';
-import {makeStyles} from '@material-ui/core/styles';
+import {Paper, Typography} from "@material-ui/core";
 import AceEditor from 'react-ace';
 import "ace-builds/src-noconflict/mode-c_cpp";
 import "ace-builds/src-noconflict/theme-xcode";
 import "ace-builds/src-noconflict/ext-language_tools"
-import paperImage from '../../../../assets/white-concrete-wall.jpg'
 import insertTextAtCursor from "insert-text-at-cursor";
-
-
-const useStyles = makeStyles((theme) => ({
-    formControl: {
-        margin: theme.spacing(1),
-        minWidth: 120,
-    },
-    selectEmpty: {
-        marginTop: theme.spacing(2),
-    },
-    paperBG: {
-        backgroundImage: 'url('+paperImage+')',
-
-    },
-    paperBG2: {
-        backgroundColor:"#bcd4e6"
-    },
-    table: {
-        minWidth: 650,
-    },
-    margin: {
-        margin: theme.spacing(1),
-    },
-    backdrop: {
-        zIndex: theme.zIndex.drawer + 1,
-        color: '#fff',
-    },
-    input: {
-        display: 'none',
-    },
-}));
+import UIIndex from "../../ui/index"
 
 const editorStyle = {
     border: '2px solid lightgray',
@@ -46,7 +13,7 @@ const editorStyle = {
 
 function EditorIndex (props) {
 
-    const classes = useStyles();
+    const classes = UIIndex.useStylesElements();
 
     let newFile = props.uploadedFile;
 
@@ -61,12 +28,9 @@ function EditorIndex (props) {
     const While = whilebutton; const doWhile = doWhileButton;
 
     const butPattern = (editor) => {
-        console.log('EditorIndex-butPattern:',editor)
-
 
         if (props.myparam === 'button1') {
             insertTextAtCursor(editor, stdio)
-            console.log('insertTextAtCursor-button1',stdioButton)
         }
         if(props.myparam === 'button2-1') {
             insertTextAtCursor(editor, main)
@@ -75,7 +39,6 @@ function EditorIndex (props) {
             insertTextAtCursor(editor, main2)
         }
         if (props.myparam === 'button3') {
-            console.log('insertTextAtCursor-button3',props.myVars.replace(',',' '))
             insertTextAtCursor(editor,props.myVars.replace(',',' '))
 
         }
@@ -105,7 +68,6 @@ function EditorIndex (props) {
     const onEditorChange = (newValue) => {
             newFile = newValue
             props.newValueFile(newFile)
-            console.log(newFile)
     }
 
     return(

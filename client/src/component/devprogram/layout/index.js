@@ -1,183 +1,19 @@
 import React, {Fragment} from "react";
 import {Link} from "react-router-dom";
 import {Hidden, Drawer, CssBaseline, MenuList, MenuItem} from "@material-ui/core";
-import Button from "@material-ui/core/Button";
-import {makeStyles, withStyles} from "@material-ui/core/styles";
 import DescriptionRoundedIcon from '@material-ui/icons/DescriptionRounded';
 import logo from '../../../assets/CSOLVIS.png'
 import Typography from '@material-ui/core/Typography';
-import drawerImage from '../../../assets/blue-concrete-textured-background.jpg'
-
-const drawerWidth = 210;
-
-const useStyles = makeStyles((theme) => ({
-  root: {
-    display: "flex",
-  },
-
-  appBar: {
-    [theme.breakpoints.up("sm")]: {
-      width: `calc(100% - ${drawerWidth}px)`,
-      marginLeft: drawerWidth,
-      backgroundImage: 'url('+drawerImage+')',
-      zIndex: theme.zIndex.drawer + 1,
-    }
-  },
-  backdrop: {
-    zIndex: theme.zIndex.drawer + 1,
-    color: '#fff',
-  },
-  sectionDesktop: {
-    display: 'none',
-    [theme.breakpoints.up('md')]: {
-      display: 'flex',
-    },
-  },
-  sectionMobile: {
-    display: 'flex',
-    [theme.breakpoints.up('md')]: {
-      display: 'none',
-    },
-  },
-  nested: {
-    paddingLeft: theme.spacing(10)
-  },
-  nested2: {
-    paddingLeft: theme.spacing(2)
-  },
-  drawer: {
-    [theme.breakpoints.up("sm")]: {
-      width: drawerWidth,
-      flexShrink: 0
-    }
-  },
-
-  drawerPaper: {
-    width: drawerWidth,
-    //backgroundImage: 'url('+drawerImage+')',
-    backgroundColor: '#bcd4e6'
-  },
-
-  drawerContainer: {
-    overflow: 'auto',
-  },
-
-  toolbar: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "flex",
-    padding: theme.spacing(0, 1),
-    ...theme.mixins.toolbar
-  },
-
-  toolbarButtons: {
-    marginLeft: "10%"
-  },
-
-  menuButton: {
-    marginLeft: theme.spacing(8),
-    [theme.breakpoints.up("sm")]: {
-      display: "none"
-    }
-  },
-  content: {
-    flexGrow: 1,
-    padding: theme.spacing(3)
-  },
-  paperBG2: {
-    backgroundColor:"#faf0e6"
-  },
-    margin: {
-        margin: theme.spacing(0.1),
-    },
-}));
-
-const BootstrapOutlineButton = withStyles({
-  root: {boxShadow: 'none', textTransform: 'none', fontSize: 16, padding: '6px 12px', border: '1px solid', lineHeight: 1.5,
-    fontFamily: [
-      '-apple-system',
-      'BlinkMacSystemFont',
-      '"Segoe UI"',
-      'Roboto',
-      '"Helvetica Neue"',
-      'Arial',
-      'sans-serif',
-      '"Apple Color Emoji"',
-      '"Segoe UI Emoji"',
-      '"Segoe UI Symbol"',
-    ].join(','),
-    '&:hover': {
-      backgroundColor: '#90ee90', borderColor: '#90ee90', boxShadow: 'none',
-    },
-    '&:active': {
-      boxShadow: 'none', backgroundColor: '#0062cc', borderColor: '#005cbf',
-    },
-    '&:focus': {
-      boxShadow: '0 0 0 0.2rem rgba(0,123,255,.5)',
-    },
-  },
-})(Button);
-
-const BootstrapWhiteButton = withStyles({
-    root: {boxShadow: 'none', textTransform: 'none', fontSize: 16, padding: '6px 12px', border: '1px solid', lineHeight: 1.5, backgroundColor: '#f5f5f5', borderColor: '#f5f5f5',
-        fontFamily: [
-            '-apple-system',
-            'BlinkMacSystemFont',
-            '"Segoe UI"',
-            'Roboto',
-            '"Helvetica Neue"',
-            'Arial',
-            'sans-serif',
-            '"Apple Color Emoji"',
-            '"Segoe UI Emoji"',
-            '"Segoe UI Symbol"',
-        ].join(','),
-        '&:hover': {
-            backgroundColor: '#90ee90', borderColor: '#90ee90', boxShadow: 'none',
-        },
-        '&:active': {
-            boxShadow: 'none', backgroundColor: '#0062cc', borderColor: '#005cbf',
-        },
-        '&:focus': {
-            boxShadow: '0 0 0 0.2rem rgba(0,123,255,.5)',
-        },
-    },
-})(Button);
-
-const BootstrapGreenButton = withStyles({
-    root: {boxShadow: 'none', textTransform: 'none', fontSize: 16, padding: '6px 12px', border: '1px solid', lineHeight: 1.5, backgroundColor: '#90ee90', borderColor: '#90ee90',
-        fontFamily: [
-            '-apple-system',
-            'BlinkMacSystemFont',
-            '"Segoe UI"',
-            'Roboto',
-            '"Helvetica Neue"',
-            'Arial',
-            'sans-serif',
-            '"Apple Color Emoji"',
-            '"Segoe UI Emoji"',
-            '"Segoe UI Symbol"',
-        ].join(','),
-        '&:hover': {
-            backgroundColor: '#f5f5f5', borderColor: '#f5f5f5', boxShadow: 'none',
-        },
-        '&:active': {
-            boxShadow: 'none', backgroundColor: '#f5f5f5', borderColor: '#f5f5f5',
-        },
-        '&:focus': {
-            boxShadow: '0 0 0 0.2rem rgba(0,123,255,.5)',
-        },
-    },
-})(Button);
+import UIIndex from '../ui/index.js'
 
 function DevLayout(props) {
-    const classes = useStyles()
+    const classes = UIIndex.useStylesLayout()
 
     const drawer = (
       <div>
           <Hidden smDown>
               <div className={classes.toolbar}>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                  {<img src={logo} height="50" />}&nbsp;&nbsp;&nbsp;
+                  {<img src={logo} height="50"  alt={'logo'}/>}&nbsp;&nbsp;&nbsp;
                   <Typography variant="h6" color="textPrimary">
                       C SOLVIS
                   </Typography>
@@ -196,7 +32,7 @@ function DevLayout(props) {
             </Typography>
           </MenuItem>
             <div align={'center'}>
-              <BootstrapWhiteButton
+              <UIIndex.BootstrapWhiteButton
                   color={'secondary'}
                   className={classes.margin}
                   type={'submit'}
@@ -205,9 +41,9 @@ function DevLayout(props) {
                 <Typography variant="subtitle2" noWrap >
                   include stdio.h
                 </Typography>
-              </BootstrapWhiteButton>
+              </UIIndex.BootstrapWhiteButton>
               <br/>
-                <BootstrapWhiteButton
+                <UIIndex.BootstrapWhiteButton
                     color={'secondary'}
                     className={classes.margin}
                     type={'submit'}
@@ -216,9 +52,9 @@ function DevLayout(props) {
                     <Typography variant="subtitle2" noWrap >
                         declare variables
                     </Typography>
-                </BootstrapWhiteButton>
+                </UIIndex.BootstrapWhiteButton>
                 <br/>
-              <BootstrapGreenButton
+              <UIIndex.BootstrapGreenButton
                   color={'secondary'}
                   className={classes.margin}
                   type={'submit'}
@@ -227,9 +63,9 @@ function DevLayout(props) {
                 <Typography variant="subtitle2" noWrap >
                     {'main {'}
                 </Typography>
-              </BootstrapGreenButton>
+              </UIIndex.BootstrapGreenButton>
               <br/>
-             <BootstrapOutlineButton
+             <UIIndex.BootstrapOutlineButton
                  color={'secondary'}
                  className={classes.margin}
                  type={'submit'}
@@ -238,9 +74,9 @@ function DevLayout(props) {
                <Typography variant="subtitle2" noWrap >
                  insert formulas
                </Typography>
-             </BootstrapOutlineButton>
+             </UIIndex.BootstrapOutlineButton>
              <br/>
-                <BootstrapOutlineButton
+                <UIIndex.BootstrapOutlineButton
                     color={'secondary'}
                     className={classes.margin}
                     type={'submit'}
@@ -249,9 +85,9 @@ function DevLayout(props) {
                   <Typography variant="subtitle2" noWrap >
                     printf
                   </Typography>
-                </BootstrapOutlineButton>
+                </UIIndex.BootstrapOutlineButton>
               <br/>
-              <BootstrapOutlineButton
+              <UIIndex.BootstrapOutlineButton
                   color={'secondary'}
                   className={classes.margin}
                   type={'submit'}
@@ -260,9 +96,9 @@ function DevLayout(props) {
                 <Typography variant="subtitle2" noWrap >
                   scanf
                 </Typography>
-              </BootstrapOutlineButton>
+              </UIIndex.BootstrapOutlineButton>
               <br/>
-              <BootstrapOutlineButton
+              <UIIndex.BootstrapOutlineButton
                   color={'secondary'}
                   className={classes.margin}
                   type={'submit'}
@@ -271,9 +107,9 @@ function DevLayout(props) {
                 <Typography variant="subtitle2" noWrap >
                   if else
                 </Typography>
-              </BootstrapOutlineButton>
+              </UIIndex.BootstrapOutlineButton>
               <br/>
-              <BootstrapOutlineButton
+              <UIIndex.BootstrapOutlineButton
                   color={'secondary'}
                   className={classes.margin}
                   type={'submit'}
@@ -282,9 +118,9 @@ function DevLayout(props) {
                 <Typography variant="subtitle2" noWrap >
                   for loop
                 </Typography>
-              </BootstrapOutlineButton>
+              </UIIndex.BootstrapOutlineButton>
               <br/>
-              <BootstrapOutlineButton
+              <UIIndex.BootstrapOutlineButton
                   color={'secondary'}
                   className={classes.margin}
                   type={'submit'}
@@ -293,9 +129,9 @@ function DevLayout(props) {
                 <Typography variant="subtitle2" noWrap >
                   while loop
                 </Typography>
-              </BootstrapOutlineButton>
+              </UIIndex.BootstrapOutlineButton>
               <br/>
-              <BootstrapOutlineButton
+              <UIIndex.BootstrapOutlineButton
                   color={'secondary'}
                   className={classes.margin}
                   type={'submit'}
@@ -304,9 +140,9 @@ function DevLayout(props) {
                 <Typography variant="subtitle2" noWrap >
                   do-while loop
                 </Typography>
-              </BootstrapOutlineButton>
+              </UIIndex.BootstrapOutlineButton>
                 <br/>
-                <BootstrapGreenButton
+                <UIIndex.BootstrapGreenButton
                     color={'secondary'}
                     className={classes.margin}
                     type={'submit'}
@@ -315,7 +151,7 @@ function DevLayout(props) {
                     <Typography variant="subtitle2" noWrap >
                         {'return 0 }'}
                     </Typography>
-                </BootstrapGreenButton>
+                </UIIndex.BootstrapGreenButton>
             </div>
           </MenuList>
         </MenuList>

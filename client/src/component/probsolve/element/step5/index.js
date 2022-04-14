@@ -1,64 +1,11 @@
 import React, {useState} from 'react'
-import {InputAdornment, Paper, withStyles} from "@material-ui/core";
-import Typography from '@material-ui/core/Typography';
-import TextField from '@material-ui/core/TextField';
-import Button from '@material-ui/core/Button';
-import { makeStyles } from '@material-ui/core/styles';
+import {InputAdornment, Paper, Button, TextField, Typography} from "@material-ui/core";
 import axios from "axios";
-import Swal from "sweetalert2";
-
-const useStyles = makeStyles((theme) => ({
-    formControl: {
-        margin: theme.spacing(1),
-        minWidth: 120,
-    },
-    selectEmpty: {
-        marginTop: theme.spacing(2),
-    },
-    paperBG: {
-        backgroundColor:"#f5f5f5"
-    },
-    paperBG2: {
-        backgroundColor:"#bcd4e6"
-    },
-    table: {
-        minWidth: 650,
-    },
-}));
-
-const BootstrapButton = withStyles({
-    root: {
-        boxShadow: 'none',
-        textTransform: 'none',
-        fontSize: 16,
-        padding: '6px 12px',
-        lineHeight: 1.5,
-        fontFamily: [
-            '-apple-system',
-            'BlinkMacSystemFont',
-            '"Segoe UI"',
-            'Roboto',
-            '"Helvetica Neue"',
-            'Arial',
-            'sans-serif',
-            '"Apple Color Emoji"',
-            '"Segoe UI Emoji"',
-            '"Segoe UI Symbol"',
-        ].join(','),
-        '&:hover': {
-            boxShadow: 'none',
-        },
-        '&:active': {
-            boxShadow: 'none',
-        },
-        '&:focus': {
-            boxShadow: '0 0 0 0.2rem rgba(0,123,255,.5)',
-        },
-    },
-})(Button);
+import UIAlertIndex from "../../uiAlert/index";
+import UIIndex from '../../ui/index.js'
 
 function Step5(props)  {
-    const classes = useStyles();
+    const classes = UIIndex.useStylesSteps();
     const URL = `${sessionStorage.getItem('IPAddress')}`;
     const [step5if, setStep5if] = useState(''); const [step5do, setStep5do] = useState('');
     const [step5else, setStep5else] = useState('')
@@ -83,21 +30,12 @@ function Step5(props)  {
                 props.IPOData(res.data.ipo)
         }).catch(function (error) {
             if (!error.status) {
-                SweetAlertSetting('Cannot communicate with server. Please check the network (Help > Preference > C SOLVIS Setting)')
+                UIAlertIndex.SweetAlertSetting('Cannot communicate with server. Please check the network (Help > Preference > C SOLVIS Setting)')
             } else {
-                SweetAlertSetting(error)
+                UIAlertIndex.SweetAlertSetting(error)
             }
         })
         setStep5if('');setStep5do('');setStep5else('')
-    }
-
-    const SweetAlertSetting =(error) => {
-        Swal.fire({
-            icon: 'error',
-            title: '',
-            text: `${error}`,
-        }).then((r) => {
-        })
     }
 
     return(
@@ -108,14 +46,7 @@ function Step5(props)  {
                     <b><u>CONDITIONAL ACTION</u></b>
                 </Typography>
                 <form >
-                <TextField id={'step5a'}
-                           label={'Selection condition'}
-                           name={'Condition'}
-                           autoFocus
-                           variant={'outlined'}
-                           color={'secondary'}
-                           value={step5if}
-                           onChange={step5OnBlur1}
+                <TextField id={'step5a'} label={'Selection condition'} name={'Condition'} autoFocus variant={'outlined'} color={'secondary'} value={step5if} onChange={step5OnBlur1}
                            helperText="Example: jejari < 0"
                            size={'small'}
                            style={{
@@ -132,17 +63,11 @@ function Step5(props)  {
                            }}
                 />
                 <br/><br/>
-                    <BootstrapButton >
+                    <UIIndex.BootstrapButton >
                         if the condition is met
-                    </BootstrapButton>
+                    </UIIndex.BootstrapButton>
                     &nbsp;
-                <TextField id={'step5b'}
-                           label={'if-true action/formula'}
-                           name={'Action'}
-                           variant={'outlined'}
-                           color={'secondary'}
-                           value={step5do}
-                           onChange={step5OnBlur2}
+                <TextField id={'step5b'} label={'if-true action/formula'} name={'Action'} variant={'outlined'} color={'secondary'} value={step5do} onChange={step5OnBlur2}
                            helperText="Example: luasbulatan = 0"
                            size={'small'}
                            style={{
@@ -159,13 +84,7 @@ function Step5(props)  {
                            }}
                 />
                 &nbsp;&nbsp;
-                <TextField id={'step5c'}
-                           label={'if-false action/formula'}
-                           name={'Action'}
-                           variant={'outlined'}
-                           color={'secondary'}
-                           value={step5else}
-                           onChange={step5OnBlur3}
+                <TextField id={'step5c'} label={'if-false action/formula'} name={'Action'} variant={'outlined'} color={'secondary'} value={step5else} onChange={step5OnBlur3}
                            helperText="Example: proceed"
                            size={'small'}
                            style={{

@@ -1,65 +1,13 @@
 import React, {useState} from 'react'
-import {Paper, withStyles} from "@material-ui/core";
-import Typography from '@material-ui/core/Typography';
-import TextField from '@material-ui/core/TextField';
-import Button from '@material-ui/core/Button';
-import { makeStyles } from '@material-ui/core/styles';
+import {Paper, TextField, Button, Typography} from "@material-ui/core";
 import MenuItem from '@material-ui/core/MenuItem';
 import axios from "axios";
-import Swal from "sweetalert2";
-
-const useStyles = makeStyles((theme) => ({
-    formControl: {
-        margin: theme.spacing(1),
-        minWidth: 120,
-    },
-    selectEmpty: {
-        marginTop: theme.spacing(2),
-    },
-    paperBG: {
-        backgroundColor:"#f5f5f5"
-    },
-    paperBG2: {
-        backgroundColor:"#bcd4e6"
-    },
-    table: {
-        minWidth: 650,
-    },
-}));
-
-const BootstrapButton = withStyles({
-    root: {
-        boxShadow: 'none',
-        textTransform: 'none',
-        fontSize: 16,
-        padding: '6px 12px',
-        lineHeight: 1.5,
-        fontFamily: [
-            '-apple-system',
-            'BlinkMacSystemFont',
-            '"Segoe UI"',
-            'Roboto',
-            '"Helvetica Neue"',
-            'Arial',
-            'sans-serif',
-            '"Apple Color Emoji"',
-            '"Segoe UI Emoji"',
-            '"Segoe UI Symbol"',
-        ].join(','),
-        '&:hover': {
-            boxShadow: 'none',
-        },
-        '&:active': {
-            boxShadow: 'none',
-        },
-        '&:focus': {
-            boxShadow: '0 0 0 0.2rem rgba(0,123,255,.5)',
-        },
-    },
-})(Button);
+import UIAlertIndex from "../../uiAlert/index";
+import UIIndex from '../../ui/index'
+import DataIndex from '../../static_data/index'
 
 function Step6(props) {
-    const classes = useStyles();
+    const classes = UIIndex.useStylesSteps();
     const URL = `${sessionStorage.getItem('IPAddress')}`;
     const [step6counter,setStep6counter] = useState(''); const [step6repeat,setStep6repeat] = useState('')
     const [atypes , setAtypes] = useState('')
@@ -85,45 +33,13 @@ function Step6(props) {
             props.IPOData(res.data.ipo)
         }).catch(function (error) {
             if (!error.status) {
-                SweetAlertSetting('Cannot communicate with server. Please check the network (Help > Preference > C SOLVIS Setting)')
+                UIAlertIndex.SweetAlertSetting('Cannot communicate with server. Please check the network (Help > Preference > C SOLVIS Setting)')
             } else {
-                SweetAlertSetting(error)
+                UIAlertIndex.SweetAlertSetting(error)
             }
         })
         setStep6counter('');setAtypes('');setStep6counter('')
     }
-
-    const SweetAlertSetting =(error) => {
-        Swal.fire({
-            icon: 'error',
-            title: '',
-            text: `${error}`,
-        }).then((r) => {
-        })
-    }
-
-    const types = [
-        {
-            value: '',
-            label: '',
-        },
-        {
-            value: 'char',
-            label: 'char',
-        },
-        {
-            value: 'int',
-            label: 'int',
-        },
-        {
-            value: 'float',
-            label: 'float',
-        },
-        {
-            value: 'double',
-            label: 'double',
-        },
-    ];
 
     return(
         <div align={'center'}>
@@ -133,18 +49,11 @@ function Step6(props) {
                     <b><u>REPEATING ACTION</u></b>
                 </Typography>
                 <form  >
-                <BootstrapButton >
+                <UIIndex.BootstrapButton >
                     Name of counter
-                </BootstrapButton>
+                </UIIndex.BootstrapButton>
                 &nbsp;
-                <TextField id={'step6a'}
-                           label={'counter'}
-                           name={'Counter'}
-                           autoFocus
-                           variant={'outlined'}
-                           color={'secondary'}
-                           value={step6counter}
-                           onChange={step6Blur1}
+                <TextField id={'step6a'} label={'counter'} name={'Counter'} autoFocus variant={'outlined'} color={'secondary'} value={step6counter} onChange={step6Blur1}
                            helperText="Example : x"
                            size={'small'}
                            style={{
@@ -154,13 +63,7 @@ function Step6(props) {
                            }}
                 />
                 &nbsp;&nbsp;
-                <TextField
-                    id="selectStep6"
-                    select
-                    label="Types"
-                    onChange={step6OnSelect}
-                    variant="outlined"
-                    value={atypes}
+                <TextField id="selectStep6" select label="Types" onChange={step6OnSelect} variant="outlined" value={atypes}
                     size={'small'}
                     style={{
                         backgroundColor: '#f5f5f5',
@@ -168,24 +71,18 @@ function Step6(props) {
                         textAlign:'left'
                     }}
                 >
-                    {types.map((option) => (
+                    {DataIndex.types.map((option) => (
                         <MenuItem key={option.value} value={option.value}>
                             {option.label}
                         </MenuItem>
                     ))}
                 </TextField>
                 <br/><br/>
-                <BootstrapButton >
+                <UIIndex.BootstrapButton >
                     Repeat for
-                </BootstrapButton>
+                </UIIndex.BootstrapButton>
                 &nbsp;
-                <TextField id={'step6b'}
-                           label={'repeat condition'}
-                           name={'Condition'}
-                           variant={'outlined'}
-                           color={'secondary'}
-                           value={step6repeat}
-                           onChange={step6Blur2}
+                <TextField id={'step6b'} label={'repeat condition'} name={'Condition'} variant={'outlined'} color={'secondary'} value={step6repeat} onChange={step6Blur2}
                            helperText="Example : x < 10"
                            size={'small'}
                            style={{
