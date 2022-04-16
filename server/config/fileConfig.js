@@ -44,7 +44,7 @@ async function compileProcess(request,response) {
         response.end(`process exited with code ${code}`)
     });
     }else if (platform === "linux") {
-        let childProcess = spawn('clang-12', [filePath, '-o', filePath.replace('.c', '')]);
+        let childProcess = spawn('clang-14', [filePath, '-o', filePath.replace('.c', '')]);
         fs.createWriteStream(`${uploadPathUserLogNormalise}${sessID}+cmdX.log`)
 
         childProcess.stdout.on('data', (data) => {
@@ -77,7 +77,7 @@ async function compileProcess2(request,response) {
         response.end(`process exited with code ${code}`)
     });
   }else if (platform === "linux") {
-        let childProcess = spawn('clang-12', ['-g',filePath, '-o', filePath.replace('.c', '-2')]);
+        let childProcess = spawn('clang-14', ['-g',filePath, '-o', filePath.replace('.c', '-2')]);
         fs.createWriteStream(`${uploadPathUserLogNormalise}${sessID}+cmdD.log`)
 
         childProcess.stdout.on('data', (data) => {
@@ -118,7 +118,7 @@ async function executeProcess(socket) {
             socket.emit('stderr', data)
         })
     }else if (platform === 'linux') {
-        let childProcess = spawn('lldb-12', [`${filePath.replace('.c', '')}`]);
+        let childProcess = spawn('lldb-14', [`${filePath.replace('.c', '')}`]);
         let data = '';
 
         process.stdin.pipe(childProcess.stdin)
@@ -167,7 +167,7 @@ async function debugProcess(socket) {
                 })
             }
     else if (platform === 'linux') {
-    let childProcess = spawn('lldb-12', [`${filePath.replace('.c', '-2')}`]);
+    let childProcess = spawn('lldb-14', [`${filePath.replace('.c', '-2')}`]);
 
     process.stdin.pipe(childProcess.stdin)
     childProcess.stdin.write(`breakpoint set --name main\n`)

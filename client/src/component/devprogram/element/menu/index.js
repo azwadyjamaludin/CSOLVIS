@@ -261,7 +261,7 @@ function MenuIndex(props) {
             Execute
         </UIIndex.BootstrapYellowButton>
         &nbsp;&nbsp;
-        <UIIndex.BootstrapYellowButton color={'primary'} className={classes.margin} onClick={visualiseFile} disabled={false}>
+        <UIIndex.BootstrapYellowButton color={'primary'} className={classes.margin} onClick={visualiseFile} disabled={true}>
             Visualize
         </UIIndex.BootstrapYellowButton>
     </Paper>
