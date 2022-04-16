@@ -1,7 +1,6 @@
-import {makeStyles} from "@material-ui/core/styles";
+import {makeStyles, withStyles} from "@material-ui/core/styles";
 import paperImage from "../../../assets/white-concrete-wall.jpg";
-import {withStyles} from "@material-ui/core";
-import Button from "@material-ui/core/Button";
+import {Button} from "@material-ui/core";
 
 const useStylesIPO = makeStyles((theme) => ({
     formControl: {
@@ -122,6 +121,14 @@ const useStylesLayout = makeStyles((theme) => ({
     }
 }));
 
+const useStyles = makeStyles((theme) => ({
+    root: {
+        flexGrow: 1,
+        width: '100%',
+        backgroundColor: '#fffafa'//theme.palette.background.paper
+    },
+}));
+
 const BootstrapButton = withStyles({
     root: {
         boxShadow: 'none', textTransform: 'none', fontSize: 16, padding: '6px 12px', lineHeight: 1.5,
@@ -149,4 +156,31 @@ const BootstrapButton = withStyles({
     },
 })(Button);
 
-export default {useStylesIPO,useStylesSteps, useStylesLayout, BootstrapButton}
+const BootstrapWhiteButton = withStyles({
+    root: {
+        boxShadow: 'none', textTransform: 'none', fontSize: 16, padding: '6px 12px', border: '1px solid', lineHeight: 1.5, backgroundColor: '#f5f5f5', borderColor: '#bcd4e6',
+        fontFamily: [
+            '-apple-system',
+            'BlinkMacSystemFont',
+            '"Segoe UI"',
+            'Roboto',
+            '"Helvetica Neue"',
+            'Arial',
+            'sans-serif',
+            '"Apple Color Emoji"',
+            '"Segoe UI Emoji"',
+            '"Segoe UI Symbol"',
+        ].join(','),
+        '&:hover': {
+            backgroundColor: '#f5f5f5', borderColor: '#f5f5f5', boxShadow: 'none',
+        },
+        '&:active': {
+            boxShadow: 'none', backgroundColor: '#0062cc', borderColor: '#005cbf',
+        },
+        '&:focus': {
+            boxShadow: '0 0 0 0.2rem rgba(0,123,255,.5)',
+        },
+    },
+})(Button);
+
+export default {useStylesIPO,useStylesSteps, useStylesLayout, useStyles, BootstrapButton, BootstrapWhiteButton}

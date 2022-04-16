@@ -8,52 +8,11 @@ import Step5 from "./step5";
 import Step6 from "./step6";
 import IPOIndex from "./ipo";
 import axios from "axios";
-import Swal from "sweetalert2";
 import PropTypes from 'prop-types';
-import TextField from "@material-ui/core/TextField";
 import {CopyToClipboard} from 'react-copy-to-clipboard';
-import {Box, Tab, Tabs} from "@material-ui/core";
-import {makeStyles, withStyles} from '@material-ui/core/styles';
-import Typography from "@material-ui/core/Typography";
-import Button from "@material-ui/core/Button";
-
-const BootstrapWhiteButton = withStyles({
-    root: {
-        boxShadow: 'none',
-        textTransform: 'none',
-        fontSize: 16,
-        padding: '6px 12px',
-        border: '1px solid',
-        lineHeight: 1.5,
-        backgroundColor: '#f5f5f5',
-        borderColor: '#bcd4e6',
-        fontFamily: [
-            '-apple-system',
-            'BlinkMacSystemFont',
-            '"Segoe UI"',
-            'Roboto',
-            '"Helvetica Neue"',
-            'Arial',
-            'sans-serif',
-            '"Apple Color Emoji"',
-            '"Segoe UI Emoji"',
-            '"Segoe UI Symbol"',
-        ].join(','),
-        '&:hover': {
-            backgroundColor: '#f5f5f5',
-            borderColor: '#f5f5f5',
-            boxShadow: 'none',
-        },
-        '&:active': {
-            boxShadow: 'none',
-            backgroundColor: '#0062cc',
-            borderColor: '#005cbf',
-        },
-        '&:focus': {
-            boxShadow: '0 0 0 0.2rem rgba(0,123,255,.5)',
-        },
-    },
-})(Button);
+import {Box, Tab, Tabs, TextField, Typography} from "@material-ui/core";
+import UIIndex from "../ui/index"
+import UIAlertIndex from "../uiAlert/index"
 
 function TabPanel(props){
     const { children, value, index, ...other } = props;
@@ -81,17 +40,9 @@ TabPanel.propTypes = {
     value: PropTypes.any.isRequired,
 };
 
-const useStyles = makeStyles((theme) => ({
-    root: {
-        flexGrow: 1,
-        width: '100%',
-        backgroundColor: '#fffafa'//theme.palette.background.paper
-    },
-}));
-
 function ProbElement() {
 
-    const classes = useStyles();
+    const classes = UIIndex.useStyles();
     const sesID = sessionStorage.getItem('sessionID'); const [IPO,setIPO] = useState([]); const URL = `${sessionStorage.getItem('IPAddress')}`;
     const [copied, setCopied] = useState(false);
     const [value, setValue] = React.useState(0);
@@ -123,23 +74,14 @@ function ProbElement() {
             axios.post(URL + '/routes/fileMgt/removeLogFiles',data).then((res) => {
 
             }).catch(function (error) {
-                SweetAlertSetting(error)
+                UIAlertIndex.SweetAlertSetting(error)
             })
         }).catch(function (error) {
             if (!error.status) {
-                SweetAlertSetting('Cannot communicate with server. Please check the network (Help > Preference > C SOLVIS Setting)')
+                UIAlertIndex.SweetAlertSetting('Cannot communicate with server. Please check the network (Help > Preference > C SOLVIS Setting)')
             } else {
-                SweetAlertSetting(error)
+                UIAlertIndex.SweetAlertSetting(error)
             }
-        })
-    }
-
-    const SweetAlertSetting =(error) => {
-        Swal.fire({
-            icon: 'error',
-            title: '',
-            text: `${error}`,
-        }).then((r) => {
         })
     }
 
@@ -153,15 +95,15 @@ function ProbElement() {
         const data= {sessionID:sessionStorage.getItem('sessionID')}
         axios.post(URL+'/routes/dataMgt/getStoredIPOData', data).then((res) => {
             if (res.data.emptyData) {
-                SweetAlertSetting('No data found in the given session, Please create a new session or you may try to insert the previous session id (Help/setting)')
+                UIAlertIndex.SweetAlertSetting('No data found in the given session, Please create a new session or you may try to insert the previous session id (Help/setting)')
             } else {
             setIPO(res.data.storedIPO)
             }
         }).catch(function (error) {
             if (!error.status) {
-                SweetAlertSetting('Cannot communicate with server. Please check the network (Help > Preference > C SOLVIS Setting)')
+                UIAlertIndex.SweetAlertSetting('Cannot communicate with server. Please check the network (Help > Preference > C SOLVIS Setting)')
             } else {
-            SweetAlertSetting(error)
+            UIAlertIndex.SweetAlertSetting(error)
             }
         })
         }
@@ -228,11 +170,11 @@ function ProbElement() {
                     &nbsp;&nbsp;&nbsp;&nbsp;
 
                 <CopyToClipboard text={sesID} onCopy={copySessionID}>
-                    <BootstrapWhiteButton
+                    <UIIndex.BootstrapWhiteButton
                         color="secondary"
                     >
                         Copy Session ID
-                    </BootstrapWhiteButton>
+                    </UIIndex.BootstrapWhiteButton>
                 </CopyToClipboard>
                 &nbsp;&nbsp;
                 {copied ? <span style={{color: 'red'}}>Copied.</span> : null}
